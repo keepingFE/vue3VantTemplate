@@ -61,11 +61,11 @@ const list = ref([
 ])
 
 const handleFeatureClick = (item) => {
-  showToast(`点击了`)
+  showToast(item.text)
 }
 
 const handleItemClick = (item) => {
-  showToast(`点击了`)
+  showToast(item.description)
 }
 </script>
 

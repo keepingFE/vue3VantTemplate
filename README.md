@@ -170,7 +170,16 @@ npm run preview
 - ✅ Token 自动注入
 - ✅ API 模块化管理
 
-### 6. 移动端适配
+### 6. Mock 数据
+
+- ✅ vite-plugin-mock 集成
+- ✅ 开发环境自动启用
+- ✅ 用户、商品、订单模块 Mock 数据
+- ✅ 支持分页、搜索、筛选
+- ✅ 模拟真实业务场景
+- ✅ 详细的使用文档
+
+### 7. 移动端适配
 
 - ✅ postcss-pxtorem（px 转 rem）
 - ✅ amfe-flexible（动态设置 rem 基准）
@@ -268,6 +277,46 @@ const handleLogin = async () => {
   const result = await execute({ username, password })
 }
 ```
+
+### Mock 数据
+
+项目已集成 Mock 数据服务，方便前端独立开发调试。
+
+#### 启用/禁用 Mock 数据
+
+在 `.env.development` 文件中配置：
+
+```bash
+# 使用 Mock 数据（前端独立开发）
+VITE_USE_MOCK=true
+
+# 使用真实后端接口（需要后端服务运行在 http://localhost:8080）
+VITE_USE_MOCK=false
+```
+
+**修改后需要重启开发服务器才能生效！**
+
+```bash
+# 停止当前服务（Ctrl + C）
+# 重新启动
+npm run dev
+```
+
+#### 测试账号
+
+```bash
+# 管理员：admin / 123456
+# 普通用户：user / 123456
+```
+
+**已有的 Mock 模块：**
+- 用户模块：登录、获取用户信息、用户列表等
+- 商品模块：商品列表、商品详情、分类等
+- 订单模块：订单列表、订单详情等
+
+详细文档请查看：
+- [Mock 数据说明](./mock/README.md)
+- [使用示例](./mock/USAGE_EXAMPLE.md)
 
 ## 🎨 样式定制
 

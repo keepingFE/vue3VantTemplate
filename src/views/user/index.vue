@@ -19,7 +19,6 @@
         <van-cell :title="$t('user.profile')" icon="user-o" is-link @click="handleProfile" />
         <van-cell :title="$t('user.theme')" icon="brush-o" is-link @click="showThemePopup = true" />
         <van-cell :title="$t('user.language')" icon="globe-o" is-link @click="showLanguagePopup = true" />
-        <van-cell :title="$t('user.settings')" icon="setting-o" is-link @click="handleSettings" />
       </van-cell-group>
 
       <!-- 退出登录 -->
@@ -85,7 +84,7 @@ const handleProfile = () => {
 }
 
 const handleSettings = () => {
-  showToast('设置')
+  showToast(t('common.success'))
 }
 
 const handleThemeConfirm = ({ selectedOptions }) => {
@@ -112,19 +111,17 @@ const handleLogout = async () => {
       title: t('common.tips'),
       message: t('user.logoutConfirm')
     })
-
     await userStore.logout()
     showToast(t('user.logoutSuccess'))
     router.push('/login')
   } catch (error) {
-    // 用户取消
+    console.log(error)
   }
 }
 </script>
 
 <style lang="scss" scoped>
 .user-container {
-  min-height: 100vh;
   background-color: var(--bg-color);
 
   .user-content {

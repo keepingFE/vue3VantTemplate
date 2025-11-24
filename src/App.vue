@@ -22,10 +22,6 @@ const themeVars = computed(() => ({
   successColor: '#07c160',
   dangerColor: '#ee0a24',
   warningColor: '#ff976a'
-  // 移除 textColor 和 backgroundColor 配置，避免影响 Toast 等组件
-  // textColor: 'var(--text-primary)',
-  // backgroundColor: 'var(--bg-color)',
-  // borderColor: 'var(--border-color)'
 }))
 
 // 需要缓存的视图
@@ -47,7 +43,6 @@ const cachedViews = computed(() => {
   display: flex;
   justify-content: center;
   background-color: #f0f0f0;
-  /* PC端背景色 */
 }
 
 .app-wrapper {

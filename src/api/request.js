@@ -7,9 +7,22 @@ import { showToast, showLoadingToast, closeToast } from 'vant'
 import { getToken, clearToken } from '@/utils/auth'
 import router from '@/router'
 
+// 根据 runtime config 或环境变量确定接口地址
+const resolveBaseURL = () => {
+  const useMock = import.meta.env.VITE_USE_MOCK === 'true'
+  if (useMock) {
+    return '/api'
+  }
+
+  if (typeof window !== 'undefined' && window?.config?.systemApi) {
+    return window.config.systemApi
+  }
+  return import.meta.env.VITE_APP_BASE_API
+}
+
 // 创建 axios 实例
 const service = axios.create({
-  baseURL: import.meta.env.VITE_APP_BASE_API,
+  baseURL: resolveBaseURL(),
   timeout: 15000,
   headers: {
     'Content-Type': 'application/json;charset=UTF-8'
@@ -107,4 +120,3 @@ service.interceptors.response.use(
 )
 
 export default service
-

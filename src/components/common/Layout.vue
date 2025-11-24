@@ -1,14 +1,9 @@
 <template>
   <div class="layout-container">
     <router-view />
-    
+
     <van-tabbar v-model="active" route fixed placeholder>
-      <van-tabbar-item
-        v-for="item in tabbarItems"
-        :key="item.name"
-        :to="item.to"
-        :icon="item.icon"
-      >
+      <van-tabbar-item v-for="item in tabbarItems" :key="item.name" :to="item.to" :icon="item.icon">
         {{ item.text }}
       </van-tabbar-item>
     </van-tabbar>
@@ -44,4 +39,3 @@ const tabbarItems = [
   background-color: var(--bg-color);
 }
 </style>
-
