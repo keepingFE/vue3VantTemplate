@@ -1,0 +1,97 @@
+/**
+ * 中文语言包
+ */
+
+export default {
+  common: {
+    confirm: '确认',
+    cancel: '取消',
+    save: '保存',
+    delete: '删除',
+    edit: '编辑',
+    add: '添加',
+    search: '搜索',
+    reset: '重置',
+    submit: '提交',
+    back: '返回',
+    loading: '加载中...',
+    noData: '暂无数据',
+    success: '操作成功',
+    failed: '操作失败',
+    tips: '提示',
+    warning: '警告',
+    error: '错误'
+  },
+  
+  route: {
+    home: '首页',
+    user: '我的',
+    login: '登录',
+    admin: '管理',
+    notFound: '页面不存在',
+    forbidden: '无权限'
+  },
+  
+  login: {
+    title: '用户登录',
+    username: '用户名',
+    password: '密码',
+    usernamePlaceholder: '请输入用户名',
+    passwordPlaceholder: '请输入密码',
+    loginBtn: '登录',
+    rememberMe: '记住我',
+    forgotPassword: '忘记密码？',
+    noAccount: '还没有账号？',
+    register: '立即注册',
+    loginSuccess: '登录成功',
+    loginFailed: '登录失败',
+    usernameRequired: '请输入用户名',
+    passwordRequired: '请输入密码'
+  },
+  
+  user: {
+    profile: '个人信息',
+    settings: '设置',
+    logout: '退出登录',
+    logoutConfirm: '确定要退出登录吗？',
+    logoutSuccess: '退出成功',
+    theme: '主题设置',
+    themeColor: '主题色',
+    themeMode: '主题模式',
+    language: '语言设置',
+    lightMode: '浅色模式',
+    darkMode: '深色模式',
+    autoMode: '跟随系统'
+  },
+  
+  message: {
+    loginSuccess: '登录成功',
+    logoutSuccess: '退出成功',
+    saveSuccess: '保存成功',
+    deleteSuccess: '删除成功',
+    updateSuccess: '更新成功',
+    operationSuccess: '操作成功',
+    operationFailed: '操作失败',
+    networkError: '网络错误',
+    serverError: '服务器错误',
+    unauthorized: '未授权，请重新登录',
+    forbidden: '您没有权限访问',
+    notFound: '请求的资源不存在',
+    timeout: '请求超时',
+    unknownError: '未知错误'
+  },
+  
+  validation: {
+    required: '此项为必填项',
+    email: '请输入有效的邮箱地址',
+    phone: '请输入有效的手机号码',
+    url: '请输入有效的URL',
+    minLength: '长度不能少于{min}个字符',
+    maxLength: '长度不能超过{max}个字符',
+    range: '长度必须在{min}到{max}个字符之间',
+    number: '请输入数字',
+    integer: '请输入整数',
+    positive: '请输入正数'
+  }
+}
+

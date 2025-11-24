@@ -1,0 +1,73 @@
+// ========== CSS 变量定义 ==========
+:root {
+  /* 主题色 */
+  --theme-color: #1989fa;
+  --theme-color-light: #66b1ff;
+  --theme-color-lighter: #ecf5ff;
+  --theme-color-dark: #0d7ce6;
+  
+  /* 辅助色 */
+  --success-color: #07c160;
+  --warning-color: #ff976a;
+  --danger-color: #ee0a24;
+  --info-color: #909399;
+  
+  /* 文本色 */
+  --text-primary: #323233;
+  --text-regular: #646566;
+  --text-secondary: #969799;
+  --text-placeholder: #c8c9cc;
+  
+  /* 背景色 */
+  --bg-color: #f7f8fa;
+  --bg-white: #ffffff;
+  
+  /* 边框色 */
+  --border-color: #ebedf0;
+}
+
+/* 深色模式 */
+[data-theme='dark'] {
+  --theme-color: #409eff;
+  --text-primary: #e5e5e5;
+  --text-regular: #c0c0c0;
+  --bg-color: #1a1a1a;
+  --bg-white: #2c2c2c;
+  --border-color: #4a4a4a;
+}
+
+// ========== SCSS 变量定义 ==========
+// 间距
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+
+// 字体大小
+$font-size-xs: 10px;
+$font-size-sm: 12px;
+$font-size-md: 14px;
+$font-size-lg: 16px;
+$font-size-xl: 18px;
+
+// 圆角
+$border-radius-sm: 2px;
+$border-radius-md: 4px;
+$border-radius-lg: 8px;
+$border-radius-xl: 12px;
+
+// 阴影
+$box-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+$box-shadow-md: 0 4px 8px rgba(0, 0, 0, 0.12);
+$box-shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.15);
+
+// Z-index
+$z-index-dropdown: 1000;
+$z-index-sticky: 1020;
+$z-index-fixed: 1030;
+$z-index-modal-backdrop: 1040;
+$z-index-modal: 1050;
+$z-index-popover: 1060;
+$z-index-tooltip: 1070;
+

@@ -1,0 +1,97 @@
+/**
+ * English language pack
+ */
+
+export default {
+  common: {
+    confirm: 'Confirm',
+    cancel: 'Cancel',
+    save: 'Save',
+    delete: 'Delete',
+    edit: 'Edit',
+    add: 'Add',
+    search: 'Search',
+    reset: 'Reset',
+    submit: 'Submit',
+    back: 'Back',
+    loading: 'Loading...',
+    noData: 'No Data',
+    success: 'Success',
+    failed: 'Failed',
+    tips: 'Tips',
+    warning: 'Warning',
+    error: 'Error'
+  },
+  
+  route: {
+    home: 'Home',
+    user: 'User',
+    login: 'Login',
+    admin: 'Admin',
+    notFound: 'Not Found',
+    forbidden: 'Forbidden'
+  },
+  
+  login: {
+    title: 'User Login',
+    username: 'Username',
+    password: 'Password',
+    usernamePlaceholder: 'Please enter username',
+    passwordPlaceholder: 'Please enter password',
+    loginBtn: 'Login',
+    rememberMe: 'Remember me',
+    forgotPassword: 'Forgot password?',
+    noAccount: "Don't have an account?",
+    register: 'Register now',
+    loginSuccess: 'Login successful',
+    loginFailed: 'Login failed',
+    usernameRequired: 'Please enter username',
+    passwordRequired: 'Please enter password'
+  },
+  
+  user: {
+    profile: 'Profile',
+    settings: 'Settings',
+    logout: 'Logout',
+    logoutConfirm: 'Are you sure you want to logout?',
+    logoutSuccess: 'Logout successful',
+    theme: 'Theme Settings',
+    themeColor: 'Theme Color',
+    themeMode: 'Theme Mode',
+    language: 'Language',
+    lightMode: 'Light Mode',
+    darkMode: 'Dark Mode',
+    autoMode: 'Auto Mode'
+  },
+  
+  message: {
+    loginSuccess: 'Login successful',
+    logoutSuccess: 'Logout successful',
+    saveSuccess: 'Save successful',
+    deleteSuccess: 'Delete successful',
+    updateSuccess: 'Update successful',
+    operationSuccess: 'Operation successful',
+    operationFailed: 'Operation failed',
+    networkError: 'Network error',
+    serverError: 'Server error',
+    unauthorized: 'Unauthorized, please login again',
+    forbidden: 'You do not have permission to access',
+    notFound: 'The requested resource does not exist',
+    timeout: 'Request timeout',
+    unknownError: 'Unknown error'
+  },
+  
+  validation: {
+    required: 'This field is required',
+    email: 'Please enter a valid email address',
+    phone: 'Please enter a valid phone number',
+    url: 'Please enter a valid URL',
+    minLength: 'Length cannot be less than {min} characters',
+    maxLength: 'Length cannot exceed {max} characters',
+    range: 'Length must be between {min} and {max} characters',
+    number: 'Please enter a number',
+    integer: 'Please enter an integer',
+    positive: 'Please enter a positive number'
+  }
+}
+
