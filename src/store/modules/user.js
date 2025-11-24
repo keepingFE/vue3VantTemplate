@@ -57,6 +57,25 @@ export const useUserStore = defineStore('user', {
     },
 
     /**
+     * 更新用户信息
+     * @param {object} payload
+     */
+    async updateUserInfo(payload) {
+      try {
+        const result = await userApi.updateUserInfo(payload)
+        const mergedInfo = {
+          ...(this.userInfo || {}),
+          ...payload,
+          ...(result || {})
+        }
+        this.userInfo = mergedInfo
+        return mergedInfo
+      } catch (error) {
+        throw error
+      }
+    },
+
+    /**
      * 登出
      */
     async logout() {

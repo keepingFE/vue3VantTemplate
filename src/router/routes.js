@@ -47,6 +47,16 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/user/profile',
+    name: 'UserProfile',
+    component: () => import('@/views/user/profile.vue'),
+    meta: {
+      title: '个人信息',
+      requiresAuth: true,
+      hidden: true
+    }
+  },
+  {
     path: '/404',
     name: 'NotFound',
     component: () => import('@/views/error/404.vue'),
@@ -91,4 +101,3 @@ export const asyncRoutes = [
     }
   }
 ]
-

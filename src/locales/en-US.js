@@ -55,6 +55,17 @@ export default {
     logout: 'Logout',
     logoutConfirm: 'Are you sure you want to logout?',
     logoutSuccess: 'Logout successful',
+    basicInfo: 'Basic Info',
+    contactInfo: 'Contact Info',
+    avatar: 'Avatar',
+    changeAvatar: 'Change Avatar',
+    avatarTip: 'Upload a clear personal avatar (JPG/PNG)',
+    usernameLabel: 'Display Name',
+    emailLabel: 'Email',
+    phoneLabel: 'Phone',
+    bioLabel: 'Bio',
+    saveProfile: 'Save Profile',
+    updateTime: 'Last updated: ',
     theme: 'Theme Settings',
     themeColor: 'Theme Color',
     themeMode: 'Theme Mode',
@@ -94,4 +105,3 @@ export default {
     positive: 'Please enter a positive number'
   }
 }
-

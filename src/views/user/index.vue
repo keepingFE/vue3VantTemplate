@@ -80,7 +80,7 @@ const languages = [
 ]
 
 const handleProfile = () => {
-  showToast(t('user.profile'))
+  router.push('/user/profile')
 }
 
 const handleSettings = () => {

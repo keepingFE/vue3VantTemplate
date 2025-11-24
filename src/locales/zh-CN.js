@@ -55,6 +55,17 @@ export default {
     logout: '退出登录',
     logoutConfirm: '确定要退出登录吗？',
     logoutSuccess: '退出成功',
+    basicInfo: '基础信息',
+    contactInfo: '联系方式',
+    avatar: '头像',
+    changeAvatar: '更换头像',
+    avatarTip: '上传清晰的个人头像，支持 jpg/png 格式',
+    usernameLabel: '昵称',
+    emailLabel: '邮箱',
+    phoneLabel: '手机号',
+    bioLabel: '个人简介',
+    saveProfile: '保存信息',
+    updateTime: '最近更新：',
     theme: '主题设置',
     themeColor: '主题色',
     themeMode: '主题模式',
@@ -94,4 +105,3 @@ export default {
     positive: '请输入正数'
   }
 }
-
