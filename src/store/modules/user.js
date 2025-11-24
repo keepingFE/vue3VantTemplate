@@ -3,7 +3,6 @@
  */
 
 import { defineStore } from 'pinia'
-import { userApi } from '@/api/modules/user'
 import { getToken, setToken, clearToken } from '@/utils/auth'
 
 export const useUserStore = defineStore('user', {
@@ -30,46 +29,47 @@ export const useUserStore = defineStore('user', {
      * @param {object} credentials - { username, password }
      */
     async login(credentials) {
-      try {
-        const { token, userInfo } = await userApi.login(credentials)
-        this.token = token
-        this.userInfo = userInfo
-        this.roles = userInfo.roles || []
-        setToken(token)
-        return { token, userInfo }
-      } catch (error) {
-        throw error
+      // 本地 Mock 登录，直接生成用户数据
+      const username = credentials?.username?.trim() || '游客'
+      const token = 'mock-token'
+      const userInfo = {
+        username,
+        email: `${username}@example.com`,
+        roles: ['user']
       }
+
+      this.token = token
+      this.userInfo = userInfo
+      this.roles = userInfo.roles
+      setToken(token)
+      return { token, userInfo }
     },
     
     /**
      * 获取用户信息
      */
     async getUserInfo() {
-      try {
-        const userInfo = await userApi.getUserInfo()
-        this.userInfo = userInfo
-        this.roles = userInfo.roles || []
-        return userInfo
-      } catch (error) {
-        throw error
+      // 本地直接返回当前用户信息
+      if (!this.userInfo) {
+        this.userInfo = {
+          username: '游客',
+          email: 'guest@example.com',
+          roles: ['user']
+        }
+        this.roles = this.userInfo.roles
       }
+      return this.userInfo
     },
     
     /**
      * 登出
      */
     async logout() {
-      try {
-        await userApi.logout()
-      } catch (error) {
-        console.error('登出失败：', error)
-      } finally {
-        clearToken()
-        this.token = ''
-        this.userInfo = null
-        this.roles = []
-      }
+      // 清除本地状态
+      clearToken()
+      this.token = ''
+      this.userInfo = null
+      this.roles = []
     },
     
     /**
@@ -90,4 +90,3 @@ export const useUserStore = defineStore('user', {
     paths: ['token']  // 仅持久化 token，userInfo 每次重新获取
   }
 })
-

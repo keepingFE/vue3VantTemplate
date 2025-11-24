@@ -9,8 +9,36 @@ import pinia from './store'
 import i18n from './locales'
 import directives from './directives'
 
+// 引入 Vant 基础样式
+import 'vant/lib/index.css'
+
 // 引入 amfe-flexible 实现移动端适配
 import 'amfe-flexible'
+
+// 限制 PC 端的 rem 基准，避免页面过度放大
+const setRemUnit = () => {
+  const docEl = document.documentElement
+  const clientWidth = docEl.clientWidth
+
+  // PC 端（宽度大于 750px）固定 font-size 为 75px（对应 750px 设计稿）
+  if (clientWidth > 750) {
+    docEl.style.fontSize = '75px'
+  } else {
+    // 移动端使用 amfe-flexible 的默认行为
+    docEl.style.fontSize = clientWidth / 10 + 'px'
+  }
+}
+
+// 初始化
+setRemUnit()
+
+// 监听窗口大小变化
+window.addEventListener('resize', setRemUnit)
+window.addEventListener('pageshow', (e) => {
+  if (e.persisted) {
+    setRemUnit()
+  }
+})
 
 // 引入全局样式
 import '@/assets/styles/index.scss'

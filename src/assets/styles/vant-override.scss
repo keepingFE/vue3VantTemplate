@@ -1,5 +1,11 @@
 // 全局覆盖 Vant 组件样式
 
+// 全局字体统一
+:root {
+  --van-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
 // 全局覆盖 Vant 按钮样式
 .van-button {
   border-radius: 8px;
@@ -39,17 +45,50 @@
 // 全局覆盖 Vant 表单项样式
 .van-field {
   padding: 12px 16px;
-  
+  font-family: inherit;
+
   .van-field__label {
     color: var(--text-regular);
+    font-family: inherit;
+    font-size: 14px;
   }
-  
+
   .van-field__control {
     color: var(--text-primary);
-    
+    font-family: inherit;
+    font-size: 14px;
+
     &::placeholder {
       color: var(--text-placeholder);
     }
   }
 }
 
+// 全局覆盖 Vant Toast 样式
+.van-toast {
+  background-color: rgba(0, 0, 0, 0.7) !important;
+  color: #fff !important;
+
+  .van-toast__text {
+    color: #fff !important;
+  }
+
+  .van-toast__icon {
+    color: #fff !important;
+  }
+}
+
+// Toast 成功状态
+.van-toast--success {
+  background-color: rgba(7, 193, 96, 0.9) !important;
+}
+
+// Toast 失败状态
+.van-toast--fail {
+  background-color: rgba(238, 10, 36, 0.9) !important;
+}
+
+// Toast 加载状态
+.van-toast--loading {
+  background-color: rgba(0, 0, 0, 0.7) !important;
+}

@@ -1,11 +1,13 @@
 <template>
-  <van-config-provider :theme-vars="themeVars">
-    <router-view v-slot="{ Component, route }">
-      <keep-alive :include="cachedViews">
-        <component :is="Component" :key="route.path" />
-      </keep-alive>
-    </router-view>
-  </van-config-provider>
+  <div class="app-wrapper">
+    <van-config-provider :theme-vars="themeVars">
+      <router-view v-slot="{ Component, route }">
+        <keep-alive :include="cachedViews">
+          <component :is="Component" :key="route.path" />
+        </keep-alive>
+      </router-view>
+    </van-config-provider>
+  </div>
 </template>
 
 <script setup>
@@ -19,10 +21,11 @@ const themeVars = computed(() => ({
   primaryColor: appStore.themeColor.primary,
   successColor: '#07c160',
   dangerColor: '#ee0a24',
-  warningColor: '#ff976a',
-  textColor: 'var(--text-primary)',
-  backgroundColor: 'var(--bg-color)',
-  borderColor: 'var(--border-color)'
+  warningColor: '#ff976a'
+  // 移除 textColor 和 backgroundColor 配置，避免影响 Toast 等组件
+  // textColor: 'var(--text-primary)',
+  // backgroundColor: 'var(--bg-color)',
+  // borderColor: 'var(--border-color)'
 }))
 
 // 需要缓存的视图
@@ -41,6 +44,41 @@ const cachedViews = computed(() => {
     'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  display: flex;
+  justify-content: center;
+  background-color: #f0f0f0;
+  /* PC端背景色 */
+}
+
+.app-wrapper {
+  width: 100%;
+  max-width: 750px;
+  /* PC 端固定 750px，移动端自适应 */
+  height: 100vh;
+  background-color: var(--bg-color);
+  box-sizing: border-box;
+  position: relative;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  /* PC端添加阴影效果 */
+}
+
+/* 移动端去除阴影 */
+@media (max-width: 750px) {
+  #app {
+    background-color: var(--bg-color);
+  }
+
+  .app-wrapper {
+    box-shadow: none;
+  }
+}
+
+/* 居中固定的底部导航栏，避免 PC 端撑满全屏 */
+:deep(.van-tabbar) {
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 750px;
 }
 </style>
-

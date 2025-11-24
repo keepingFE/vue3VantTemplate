@@ -1,7 +1,7 @@
 <template>
   <div class="home-container">
     <van-nav-bar :title="$t('route.home')" fixed placeholder />
-    
+
     <div class="home-content">
       <!-- 轮播图 -->
       <van-swipe class="home-swipe" :autoplay="3000" indicator-color="white">
@@ -11,29 +11,18 @@
           </div>
         </van-swipe-item>
       </van-swipe>
-      
+
       <!-- 功能网格 -->
       <van-grid :column-num="4" class="home-grid">
-        <van-grid-item
-          v-for="item in features"
-          :key="item.id"
-          :icon="item.icon"
-          :text="item.text"
-          @click="handleFeatureClick(item)"
-        />
+        <van-grid-item v-for="item in features" :key="item.id" :icon="item.icon" :text="item.text"
+          @click="handleFeatureClick(item)" />
       </van-grid>
-      
+
       <!-- 内容列表 -->
       <div class="home-list">
         <van-cell-group inset>
-          <van-cell
-            v-for="item in list"
-            :key="item.id"
-            :title="item.title"
-            :label="item.description"
-            is-link
-            @click="handleItemClick(item)"
-          />
+          <van-cell v-for="item in list" :key="item.id" :title="item.title" :label="item.description" is-link
+            @click="handleItemClick(item)" />
         </van-cell-group>
       </div>
     </div>
@@ -72,11 +61,11 @@ const list = ref([
 ])
 
 const handleFeatureClick = (item) => {
-  showToast(`点击了 ${item.text}`)
+  showToast(`点击了`)
 }
 
 const handleItemClick = (item) => {
-  showToast(`点击了 ${item.title}`)
+  showToast(`点击了`)
 }
 </script>
 
@@ -84,13 +73,13 @@ const handleItemClick = (item) => {
 .home-container {
   min-height: 100vh;
   background-color: var(--bg-color);
-  
+
   .home-content {
     padding-bottom: 60px;
-    
+
     .home-swipe {
       height: 200px;
-      
+
       .swipe-item {
         display: flex;
         align-items: center;
@@ -101,15 +90,14 @@ const handleItemClick = (item) => {
         font-weight: 600;
       }
     }
-    
+
     .home-grid {
       margin: $spacing-md 0;
     }
-    
+
     .home-list {
       margin-top: $spacing-md;
     }
   }
 }
 </style>
-

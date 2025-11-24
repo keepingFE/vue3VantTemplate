@@ -3,42 +3,25 @@
     <div class="login-header">
       <h1 class="login-title">{{ $t('login.title') }}</h1>
     </div>
-    
+
     <van-form @submit="handleLogin" class="login-form">
       <van-cell-group inset>
-        <van-field
-          v-model="loginForm.username"
-          name="username"
-          :label="$t('login.username')"
+        <van-field v-model="loginForm.username" name="username" :label="$t('login.username')"
           :placeholder="$t('login.usernamePlaceholder')"
-          :rules="[{ required: true, message: $t('login.usernameRequired') }]"
-          clearable
-        />
-        <van-field
-          v-model="loginForm.password"
-          type="password"
-          name="password"
-          :label="$t('login.password')"
+          :rules="[{ required: true, message: $t('login.usernameRequired') }]" clearable />
+        <van-field v-model="loginForm.password" type="password" name="password" :label="$t('login.password')"
           :placeholder="$t('login.passwordPlaceholder')"
-          :rules="[{ required: true, message: $t('login.passwordRequired') }]"
-          clearable
-        />
+          :rules="[{ required: true, message: $t('login.passwordRequired') }]" clearable />
       </van-cell-group>
-      
-      <div class="login-options">
-        <van-checkbox v-model="loginForm.rememberMe">
-          {{ $t('login.rememberMe') }}
-        </van-checkbox>
-      </div>
-      
+      <van-cell-group inset>
+        <div class="login-options">
+          <van-checkbox v-model="loginForm.rememberMe">
+            {{ $t('login.rememberMe') }}
+          </van-checkbox>
+        </div>
+      </van-cell-group>
       <div class="login-button">
-        <van-button
-          round
-          block
-          type="primary"
-          native-type="submit"
-          :loading="loading"
-        >
+        <van-button round block type="primary" native-type="submit" :loading="loading">
           {{ $t('login.loginBtn') }}
         </van-button>
       </div>
@@ -67,15 +50,15 @@ const loginForm = reactive({
 
 const handleLogin = async () => {
   loading.value = true
-  
+
   try {
     await userStore.login({
       username: loginForm.username,
       password: loginForm.password
     })
-    
+
     showToast(t('login.loginSuccess'))
-    
+
     // 跳转到重定向页面或首页
     const redirect = route.query.redirect || '/'
     router.push(redirect)
@@ -92,11 +75,11 @@ const handleLogin = async () => {
   min-height: 100vh;
   padding: $spacing-xl;
   background: linear-gradient(135deg, var(--theme-color-lighter) 0%, var(--bg-white) 100%);
-  
+
   .login-header {
     padding: 60px 0 40px;
     text-align: center;
-    
+
     .login-title {
       font-size: 28px;
       font-weight: 600;
@@ -104,19 +87,26 @@ const handleLogin = async () => {
       margin: 0;
     }
   }
-  
+
   .login-form {
     .login-options {
       padding: $spacing-md 0;
       display: flex;
       justify-content: space-between;
       align-items: center;
+
+      // 优化复选框字体大小，与输入框保持一致
+      :deep(.van-checkbox) {
+        .van-checkbox__label {
+          font-size: 14px;
+          color: var(--text-regular);
+        }
+      }
     }
-    
+
     .login-button {
       margin-top: $spacing-lg;
     }
   }
 }
 </style>
-
