@@ -65,10 +65,10 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   response => {
     closeToast()
-    const { code, data, message } = response.data
     
-    // 根据业务状态码处理，请求成功
+    const { code, data, message } = response.data
     if (code === 200 || code === 0) {
+       // 根据业务状态码处理，请求成功
       return data
     } else if (code === 401) {
       // token 过期
@@ -77,7 +77,8 @@ service.interceptors.response.use(
       router.push(`/login?redirect=${encodeURIComponent(redirect)}`)
       showToast(t('http.loginExpired'))
       return Promise.reject(new Error(message || t('http.loginExpiredShort')))
-    } else {// 请求失败
+    } else {
+      // 请求失败
       showToast(message || t('http.requestFailed'))
       return Promise.reject(new Error(message || t('http.requestFailed')))
     }

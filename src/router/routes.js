@@ -45,6 +45,17 @@ export const constantRoutes = [
         }
       },
       {
+        path: '/message',
+        name: 'Message',
+        component: () => import('@/views/message/index.vue'),
+        meta: {
+          title: '消息',
+          requiresAuth: false,
+          keepAlive: true,
+          icon: 'chat-o'
+        }
+      },
+      {
         path: '/user',
         name: 'User',
         component: () => import('@/views/user/index.vue'),
@@ -63,6 +74,16 @@ export const constantRoutes = [
     component: () => import('@/views/list/detail.vue'),
     meta: {
       title: '列表详情',
+      requiresAuth: false,
+      hidden: true
+    }
+  },
+  {
+    path: '/message/detail/:id',
+    name: 'MessageDetail',
+    component: () => import('@/views/message/detail.vue'),
+    meta: {
+      title: '消息详情',
       requiresAuth: false,
       hidden: true
     }

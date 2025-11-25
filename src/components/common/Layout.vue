@@ -1,7 +1,7 @@
 <template>
   <div class="layout-container">
     <router-view />
-
+    <!-- 底部导航菜单 -->
     <van-tabbar v-model="active" route fixed placeholder>
       <van-tabbar-item v-for="item in tabbarItems" :key="item.name" :to="item.to" :icon="item.icon">
         {{ item.text }}
@@ -29,6 +29,12 @@ const tabbarItems = [
     to: '/list',
     icon: 'bars',
     text: t('route.list')
+  },
+  {
+    name: 'message',
+    to: '/message',
+    icon: 'chat-o',
+    text: t('route.message')
   },
   {
     name: 'user',

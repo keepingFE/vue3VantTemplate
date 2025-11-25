@@ -3,6 +3,7 @@
  */
 
 import { showToast } from 'vant'
+import config from '@/config'
 
 /**
  * 全局前置守卫
@@ -10,7 +11,7 @@ import { showToast } from 'vant'
 export function setupRouterGuards(router) {
   router.beforeEach(async (to, from, next) => {
     // 设置页面标题
-    document.title = to.meta.title || '移动端应用'
+    document.title = to.meta.title || config.title
 
     // 目前无需登录校验，直接放行所有路由
     next()

@@ -19,7 +19,7 @@ export default {
   tokenPrefix: 'Bearer ',
   
   // 默认语言
-  defaultLocale: 'zh-CN',
+  defaultLocale: window.config.defaultLocale || 'zh-CN',
   
   // 默认主题色
   defaultThemeColor: 'blue',

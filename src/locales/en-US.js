@@ -41,6 +41,7 @@ export default {
   route: {
     home: 'Home',
     list: 'List',
+    message: 'Messages',
     user: 'User',
     login: 'Login',
     admin: 'Admin',
@@ -89,6 +90,25 @@ export default {
     lightMode: 'Light Mode',
     darkMode: 'Dark Mode',
     autoMode: 'Auto Mode'
+  },
+  
+  messages: {
+    title: 'Message Center',
+    all: 'All',
+    unread: 'Unread',
+    read: 'Read',
+    system: 'System',
+    notification: 'Notification',
+    announcement: 'Announcement',
+    markAsRead: 'Mark as Read',
+    markAllAsRead: 'Mark All as Read',
+    delete: 'Delete',
+    deleteAll: 'Clear All',
+    noMessages: 'No messages',
+    messageDetail: 'Message Detail',
+    sender: 'Sender',
+    time: 'Time',
+    content: 'Content'
   },
   
   message: {

@@ -41,6 +41,7 @@ export default {
   route: {
     home: '首页',
     list: '列表',
+    message: '消息',
     user: '我的',
     login: '登录',
     admin: '管理',
@@ -89,6 +90,25 @@ export default {
     lightMode: '浅色模式',
     darkMode: '深色模式',
     autoMode: '跟随系统'
+  },
+  
+  messages: {
+    title: '消息中心',
+    all: '全部',
+    unread: '未读',
+    read: '已读',
+    system: '系统消息',
+    notification: '通知',
+    announcement: '公告',
+    markAsRead: '标为已读',
+    markAllAsRead: '全部已读',
+    delete: '删除',
+    deleteAll: '清空消息',
+    noMessages: '暂无消息',
+    messageDetail: '消息详情',
+    sender: '发送者',
+    time: '时间',
+    content: '内容'
   },
   
   message: {
