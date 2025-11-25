@@ -42,6 +42,7 @@ export default {
     home: '首页',
     list: '列表',
     message: '消息',
+    chart: '图表',
     user: '我的',
     login: '登录',
     admin: '管理',

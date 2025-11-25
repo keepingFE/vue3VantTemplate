@@ -42,6 +42,7 @@ export default {
     home: 'Home',
     list: 'List',
     message: 'Messages',
+    chart: 'Chart',
     user: 'User',
     login: 'Login',
     admin: 'Admin',

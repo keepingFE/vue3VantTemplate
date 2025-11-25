@@ -56,6 +56,17 @@ export const constantRoutes = [
         }
       },
       {
+        path: '/chart',
+        name: 'Chart',
+        component: () => import('@/views/chart/index.vue'),
+        meta: {
+          title: '图表',
+          requiresAuth: false,
+          keepAlive: true,
+          icon: 'chart-trending-o'
+        }
+      },
+      {
         path: '/user',
         name: 'User',
         component: () => import('@/views/user/index.vue'),

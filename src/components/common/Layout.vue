@@ -31,6 +31,12 @@ const tabbarItems = [
     text: t('route.list')
   },
   {
+    name: 'chart',
+    to: '/chart',
+    icon: 'chart-trending-o',
+    text: t('route.chart')
+  },
+   {
     name: 'message',
     to: '/message',
     icon: 'chat-o',
