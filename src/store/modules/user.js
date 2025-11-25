@@ -48,10 +48,35 @@ export const useUserStore = defineStore('user', {
     async getUserInfo() {
       try {
         const userInfo = await userApi.getUserInfo()
+        
+        // 验证用户信息格式
+        if (!userInfo || !userInfo.username) {
+          throw new Error('用户信息格式错误')
+        }
+        
+        // 验证角色列表（防止后端返回非法角色）
+        const validRoles = ['admin', 'user', 'guest', 'editor', 'viewer']
+        let roles = []
+        
+        if (Array.isArray(userInfo.roles)) {
+          // 过滤出合法角色
+          roles = userInfo.roles.filter(role => validRoles.includes(role))
+        }
+        
+        // 如果没有任何角色，分配默认角色
+        if (roles.length === 0) {
+          console.warn('用户没有有效角色，分配默认角色: guest')
+          roles = ['guest']
+        }
+        
         this.userInfo = userInfo
-        this.roles = userInfo.roles || []
+        this.roles = roles
+        
         return userInfo
       } catch (error) {
+        console.error('获取用户信息失败：', error)
+        // 获取用户信息失败，清除登录状态
+        this.resetToken()
         throw error
       }
     },
@@ -84,10 +109,16 @@ export const useUserStore = defineStore('user', {
       } catch (error) {
         console.error('登出失败：', error)
       } finally {
+        // 清除 token
         clearToken()
         this.token = ''
         this.userInfo = null
         this.roles = []
+        
+        // 清除权限路由
+        const { usePermissionStore } = await import('./permission')
+        const permissionStore = usePermissionStore()
+        permissionStore.resetRoutes()
       }
     },
     

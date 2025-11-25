@@ -664,6 +664,162 @@ export const THEME_COLORS = {
 3. 检查 Mock 文件路径是否正确
 </details>
 
+<details>
+<summary><b>项目支持 TypeScript 吗？</b></summary>
+
+### 当前状态
+
+项目**默认使用 JavaScript**，但已配置好 TypeScript 支持，可以**混用 JS 和 TS**。
+
+### TypeScript 配置
+
+项目已包含以下 TypeScript 配置文件：
+
+- `tsconfig.json` - TypeScript 主配置
+- `tsconfig.node.json` - Vite 配置文件的 TS 配置
+- `src/vite-env.d.ts` - 环境变量和 Vue 模块类型声明
+
+### 启用 TypeScript
+
+1. **安装依赖**（如果还没安装）：
+
+```bash
+npm install
+```
+
+2. **创建 TypeScript 文件**：
+
+你可以直接创建 `.ts` 或 `.tsx` 文件，项目会自动识别。
+
+```typescript
+// src/utils/helper.ts
+export function formatDate(date: Date): string {
+  return date.toLocaleDateString()
+}
+```
+
+3. **在 Vue 组件中使用 TypeScript**：
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+
+interface User {
+  id: number
+  name: string
+  email: string
+}
+
+const user = ref<User>({
+  id: 1,
+  name: 'Admin',
+  email: 'admin@example.com'
+})
+</script>
+```
+
+### 类型检查
+
+```bash
+# 运行类型检查（不生成文件）
+npm run type-check
+
+# 构建时会自动进行类型检查
+npm run build
+```
+
+### JS 和 TS 混用
+
+项目支持 JavaScript 和 TypeScript 混用：
+
+- `.js` 文件 - JavaScript
+- `.ts` 文件 - TypeScript
+- `.vue` 文件 - 可以使用 `<script setup>` 或 `<script setup lang="ts">`
+
+**示例**：
+
+```javascript
+// utils/format.js (JavaScript)
+export function formatPrice(price) {
+  return `¥${price.toFixed(2)}`
+}
+```
+
+```typescript
+// utils/validate.ts (TypeScript)
+export function validateEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+}
+```
+
+```vue
+<!-- components/UserCard.vue -->
+<script setup lang="ts">
+import { formatPrice } from '@/utils/format'  // JS 文件
+import { validateEmail } from '@/utils/validate'  // TS 文件
+
+interface Props {
+  username: string
+  email: string
+}
+
+const props = defineProps<Props>()
+</script>
+```
+
+### 类型提示
+
+即使在 JavaScript 文件中，你也可以获得类型提示：
+
+```javascript
+// 使用 JSDoc 获得类型提示
+/**
+ * @param {string} name
+ * @param {number} age
+ * @returns {User}
+ */
+export function createUser(name, age) {
+  return { name, age }
+}
+```
+
+### 推荐做法
+
+1. **新项目**：建议全部使用 TypeScript
+2. **现有项目**：可以逐步迁移，先从工具函数开始
+3. **类型定义**：为第三方库添加类型定义 `@types/*`
+
+</details>
+
+<details>
+<summary><b>如何禁用 TypeScript？</b></summary>
+
+如果你不想使用 TypeScript，可以：
+
+1. **修改构建脚本**（`package.json`）：
+
+```json
+{
+  "scripts": {
+    "build": "vite build"  // 移除 vue-tsc --noEmit
+  }
+}
+```
+
+2. **删除 TypeScript 文件**（可选）：
+
+```bash
+# 删除 TS 配置文件
+rm tsconfig.json tsconfig.node.json src/vite-env.d.ts
+```
+
+3. **继续使用 JavaScript**：
+
+项目会正常工作，只是失去了类型检查功能。
+
+</details>
+
+
 ## 📄 License
 
 [MIT License](LICENSE)

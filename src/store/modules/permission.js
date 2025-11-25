@@ -3,10 +3,12 @@
  */
 
 import { defineStore } from 'pinia'
+import { asyncRoutes } from '@/router/routes'
 
 export const usePermissionStore = defineStore('permission', {
   state: () => ({
     routes: [],
+    addRoutes: [],
     permissions: []
   }),
   
@@ -17,33 +19,81 @@ export const usePermissionStore = defineStore('permission', {
   
   actions: {
     /**
-     * 生成动态路由
+     * 检查路由是否有权限访问
      * @param {Array} roles - 用户角色
+     * @param {Object} route - 路由对象
+     * @returns {boolean}
      */
-    async generateRoutes(roles) {
-      // 这里可以根据角色动态生成路由
-      // 示例：根据角色过滤路由
-      const accessRoutes = this.filterRoutes(roles)
-      this.routes = accessRoutes
-      return accessRoutes
+    hasPermission(roles, route) {
+      if (route.meta && route.meta.roles) {
+        // 路由定义了角色要求，检查用户是否有对应角色
+        return roles.some(role => route.meta.roles.includes(role))
+      }
+      // 路由没有角色要求，默认有权限
+      return true
     },
     
     /**
      * 根据角色过滤路由
-     * @param {Array} roles
+     * @param {Array} routes - 路由列表
+     * @param {Array} roles - 用户角色
+     * @returns {Array} - 过滤后的路由
      */
-    filterRoutes(roles) {
-      // 这里实现路由过滤逻辑
-      // 示例：返回所有路由（实际应根据角色过滤）
-      return []
+    filterAsyncRoutes(routes, roles) {
+      const res = []
+      
+      routes.forEach(route => {
+        // 复制路由对象，避免修改原对象
+        const tmp = { ...route }
+        
+        // 检查是否有权限
+        if (this.hasPermission(roles, tmp)) {
+          // 递归处理子路由
+          if (tmp.children) {
+            tmp.children = this.filterAsyncRoutes(tmp.children, roles)
+          }
+          res.push(tmp)
+        }
+      })
+      
+      return res
+    },
+    
+    /**
+     * 生成动态路由
+     * @param {Array} roles - 用户角色
+     * @returns {Array} - 可访问的路由列表
+     */
+    async generateRoutes(roles) {
+      let accessedRoutes
+      
+      if (roles.includes('admin')) {
+        // 管理员拥有所有权限
+        accessedRoutes = asyncRoutes || []
+      } else {
+        // 根据角色过滤路由
+        accessedRoutes = this.filterAsyncRoutes(asyncRoutes, roles)
+      }
+      
+      this.addRoutes = accessedRoutes
+      
+      return accessedRoutes
     },
     
     /**
      * 设置权限列表
-     * @param {Array} permissions
+     * @param {Array} permissions - 权限列表
      */
     setPermissions(permissions) {
       this.permissions = permissions
+    },
+    
+    /**
+     * 重置路由
+     */
+    resetRoutes() {
+      this.routes = []
+      this.addRoutes = []
     }
   }
 })

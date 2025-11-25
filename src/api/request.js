@@ -4,7 +4,7 @@
 
 import axios from 'axios'
 import { showToast, showLoadingToast, closeToast } from 'vant'
-import { getToken, clearToken } from '@/utils/auth'
+import { getToken, clearToken, isTokenExpiringSoon } from '@/utils/auth'
 import router from '@/router'
 import i18n from '@/locales'
 
@@ -41,7 +41,20 @@ service.interceptors.request.use(
     const token = getToken()
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`
+      
+      // 检查 token 是否即将过期（提前 5 分钟提醒）
+      if (isTokenExpiringSoon()) {
+        console.warn('Token 即将过期，建议刷新')
+        // 可以在这里触发 token 刷新逻辑
+        // 或者提示用户重新登录
+      }
     }
+    
+    // 添加时间戳防止缓存
+    config.headers['X-Request-Time'] = Date.now().toString()
+    
+    // 添加请求 ID 用于追踪和调试
+    config.headers['X-Request-ID'] = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
     
     // 显示 loading
     if (config.loading !== false) {
