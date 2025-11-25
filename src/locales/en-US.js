@@ -20,11 +20,27 @@ export default {
     failed: 'Failed',
     tips: 'Tips',
     warning: 'Warning',
-    error: 'Error'
+    error: 'Error',
+    refreshSuccess: 'Refresh successful',
+    noMore: 'No more data',
+    detail: 'Detail',
+    basicInfo: 'Basic Info',
+    description: 'Description',
+    additionalInfo: 'Additional Info',
+    status: 'Status',
+    createTime: 'Create Time',
+    updateTime: 'Update Time',
+    category: 'Category',
+    priority: 'Priority',
+    assignee: 'Assignee',
+    editSuccess: 'Edit successful',
+    deleteSuccess: 'Delete successful',
+    deleteConfirm: 'Are you sure you want to delete?'
   },
   
   route: {
     home: 'Home',
+    list: 'List',
     user: 'User',
     login: 'Login',
     admin: 'Admin',
@@ -103,5 +119,21 @@ export default {
     number: 'Please enter a number',
     integer: 'Please enter an integer',
     positive: 'Please enter a positive number'
+  },
+  
+  http: {
+    loading: 'Loading...',
+    requestError: 'Request error',
+    requestFailed: 'Request failed',
+    loginExpired: 'Login expired, please login again',
+    loginExpiredShort: 'Login expired',
+    unauthorized: 'Unauthorized, please login again',
+    forbidden: 'Access denied',
+    notFound: 'Requested resource does not exist',
+    serverError: 'Server error',
+    badRequest: 'Invalid request parameters',
+    timeout: 'Request timeout, please try again later',
+    networkError: 'Network connection failed',
+    retryLater: 'Request failed, please try again later'
   }
 }

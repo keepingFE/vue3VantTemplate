@@ -27,7 +27,7 @@ const themeVars = computed(() => ({
 // 需要缓存的视图
 const cachedViews = computed(() => {
   // 这里可以根据路由配置动态获取需要缓存的组件
-  return ['Home', 'User']
+  return ['Home', 'List', 'User']
 })
 </script>
 

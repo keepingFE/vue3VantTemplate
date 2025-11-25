@@ -25,6 +25,12 @@ const tabbarItems = [
     text: t('route.home')
   },
   {
+    name: 'list',
+    to: '/list',
+    icon: 'bars',
+    text: t('route.list')
+  },
+  {
     name: 'user',
     to: '/user',
     icon: 'user-o',

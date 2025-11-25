@@ -19,7 +19,6 @@ import 'amfe-flexible'
 const setRemUnit = () => {
   const docEl = document.documentElement
   const clientWidth = docEl.clientWidth
-
   // PC 端（宽度大于 750px）固定 font-size 为 75px（对应 750px 设计稿）
   if (clientWidth > 750) {
     docEl.style.fontSize = '75px'

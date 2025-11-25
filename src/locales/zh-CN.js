@@ -20,11 +20,27 @@ export default {
     failed: '操作失败',
     tips: '提示',
     warning: '警告',
-    error: '错误'
+    error: '错误',
+    refreshSuccess: '刷新成功',
+    noMore: '没有更多了',
+    detail: '详情',
+    basicInfo: '基本信息',
+    description: '详细描述',
+    additionalInfo: '附加信息',
+    status: '状态',
+    createTime: '创建时间',
+    updateTime: '更新时间',
+    category: '分类',
+    priority: '优先级',
+    assignee: '负责人',
+    editSuccess: '编辑成功',
+    deleteSuccess: '删除成功',
+    deleteConfirm: '确定要删除吗？'
   },
   
   route: {
     home: '首页',
+    list: '列表',
     user: '我的',
     login: '登录',
     admin: '管理',
@@ -103,5 +119,21 @@ export default {
     number: '请输入数字',
     integer: '请输入整数',
     positive: '请输入正数'
+  },
+  
+  http: {
+    loading: '加载中...',
+    requestError: '请求错误',
+    requestFailed: '请求失败',
+    loginExpired: '登录已过期，请重新登录',
+    loginExpiredShort: '登录已过期',
+    unauthorized: '未授权，请重新登录',
+    forbidden: '拒绝访问',
+    notFound: '请求资源不存在',
+    serverError: '服务器错误',
+    badRequest: '请求参数错误',
+    timeout: '请求超时，请稍后重试',
+    networkError: '网络连接失败',
+    retryLater: '请求失败，请稍后重试'
   }
 }

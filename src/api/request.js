@@ -6,6 +6,7 @@ import axios from 'axios'
 import { showToast, showLoadingToast, closeToast } from 'vant'
 import { getToken, clearToken } from '@/utils/auth'
 import router from '@/router'
+import i18n from '@/locales'
 
 // 根据 runtime config 或环境变量确定接口地址
 const resolveBaseURL = () => {
@@ -14,11 +15,15 @@ const resolveBaseURL = () => {
     return '/api'
   }
 
-  if (typeof window !== 'undefined' && window?.config?.systemApi) {
+  if (typeof window !== 'undefined' && window.config && window.config.systemApi) {
     return window.config.systemApi
   }
+
   return import.meta.env.VITE_APP_BASE_API
 }
+
+// 获取国际化翻译
+const t = (key) => i18n.global.t(key)
 
 // 创建 axios 实例
 const service = axios.create({
@@ -41,7 +46,7 @@ service.interceptors.request.use(
     // 显示 loading
     if (config.loading !== false) {
       showLoadingToast({
-        message: '加载中...',
+        message: t('http.loading'),
         forbidClick: true,
         duration: 0
       })
@@ -51,7 +56,7 @@ service.interceptors.request.use(
   },
   error => {
     closeToast()
-    console.error('请求错误：', error)
+    console.error(t('http.requestError'), error)
     return Promise.reject(error)
   }
 )
@@ -62,7 +67,7 @@ service.interceptors.response.use(
     closeToast()
     const { code, data, message } = response.data
     
-    // 根据业务状态码处理
+    // 根据业务状态码处理，请求成功
     if (code === 200 || code === 0) {
       return data
     } else if (code === 401) {
@@ -70,11 +75,11 @@ service.interceptors.response.use(
       clearToken()
       const redirect = router.currentRoute?.value?.fullPath || '/'
       router.push(`/login?redirect=${encodeURIComponent(redirect)}`)
-      showToast('登录已过期，请重新登录')
-      return Promise.reject(new Error(message || '登录已过期'))
-    } else {
-      showToast(message || '请求失败')
-      return Promise.reject(new Error(message || '请求失败'))
+      showToast(t('http.loginExpired'))
+      return Promise.reject(new Error(message || t('http.loginExpiredShort')))
+    } else {// 请求失败
+      showToast(message || t('http.requestFailed'))
+      return Promise.reject(new Error(message || t('http.requestFailed')))
     }
   },
   error => {
@@ -85,10 +90,10 @@ service.interceptors.response.use(
       
       switch (status) {
         case 400:
-          showToast(data.message || '请求参数错误')
+          showToast(data.message || t('http.badRequest'))
           break
         case 401:
-          showToast('未授权，请重新登录')
+          showToast(t('http.unauthorized'))
           clearToken()
           {
             const redirect = router.currentRoute?.value?.fullPath || '/'
@@ -96,23 +101,23 @@ service.interceptors.response.use(
           }
           break
         case 403:
-          showToast('拒绝访问')
+          showToast(t('http.forbidden'))
           break
         case 404:
-          showToast('请求资源不存在')
+          showToast(t('http.notFound'))
           break
         case 500:
-          showToast('服务器错误')
+          showToast(t('http.serverError'))
           break
         default:
-          showToast(data.message || '请求失败')
+          showToast(data.message || t('http.requestFailed'))
       }
     } else if (error.message.includes('timeout')) {
-      showToast('请求超时，请稍后重试')
+      showToast(t('http.timeout'))
     } else if (error.message.includes('Network Error')) {
-      showToast('网络连接失败')
+      showToast(t('http.networkError'))
     } else {
-      showToast('请求失败，请稍后重试')
+      showToast(t('http.retryLater'))
     }
     
     return Promise.reject(error)

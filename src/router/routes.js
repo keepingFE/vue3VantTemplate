@@ -34,6 +34,17 @@ export const constantRoutes = [
         }
       },
       {
+        path: '/list',
+        name: 'List',
+        component: () => import('@/views/list/index.vue'),
+        meta: {
+          title: '列表',
+          requiresAuth: false,
+          keepAlive: true,
+          icon: 'bars'
+        }
+      },
+      {
         path: '/user',
         name: 'User',
         component: () => import('@/views/user/index.vue'),
@@ -45,6 +56,16 @@ export const constantRoutes = [
         }
       }
     ]
+  },
+  {
+    path: '/list/detail/:id',
+    name: 'ListDetail',
+    component: () => import('@/views/list/detail.vue'),
+    meta: {
+      title: '列表详情',
+      requiresAuth: false,
+      hidden: true
+    }
   },
   {
     path: '/user/profile',
