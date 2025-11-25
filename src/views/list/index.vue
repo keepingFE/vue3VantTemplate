@@ -2,40 +2,37 @@
   <div class="list-container">
     <van-nav-bar :title="$t('route.list')" fixed placeholder />
 
-    <div class="list-content">
+    <!-- 固定区域：Tab 和搜索栏 -->
+    <div class="fixed-header">
+      <!-- Tab 切换 -->
+      <van-tabs v-model:active="activeTab" @change="onTabChange">
+        <van-tab title="全部" name="all"></van-tab>
+        <van-tab title="进行中" name="ongoing"></van-tab>
+        <van-tab title="已完成" name="completed"></van-tab>
+        <van-tab title="待处理" name="pending"></van-tab>
+      </van-tabs>
+
       <!-- 搜索栏 -->
-      <van-search
-        v-model="searchValue"
-        :placeholder="$t('common.search')"
-        show-action
-        @search="onSearch"
-      >
+      <van-search v-model="searchValue" :placeholder="$t('common.search')" show-action @search="onSearch">
         <template #action>
           <div @click="onSearch">{{ $t('common.search') }}</div>
         </template>
       </van-search>
+    </div>
+
+    <div class="list-content">
 
       <!-- 下拉刷新 -->
       <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
         <!-- 上拉加载 -->
-        <van-list
-          v-model:loading="loading"
-          :finished="finished"
-          :finished-text="$t('common.noMore')"
-          @load="onLoad"
-        >
+        <van-list v-model:loading="loading" :finished="finished" :finished-text="$t('common.noMore')" @load="onLoad">
           <van-cell-group inset>
-            <van-cell
-              v-for="item in list"
-              :key="item.id"
-              :title="item.title"
-              :label="item.description"
-              :value="item.status"
-              is-link
-              @click="handleItemClick(item)"
-            >
+            <van-cell v-for="item in list" :key="item.id" :title="item.title" :label="item.description"
+              :value="item.status" is-link @click="handleItemClick(item)">
               <template #icon>
-                <van-icon :name="item.icon" class="item-icon" />
+                <van-image v-if="item.image" :src="item.image" width="60" height="60" fit="cover" radius="4"
+                  class="item-image" />
+                <van-icon v-else :name="item.icon" class="item-icon" />
               </template>
             </van-cell>
           </van-cell-group>
@@ -43,10 +40,7 @@
       </van-pull-refresh>
 
       <!-- 空状态 -->
-      <van-empty
-        v-if="!loading && list.length === 0"
-        :description="$t('common.noData')"
-      />
+      <van-empty v-if="!loading && list.length === 0" :description="$t('common.noData')" />
     </div>
   </div>
 </template>
@@ -59,6 +53,9 @@ import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
 const { t } = useI18n()
+
+// Tab 激活状态
+const activeTab = ref('all')
 
 // 搜索值
 const searchValue = ref('')
@@ -77,21 +74,21 @@ const pageSize = 10
 
 // 模拟数据
 const mockData = [
-  { id: 1, title: '列表项 1', description: '这是列表项 1 的详细描述', status: '进行中', icon: 'notes-o' },
-  { id: 2, title: '列表项 2', description: '这是列表项 2 的详细描述', status: '已完成', icon: 'completed' },
-  { id: 3, title: '列表项 3', description: '这是列表项 3 的详细描述', status: '待处理', icon: 'clock-o' },
-  { id: 4, title: '列表项 4', description: '这是列表项 4 的详细描述', status: '进行中', icon: 'notes-o' },
-  { id: 5, title: '列表项 5', description: '这是列表项 5 的详细描述', status: '已完成', icon: 'completed' },
-  { id: 6, title: '列表项 6', description: '这是列表项 6 的详细描述', status: '待处理', icon: 'clock-o' },
-  { id: 7, title: '列表项 7', description: '这是列表项 7 的详细描述', status: '进行中', icon: 'notes-o' },
-  { id: 8, title: '列表项 8', description: '这是列表项 8 的详细描述', status: '已完成', icon: 'completed' },
-  { id: 9, title: '列表项 9', description: '这是列表项 9 的详细描述', status: '待处理', icon: 'clock-o' },
-  { id: 10, title: '列表项 10', description: '这是列表项 10 的详细描述', status: '进行中', icon: 'notes-o' },
-  { id: 11, title: '列表项 11', description: '这是列表项 11 的详细描述', status: '已完成', icon: 'completed' },
-  { id: 12, title: '列表项 12', description: '这是列表项 12 的详细描述', status: '待处理', icon: 'clock-o' },
-  { id: 13, title: '列表项 13', description: '这是列表项 13 的详细描述', status: '进行中', icon: 'notes-o' },
-  { id: 14, title: '列表项 14', description: '这是列表项 14 的详细描述', status: '已完成', icon: 'completed' },
-  { id: 15, title: '列表项 15', description: '这是列表项 15 的详细描述', status: '待处理', icon: 'clock-o' }
+  { id: 1, title: '列表项 1', description: '这是列表项 1 的详细描述', status: '进行中', icon: 'notes-o', image: 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg' },
+  { id: 2, title: '列表项 2', description: '这是列表项 2 的详细描述', status: '已完成', icon: 'completed', image: 'https://fastly.jsdelivr.net/npm/@vant/assets/apple-1.jpeg' },
+  { id: 3, title: '列表项 3', description: '这是列表项 3 的详细描述', status: '待处理', icon: 'clock-o', image: 'https://fastly.jsdelivr.net/npm/@vant/assets/apple-2.jpeg' },
+  { id: 4, title: '列表项 4', description: '这是列表项 4 的详细描述', status: '进行中', icon: 'notes-o', image: 'https://fastly.jsdelivr.net/npm/@vant/assets/apple-3.jpeg' },
+  { id: 5, title: '列表项 5', description: '这是列表项 5 的详细描述', status: '已完成', icon: 'completed', image: 'https://fastly.jsdelivr.net/npm/@vant/assets/apple-4.jpeg' },
+  { id: 6, title: '列表项 6', description: '这是列表项 6 的详细描述', status: '待处理', icon: 'clock-o', image: 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg' },
+  { id: 7, title: '列表项 7', description: '这是列表项 7 的详细描述', status: '进行中', icon: 'notes-o', image: 'https://fastly.jsdelivr.net/npm/@vant/assets/apple-1.jpeg' },
+  { id: 8, title: '列表项 8', description: '这是列表项 8 的详细描述', status: '已完成', icon: 'completed', image: 'https://fastly.jsdelivr.net/npm/@vant/assets/apple-2.jpeg' },
+  { id: 9, title: '列表项 9', description: '这是列表项 9 的详细描述', status: '待处理', icon: 'clock-o', image: 'https://fastly.jsdelivr.net/npm/@vant/assets/apple-3.jpeg' },
+  { id: 10, title: '列表项 10', description: '这是列表项 10 的详细描述', status: '进行中', icon: 'notes-o', image: 'https://fastly.jsdelivr.net/npm/@vant/assets/apple-4.jpeg' },
+  { id: 11, title: '列表项 11', description: '这是列表项 11 的详细描述', status: '已完成', icon: 'completed', image: 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg' },
+  { id: 12, title: '列表项 12', description: '这是列表项 12 的详细描述', status: '待处理', icon: 'clock-o', image: 'https://fastly.jsdelivr.net/npm/@vant/assets/apple-1.jpeg' },
+  { id: 13, title: '列表项 13', description: '这是列表项 13 的详细描述', status: '进行中', icon: 'notes-o', image: 'https://fastly.jsdelivr.net/npm/@vant/assets/apple-2.jpeg' },
+  { id: 14, title: '列表项 14', description: '这是列表项 14 的详细描述', status: '已完成', icon: 'completed', image: 'https://fastly.jsdelivr.net/npm/@vant/assets/apple-3.jpeg' },
+  { id: 15, title: '列表项 15', description: '这是列表项 15 的详细描述', status: '待处理', icon: 'clock-o', image: 'https://fastly.jsdelivr.net/npm/@vant/assets/apple-4.jpeg' }
 ]
 
 // 监听搜索框变化，当清空时重新加载列表
@@ -106,12 +103,35 @@ watch(searchValue, (newValue, oldValue) => {
   }
 })
 
+// 获取过滤后的数据
+const getFilteredData = () => {
+  if (activeTab.value === 'all') {
+    return mockData
+  }
+  const statusMap = {
+    ongoing: '进行中',
+    completed: '已完成',
+    pending: '待处理'
+  }
+  return mockData.filter(item => item.status === statusMap[activeTab.value])
+}
+
+// Tab 切换
+const onTabChange = () => {
+  list.value = []
+  page.value = 1
+  finished.value = false
+  loading.value = true
+  onLoad()
+}
+
 // 加载数据
 const onLoad = () => {
   setTimeout(() => {
+    const filteredData = getFilteredData()
     const start = (page.value - 1) * pageSize
     const end = start + pageSize
-    const newData = mockData.slice(start, end)
+    const newData = filteredData.slice(start, end)
 
     if (newData.length > 0) {
       list.value = [...list.value, ...newData]
@@ -120,7 +140,7 @@ const onLoad = () => {
 
     loading.value = false
 
-    if (list.value.length >= mockData.length) {
+    if (list.value.length >= filteredData.length) {
       finished.value = true
     }
   }, 500)
@@ -142,7 +162,8 @@ const onRefresh = () => {
 // 搜索
 const onSearch = () => {
   if (searchValue.value.trim()) {
-    const filtered = mockData.filter(
+    const filteredData = getFilteredData()
+    const filtered = filteredData.filter(
       (item) =>
         item.title.includes(searchValue.value) ||
         item.description.includes(searchValue.value)
@@ -172,12 +193,24 @@ const handleItemClick = (item) => {
   min-height: 100vh;
   background-color: var(--bg-color);
 
+  .fixed-header {
+    position: sticky;
+    top: 46px; // 导航栏高度
+    z-index: 99;
+    background-color: var(--bg-color);
+  }
+
   .list-content {
     padding-bottom: 60px;
 
     .item-icon {
       margin-right: $spacing-sm;
       font-size: 20px;
+    }
+
+    .item-image {
+      margin-right: $spacing-sm;
+      border-radius: 4px;
     }
 
     :deep(.van-cell-group) {

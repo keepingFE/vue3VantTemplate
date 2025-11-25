@@ -19,22 +19,11 @@
       <!-- 下拉刷新 -->
       <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
         <!-- 上拉加载 -->
-        <van-list
-          v-model:loading="loading"
-          :finished="finished"
-          :finished-text="$t('common.noMore')"
-          @load="onLoad"
-        >
+        <van-list v-model:loading="loading" :finished="finished" :finished-text="$t('common.noMore')" @load="onLoad">
           <van-cell-group inset>
             <van-swipe-cell v-for="item in messageList" :key="item.id">
-              <van-cell
-                :title="item.title"
-                :label="item.content"
-                :value="formatTime(item.time)"
-                is-link
-                @click="handleMessageClick(item)"
-                :class="{ 'unread-message': !item.isRead }"
-              >
+              <van-cell :title="item.title" :label="item.content" :value="formatTime(item.time)" is-link
+                @click="handleMessageClick(item)" :class="{ 'unread-message': !item.isRead }">
                 <template #icon>
                   <van-badge v-if="!item.isRead" dot>
                     <van-icon :name="getMessageIcon(item.type)" class="message-icon" />
@@ -49,21 +38,10 @@
                 </template>
               </van-cell>
               <template #right>
-                <van-button
-                  square
-                  type="primary"
-                  :text="$t('messages.markAsRead')"
-                  class="swipe-button"
-                  @click="markAsRead(item)"
-                  v-if="!item.isRead"
-                />
-                <van-button
-                  square
-                  type="danger"
-                  :text="$t('messages.delete')"
-                  class="swipe-button"
-                  @click="deleteMessage(item)"
-                />
+                <van-button square type="primary" :text="$t('messages.markAsRead')" class="swipe-button"
+                  @click="markAsRead(item)" v-if="!item.isRead" />
+                <van-button square type="danger" :text="$t('messages.delete')" class="swipe-button"
+                  @click="deleteMessage(item)" />
               </template>
             </van-swipe-cell>
           </van-cell-group>
@@ -71,28 +49,14 @@
       </van-pull-refresh>
 
       <!-- 空状态 -->
-      <van-empty
-        v-if="!loading && messageList.length === 0"
-        :description="$t('messages.noMessages')"
-        image="search"
-      />
+      <van-empty v-if="!loading && messageList.length === 0" :description="$t('messages.noMessages')" image="search" />
 
       <!-- 底部操作栏 -->
       <div v-if="messageList.length > 0" class="message-actions">
-        <van-button
-          type="primary"
-          size="small"
-          @click="markAllAsRead"
-          :disabled="unreadCount === 0"
-        >
+        <van-button type="primary" size="small" @click="markAllAsRead" :disabled="unreadCount === 0">
           {{ $t('messages.markAllAsRead') }}
         </van-button>
-        <van-button
-          type="danger"
-          size="small"
-          plain
-          @click="clearAllMessages"
-        >
+        <van-button type="danger" size="small" plain @click="clearAllMessages">
           {{ $t('messages.deleteAll') }}
         </van-button>
       </div>
@@ -246,13 +210,13 @@ const formatTime = (timestamp) => {
 // 过滤消息
 const filterMessages = () => {
   let filtered = [...allMessages.value]
-  
+
   if (activeTab.value === 'unread') {
     filtered = filtered.filter(msg => !msg.isRead)
   } else if (activeTab.value !== 'all') {
     filtered = filtered.filter(msg => msg.type === activeTab.value)
   }
-  
+
   return filtered
 }
 
@@ -305,7 +269,7 @@ const handleMessageClick = (item) => {
   if (!item.isRead) {
     item.isRead = true
   }
-  
+
   // 跳转到详情页
   router.push({
     name: 'MessageDetail',
@@ -330,12 +294,12 @@ const deleteMessage = (item) => {
       if (index > -1) {
         allMessages.value.splice(index, 1)
       }
-      
+
       const listIndex = messageList.value.findIndex(msg => msg.id === item.id)
       if (listIndex > -1) {
         messageList.value.splice(listIndex, 1)
       }
-      
+
       showToast(t('common.deleteSuccess'))
     })
     .catch(() => {
@@ -377,7 +341,6 @@ const clearAllMessages = () => {
   background-color: var(--bg-color);
 
   .message-content {
-    padding-bottom: 60px;
 
     .message-icon {
       margin-right: $spacing-sm;
@@ -387,7 +350,7 @@ const clearAllMessages = () => {
 
     .unread-message {
       background-color: rgba(25, 137, 250, 0.05);
-      
+
       :deep(.van-cell__title) {
         font-weight: 600;
       }

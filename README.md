@@ -668,7 +668,7 @@ export const THEME_COLORS = {
 
 [MIT License](LICENSE)
 
-Copyright (c) 2024
+Copyright (c) 2025
 
 ## 🙏 鸣谢
 
