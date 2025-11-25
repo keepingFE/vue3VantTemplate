@@ -15,6 +15,9 @@ import 'vant/lib/index.css'
 // 引入 amfe-flexible 实现移动端适配
 import 'amfe-flexible'
 
+// 引入vconsole调试工具
+import VConsole from 'vconsole'
+
 // 限制 PC 端的 rem 基准，避免页面过度放大
 const setRemUnit = () => {
   const docEl = document.documentElement
@@ -33,7 +36,7 @@ setRemUnit()
 
 // 监听窗口大小变化
 window.addEventListener('resize', setRemUnit)
-window.addEventListener('pageshow', (e) => {
+window.addEventListener('pageshow', e => {
   if (e.persisted) {
     setRemUnit()
   }
@@ -49,7 +52,7 @@ const app = createApp(App)
 app.config.errorHandler = (err, instance, info) => {
   console.error('全局错误：', err)
   console.error('错误信息：', info)
-  
+
   // 这里可以添加错误日志上报
   // reportError(err, info)
 }
@@ -71,6 +74,11 @@ import { useAppStore } from '@/store/modules/app'
 const appStore = useAppStore()
 appStore.initTheme()
 
+// 根据环境变量初始化vconsole调试工具
+if (import.meta.env.VITE_USE_VCONSOLE === 'true') {
+  new VConsole()
+  console.log('VConsole 已启用')
+}
+
 // 挂载应用
 app.mount('#app')
-

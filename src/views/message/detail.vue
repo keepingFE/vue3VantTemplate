@@ -1,12 +1,6 @@
 <template>
   <div class="message-detail-container">
-    <van-nav-bar
-      :title="$t('messages.messageDetail')"
-      left-arrow
-      fixed
-      placeholder
-      @click-left="onClickLeft"
-    />
+    <van-nav-bar :title="$t('messages.messageDetail')" left-arrow fixed placeholder @click-left="onClickLeft" />
 
     <div v-if="message" class="message-detail-content">
       <!-- 消息头部 -->
@@ -51,14 +45,8 @@
         <van-cell-group v-if="message.attachments && message.attachments.length > 0" inset>
           <van-cell title="附件" />
           <div class="attachments">
-            <van-tag
-              v-for="(attachment, index) in message.attachments"
-              :key="index"
-              type="primary"
-              plain
-              size="large"
-              class="attachment-item"
-            >
+            <van-tag v-for="(attachment, index) in message.attachments" :key="index" type="primary" plain size="large"
+              class="attachment-item">
               <van-icon name="description" />
               {{ attachment }}
             </van-tag>
@@ -68,20 +56,10 @@
 
       <!-- 操作按钮 -->
       <div class="message-actions">
-        <van-button
-          v-if="!message.isRead"
-          type="primary"
-          block
-          @click="markAsRead"
-        >
+        <van-button v-if="!message.isRead" type="primary" block @click="markAsRead">
           {{ $t('messages.markAsRead') }}
         </van-button>
-        <van-button
-          type="danger"
-          block
-          plain
-          @click="deleteMessage"
-        >
+        <van-button type="danger" block plain @click="deleteMessage">
           {{ $t('messages.delete') }}
         </van-button>
       </div>

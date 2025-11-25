@@ -3,28 +3,31 @@
     <van-nav-bar :title="$t('messages.title')" fixed placeholder />
 
     <div class="message-content">
-      <!-- 消息分类标签 -->
-      <van-tabs v-model:active="activeTab" @change="onTabChange" sticky>
-        <van-tab :title="$t('messages.all')" name="all" />
-        <van-tab :title="$t('messages.unread')" name="unread">
-          <template #title>
-            {{ $t('messages.unread') }}
-            <van-badge v-if="unreadCount > 0" :content="unreadCount" />
-          </template>
-        </van-tab>
-        <van-tab :title="$t('messages.system')" name="system" />
-        <van-tab :title="$t('messages.notification')" name="notification" />
-      </van-tabs>
+      <!-- 固定区域：消息分类标签 + 操作按钮 -->
+      <div class="sticky-header">
+        <!-- 消息分类标签 -->
+        <van-tabs v-model:active="activeTab" @change="onTabChange">
+          <van-tab :title="$t('messages.all')" name="all" />
+          <van-tab :title="$t('messages.unread')" name="unread">
+            <template #title>
+              {{ $t('messages.unread') }}
+              <van-badge v-if="unreadCount > 0" :content="unreadCount" :max="99" class="unread-count-badge" />
+            </template>
+          </van-tab>
+          <van-tab :title="$t('messages.system')" name="system" />
+          <van-tab :title="$t('messages.notification')" name="notification" />
+        </van-tabs>
 
-      <!-- 操作按钮 -->
-      <div v-if="messageList.length > 0" class="message-actions">
-        <span class="action-btn" @click="markAllAsRead" :class="{ disabled: unreadCount === 0 }">
-          {{ $t('messages.markAllAsRead') }}
-        </span>
-        <span class="action-divider">|</span>
-        <span class="action-btn danger" @click="clearAllMessages">
-          {{ $t('messages.deleteAll') }}
-        </span>
+        <!-- 操作按钮 -->
+        <div v-if="messageList.length > 0" class="message-actions">
+          <span class="action-btn" @click="markAllAsRead" :class="{ disabled: unreadCount === 0 }">
+            {{ $t('messages.markAllAsRead') }}
+          </span>
+          <span class="action-divider">|</span>
+          <span class="action-btn danger" @click="clearAllMessages">
+            {{ $t('messages.deleteAll') }}
+          </span>
+        </div>
       </div>
 
       <!-- 下拉刷新 -->
@@ -343,6 +346,14 @@ const clearAllMessages = () => {
 
   .message-content {
 
+    // 固定头部区域
+    .sticky-header {
+      position: sticky;
+      top: 46px; // NavBar 的高度
+      z-index: 99;
+      background-color: var(--van-background-2);
+    }
+
     .message-icon {
       margin-right: $spacing-sm;
       font-size: 20px;
@@ -397,20 +408,59 @@ const clearAllMessages = () => {
       background-color: var(--van-background-2);
     }
 
+    // 确保 tab 标题不会裁剪徽章
+    :deep(.van-tab__text) {
+      overflow: visible;
+    }
+
+    :deep(.van-tabs__wrap) {
+      overflow: visible;
+    }
+
+    .unread-count-badge {
+      margin-left: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      top: -2px;
+      vertical-align: middle;
+
+      :deep(.van-badge__content) {
+        position: static;
+        transform: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 5px;
+        border-radius: 9px;
+        font-size: 11px;
+        line-height: 1;
+        box-sizing: border-box;
+        white-space: nowrap;
+      }
+    }
+
     .message-actions {
       display: flex;
       align-items: center;
       justify-content: flex-end;
       gap: 8px;
-      padding: $spacing-sm $spacing-md;
+      padding: 6px $spacing-md;
       background-color: var(--van-background-2);
       font-size: 14px;
+      line-height: 1.2;
+      min-height: 45px;
 
       .action-btn {
         color: var(--van-primary-color);
         cursor: pointer;
         user-select: none;
         transition: opacity 0.3s;
+        padding: 4px 0;
+        line-height: 1.5;
 
         &:active {
           opacity: 0.7;
