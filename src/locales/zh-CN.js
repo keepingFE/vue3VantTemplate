@@ -46,6 +46,7 @@ export default {
     user: '我的',
     login: '登录',
     admin: '管理',
+    aiChat: 'AI 助手',
     notFound: '页面不存在',
     forbidden: '无权限'
   },
@@ -69,6 +70,8 @@ export default {
   
   user: {
     profile: '个人信息',
+    chat: '消息中心',
+    aiChat: 'AI 助手',
     settings: '设置',
     logout: '退出登录',
     logoutConfirm: '确定要退出登录吗？',

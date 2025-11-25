@@ -110,6 +110,16 @@ export const constantRoutes = [
     }
   },
   {
+    path: '/ai-chat',
+    name: 'AiChat',
+    component: () => import('@/views/ai-chat/index.vue'),
+    meta: {
+      title: 'AI 助手',
+      requiresAuth: false,
+      hidden: true
+    }
+  },
+  {
     path: '/404',
     name: 'NotFound',
     component: () => import('@/views/error/404.vue'),

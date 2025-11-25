@@ -17,6 +17,8 @@
       <!-- 设置列表 -->
       <van-cell-group inset class="user-settings">
         <van-cell :title="$t('user.profile')" icon="user-o" is-link @click="handleProfile" />
+        <van-cell :title="$t('user.chat')" icon="chat-o" is-link @click="handleChat" />
+        <van-cell :title="$t('user.aiChat')" icon="robot" is-link @click="handleAiChat" />
         <van-cell :title="$t('user.theme')" icon="brush-o" is-link @click="showThemePopup = true" />
         <van-cell :title="$t('user.language')" icon="globe-o" is-link @click="showLanguagePopup = true" />
       </van-cell-group>
@@ -81,6 +83,14 @@ const languages = [
 
 const handleProfile = () => {
   router.push('/user/profile')
+}
+
+const handleChat = () => {
+  router.push('/message')
+}
+
+const handleAiChat = () => {
+  router.push('/ai-chat')
 }
 
 const handleSettings = () => {

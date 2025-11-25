@@ -46,6 +46,7 @@ export default {
     user: 'User',
     login: 'Login',
     admin: 'Admin',
+    aiChat: 'AI Assistant',
     notFound: 'Not Found',
     forbidden: 'Forbidden'
   },
@@ -69,6 +70,8 @@ export default {
   
   user: {
     profile: 'Profile',
+    chat: 'Messages',
+    aiChat: 'AI Assistant',
     settings: 'Settings',
     logout: 'Logout',
     logoutConfirm: 'Are you sure you want to logout?',
