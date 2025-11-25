@@ -52,8 +52,7 @@ const simulateAiResponse = async (userMessage) => {
         type: 'bot',
         content: randomResponse,
         avatar: 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg',
-        time: new Date(),
-        typing: true // 启用打字效果
+        time: new Date()
     })
 
     isLoading.value = false

@@ -22,15 +22,16 @@
                             </div>
                             <div v-if="message.time" class="message-time">{{ formatTime(message.time) }}</div>
                         </div>
-                        <van-image v-if="message.avatar" :src="message.avatar" round width="32" height="32"
-                            class="message-avatar user-avatar" />
+                        <van-image :src="message.avatar || 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg'"
+                            round width="32" height="32" class="message-avatar user-avatar" />
                     </div>
                 </div>
 
                 <!-- Bot/Assistant Message -->
                 <div v-else-if="message.type === 'bot' || message.type === 'assistant'" class="message-group">
                     <div class="message-content bot-message">
-                        <van-image :src="message.avatar" round width="32" height="32" class="message-avatar" />
+                        <van-image :src="message.avatar || 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg'"
+                            round width="32" height="32" class="message-avatar" />
                         <div class="bubble-wrap">
                             <div class="message-bubble">
                                 <div class="bubble-text">
@@ -60,6 +61,8 @@
                             </div>
                             <div v-if="message.time" class="message-time">{{ formatTime(message.time) }}</div>
                         </div>
+                        <van-image :src="message.avatar || 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg'"
+                            round width="32" height="32" class="message-avatar user-avatar" />
                     </div>
                 </div>
             </div>
@@ -358,7 +361,7 @@ onUnmounted(() => {
 
                 &.user-message {
                     flex-direction: row;
-                    margin-left: auto;
+                    justify-content: flex-end;
                 }
 
                 &.bot-message {
@@ -373,13 +376,14 @@ onUnmounted(() => {
                 }
 
                 .message-bubble {
-                    display: block;
+                    display: inline-block;
                     padding: 10px 14px;
                     border-radius: 18px;
                     max-width: 100%;
-                    word-break: normal;
+                    word-break: break-word;
                     overflow-wrap: break-word;
-                    white-space: normal;
+                    word-wrap: break-word;
+                    white-space: pre-wrap;
                     line-height: 1.4;
                     font-size: 14px;
                     margin-top: 6px;
@@ -427,7 +431,11 @@ onUnmounted(() => {
                 }
 
                 .bubble-text {
-                    display: block;
+                    display: inline-block;
+                    max-width: 100%;
+                    word-break: break-word;
+                    overflow-wrap: break-word;
+                    word-wrap: break-word;
                 }
 
                 .message-time {
@@ -453,7 +461,6 @@ onUnmounted(() => {
 
                     &.user-avatar {
                         order: 2;
-                        margin-right: 30px;
                     }
                 }
             }
