@@ -16,6 +16,17 @@
         <van-tab :title="$t('messages.notification')" name="notification" />
       </van-tabs>
 
+      <!-- 操作按钮 -->
+      <div v-if="messageList.length > 0" class="message-actions">
+        <span class="action-btn" @click="markAllAsRead" :class="{ disabled: unreadCount === 0 }">
+          {{ $t('messages.markAllAsRead') }}
+        </span>
+        <span class="action-divider">|</span>
+        <span class="action-btn danger" @click="clearAllMessages">
+          {{ $t('messages.deleteAll') }}
+        </span>
+      </div>
+
       <!-- 下拉刷新 -->
       <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
         <!-- 上拉加载 -->
@@ -50,16 +61,6 @@
 
       <!-- 空状态 -->
       <van-empty v-if="!loading && messageList.length === 0" :description="$t('messages.noMessages')" image="search" />
-
-      <!-- 底部操作栏 -->
-      <div v-if="messageList.length > 0" class="message-actions">
-        <van-button type="primary" size="small" @click="markAllAsRead" :disabled="unreadCount === 0">
-          {{ $t('messages.markAllAsRead') }}
-        </van-button>
-        <van-button type="danger" size="small" plain @click="clearAllMessages">
-          {{ $t('messages.deleteAll') }}
-        </van-button>
-      </div>
     </div>
   </div>
 </template>
@@ -397,17 +398,38 @@ const clearAllMessages = () => {
     }
 
     .message-actions {
-      position: fixed;
-      bottom: 60px;
-      left: 0;
-      right: 0;
-      padding: $spacing-md;
-      background-color: var(--van-background-2);
-      border-top: 1px solid var(--van-border-color);
       display: flex;
-      gap: $spacing-md;
-      justify-content: space-around;
-      z-index: 999;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: $spacing-sm $spacing-md;
+      background-color: var(--van-background-2);
+      font-size: 14px;
+
+      .action-btn {
+        color: var(--van-primary-color);
+        cursor: pointer;
+        user-select: none;
+        transition: opacity 0.3s;
+
+        &:active {
+          opacity: 0.7;
+        }
+
+        &.disabled {
+          color: var(--van-text-color-3);
+          cursor: not-allowed;
+          opacity: 0.5;
+        }
+
+        &.danger {
+          color: var(--van-danger-color);
+        }
+      }
+
+      .action-divider {
+        color: var(--van-border-color);
+      }
     }
   }
 }
