@@ -15,10 +15,22 @@
       <div v-if="!loading && !error" class="pdf-content">
         <div class="pdf-controls">
           <span class="page-info">第 {{ currentPage }} 页 / 共 {{ totalPages }} 页</span>
+          <van-button
+            size="small"
+            icon="arrow-up"
+            @click="scrollToTop"
+            v-if="totalPages > 1"
+            title="回到首页"
+          />
           <van-button size="small" icon="minus" @click="zoomOut" :disabled="scale <= 0.5" />
           <span class="zoom-info">{{ Math.round(scale * 100) }}%</span>
           <van-button size="small" icon="plus" @click="zoomIn" :disabled="scale >= 5" />
           <van-button size="small" icon="replay" @click="fitToWidth" />
+        </div>
+
+        <!-- 进度条 -->
+        <div class="pdf-progress-bar">
+          <div class="pdf-progress-inner" :style="{ width: scrollProgress + '%' }"></div>
         </div>
 
         <div class="pdf-canvas-container" ref="canvasContainer" @scroll="onScroll">
@@ -65,6 +77,7 @@ const pageHeights = ref({}) // 存储每页的高度，用于占位
 const renderedPages = ref(new Set()) // 记录已渲染的页面
 const visibleRatios = ref({}) // 记录页面可见比例
 let observer = null // IntersectionObserver 实例
+const renderTasks = {} // 存储渲染任务，用于取消
 
 const setCanvasRef = (el, pageNum) => {
   if (el) {
@@ -77,6 +90,7 @@ const error = ref(false)
 const currentPage = ref(1)
 const totalPages = ref(0)
 const scale = ref(1.0)
+const scrollProgress = ref(0)
 // 使用 shallowRef 避免 PDF.js 对象被 Vue 响应式系统深度包装
 const pdfDocument = shallowRef(null)
 
@@ -85,6 +99,7 @@ const loadPdf = async () => {
   try {
     loading.value = true
     error.value = false
+    scrollProgress.value = 0
 
     console.log('开始加载PDF:', props.src)
 
@@ -139,12 +154,20 @@ const loadPdf = async () => {
 // 渲染指定页面
 // 渲染指定页面
 const renderPage = async pageNum => {
-  // 如果已经渲染过且缩放比例没变，就不重复渲染（这里简单处理，实际缩放变化时会清空 renderedPages）
+  // 如果已经渲染过且缩放比例没变，就不重复渲染
   if (renderedPages.value.has(pageNum)) return
 
-  try {
-    // console.log('开始渲染页面:', pageNum, '缩放比例:', scale.value)
+  // 如果该页面正在渲染，取消之前的渲染任务
+  if (renderTasks[pageNum]) {
+    try {
+      await renderTasks[pageNum].cancel()
+    } catch (e) {
+      // 取消渲染会抛出异常，忽略即可
+    }
+    delete renderTasks[pageNum]
+  }
 
+  try {
     if (!pdfDocument.value) return
 
     const page = await pdfDocument.value.getPage(pageNum)
@@ -170,10 +193,19 @@ const renderPage = async pageNum => {
       viewport: viewport
     }
 
-    await page.render(renderContext).promise
+    // 保存渲染任务
+    const renderTask = page.render(renderContext)
+    renderTasks[pageNum] = renderTask
+
+    await renderTask.promise
+
+    delete renderTasks[pageNum]
     renderedPages.value.add(pageNum)
-    // console.log('页面渲染成功:', pageNum)
   } catch (err) {
+    // 忽略取消渲染的错误
+    if (err?.name === 'RenderingCancelledException') {
+      return
+    }
     console.error(`第${pageNum}页渲染失败:`, err)
   }
 }
@@ -227,8 +259,18 @@ const initIntersectionObserver = () => {
 }
 
 // 监听滚动更新当前页码（辅助 IntersectionObserver）
-const onScroll = () => {
-  // 这里可以添加更精确的当前页码计算逻辑，如果需要的话
+const onScroll = e => {
+  const target = e.target
+  if (target) {
+    const totalScroll = target.scrollHeight - target.clientHeight
+    if (totalScroll > 0) {
+      // 计算滚动百分比
+      const progress = (target.scrollTop / totalScroll) * 100
+      scrollProgress.value = Math.min(100, Math.max(0, progress))
+    } else {
+      scrollProgress.value = 0
+    }
+  }
 }
 
 // 重新渲染所有可见页面（用于缩放后）
@@ -256,6 +298,14 @@ const zoomOut = () => {
   console.log('缩小：', scale.value, '->', newScale)
   scale.value = newScale
   rerenderVisiblePages()
+}
+
+// 回到第一页
+const scrollToTop = () => {
+  if (canvasContainer.value) {
+    canvasContainer.value.scrollTop = 0
+    currentPage.value = 1
+  }
 }
 
 // 自适应宽度（重置）
@@ -345,6 +395,20 @@ onMounted(() => {
   gap: 8px;
   background-color: #f7f8fa;
   border-bottom: 1px solid #ebedf0;
+}
+
+.pdf-progress-bar {
+  height: 3px;
+  background-color: #ebedf0;
+  width: 100%;
+  position: relative;
+  z-index: 10;
+}
+
+.pdf-progress-inner {
+  height: 100%;
+  background-color: #1989fa;
+  transition: width 0.1s linear;
 }
 
 .page-info {
