@@ -1,16 +1,9 @@
 <template>
     <div class="chat-container">
-        <!-- Chat Header -->
-        <!-- <div class="chat-header">
-            <slot name="header">
-                <div class="header-title">{{ title }}</div>
-            </slot>
-        </div> -->
-
         <!-- Messages Area -->
         <div class="chat-messages" ref="messagesContainer">
             <div v-if="messages.length === 0" class="empty-state">
-                <van-empty description="暂无消息" />
+                <van-empty :description="$t('chat.noMessages')" />
             </div>
             <div v-for="(message, index) in messages" :key="index" class="message-item" :class="message.type">
                 <!-- User Message -->
@@ -20,9 +13,8 @@
                             <div class="message-bubble">
                                 <div class="bubble-text">{{ message.content }}</div>
                             </div>
-                            <div v-if="message.time" class="message-time">{{ formatTime(message.time) }}</div>
                         </div>
-                        <van-image :src="message.avatar || 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg'"
+                        <van-image :src="message.avatar || userAvatar"
                             round width="32" height="32" class="message-avatar user-avatar" />
                     </div>
                 </div>
@@ -30,7 +22,7 @@
                 <!-- Bot/Assistant Message -->
                 <div v-else-if="message.type === 'bot' || message.type === 'assistant'" class="message-group">
                     <div class="message-content bot-message">
-                        <van-image :src="message.avatar || 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg'"
+                        <van-image :src="message.avatar || botAvatar"
                             round width="32" height="32" class="message-avatar" />
                         <div class="bubble-wrap">
                             <div class="message-bubble">
@@ -40,7 +32,6 @@
                                     </span>
                                 </div>
                             </div>
-                            <div v-if="message.time" class="message-time">{{ formatTime(message.time) }}</div>
                         </div>
                     </div>
                 </div>
@@ -59,9 +50,8 @@
                             <div class="message-bubble">
                                 <div class="bubble-text">{{ message.content }}</div>
                             </div>
-                            <div v-if="message.time" class="message-time">{{ formatTime(message.time) }}</div>
                         </div>
-                        <van-image :src="message.avatar || 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg'"
+                        <van-image :src="message.avatar || userAvatar"
                             round width="32" height="32" class="message-avatar user-avatar" />
                     </div>
                 </div>
@@ -71,13 +61,13 @@
         <!-- Input Area (shown by default) -->
         <div class="chat-input-area">
             <div class="input-wrapper">
-                <van-field ref="inputField" v-model="inputValue" type="textarea" placeholder="请输入消息..." rows="1"
+                <van-field ref="inputField" v-model="inputValue" type="textarea" :placeholder="$t('chat.placeholder')" rows="1"
                     autosize maxlength="500" @keydown="handleKeyDown" class="message-input" />
                 <!-- Send button with fade-in animation -->
                 <Transition name="fade-send">
                     <van-button v-if="inputValue.trim()" type="primary" size="small" round :loading="isSending"
                         @click="sendMessage" class="send-btn">
-                        发送
+                        {{ $t('chat.send') }}
                     </van-button>
                 </Transition>
             </div>
@@ -88,12 +78,15 @@
 <script setup>
 import { ref, reactive, watch, nextTick, onUnmounted } from 'vue'
 import { showToast } from 'vant'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 // Props
 const props = defineProps({
     title: {
         type: String,
-        default: '对话'
+        default: 'chat.title'
     },
     messages: {
         type: Array,
@@ -109,15 +102,19 @@ const props = defineProps({
     },
     placeholder: {
         type: String,
-        default: '输入消息...'
+        default: 'chat.inputPlaceholder'
     },
     maxLength: {
         type: Number,
         default: 500
     },
-    typingSpeed: {
-        type: Number,
-        default: 50 // 打字速度（毫秒/字符）
+    userAvatar: {
+        type: String,
+        default: 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg'
+    },
+    botAvatar: {
+        type: String,
+        default: 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg'
     }
 })
 
@@ -127,24 +124,21 @@ const emit = defineEmits(['send-message', 'update:messages'])
 // Refs
 const messagesContainer = ref(null)
 const inputValue = ref('')
-const showInput = ref(true) /* show input by default */
+const showInput = ref(true) 
 const inputField = ref(null)
 
-// Typing effect state
-const typingStates = ref({}) // 存储每条消息的打字状态
-const typingTimers = ref({}) // 存储打字定时器
 
 // Methods
 const sendMessage = () => {
     const message = inputValue.value.trim()
 
     if (!message) {
-        showToast('请输入消息内容')
+        showToast(t('chat.emptyContent'))
         return
     }
 
     if (message.length > props.maxLength) {
-        showToast(`消息长度不能超过${props.maxLength}个字符`)
+        showToast(t('chat.maxLengthError', { max: props.maxLength }))
         return
     }
 
@@ -158,7 +152,6 @@ const toggleInput = (visible) => {
     if (visible) {
         nextTick(() => {
             if (inputField.value && inputField.value.focus) {
-                // van-field exposes focus via ref on its input element in some setups; try both
                 try { inputField.value.focus() } catch (e) { }
                 const el = inputField.value?.$el?.querySelector('textarea, input')
                 if (el) el.focus()
@@ -196,62 +189,6 @@ const scrollToBottom = () => {
     })
 }
 
-// 获取打字显示的文本
-const getTypingText = (message, index) => {
-    const key = `${index}-${message.content}`
-    const state = typingStates.value[key]
-    if (!state) return ''
-    return message.content.substring(0, state.currentIndex)
-}
-
-// 检查是否正在打字
-const isTyping = (message, index) => {
-    const key = `${index}-${message.content}`
-    const state = typingStates.value[key]
-    return state && state.currentIndex < message.content.length
-}
-
-// 开始打字效果
-const startTyping = (message, index) => {
-    const key = `${index}-${message.content}`
-
-    // 如果已经有打字状态，不重复开始
-    if (typingStates.value[key]) return
-
-    // 初始化打字状态
-    typingStates.value[key] = {
-        currentIndex: 0,
-        isComplete: false
-    }
-
-    // 清除可能存在的旧定时器
-    if (typingTimers.value[key]) {
-        clearInterval(typingTimers.value[key])
-    }
-
-    // 创建打字定时器
-    typingTimers.value[key] = setInterval(() => {
-        const state = typingStates.value[key]
-        if (state.currentIndex < message.content.length) {
-            state.currentIndex++
-            scrollToBottom() // 打字过程中保持滚动到底部
-        } else {
-            // 打字完成
-            state.isComplete = true
-            clearInterval(typingTimers.value[key])
-            delete typingTimers.value[key]
-        }
-    }, props.typingSpeed)
-}
-
-// 清理所有打字定时器
-const clearAllTypingTimers = () => {
-    Object.keys(typingTimers.value).forEach(key => {
-        clearInterval(typingTimers.value[key])
-    })
-    typingTimers.value = {}
-}
-
 // Watch messages to auto-scroll and start typing effect
 watch(
     () => props.messages,
@@ -274,7 +211,6 @@ watch(
     { deep: true }
 )
 
-// Watch loading state to auto-scroll
 watch(
     () => props.isLoading,
     () => {
@@ -282,10 +218,6 @@ watch(
     }
 )
 
-// 组件卸载时清理定时器
-onUnmounted(() => {
-    clearAllTypingTimers()
-})
 </script>
 
 <style lang="scss" scoped>
@@ -331,6 +263,9 @@ onUnmounted(() => {
 
             &.user {
                 align-items: flex-end;
+                .message-group {
+                    width: 100%;
+                }
             }
 
             &.bot,
@@ -355,38 +290,27 @@ onUnmounted(() => {
 
             .message-content {
                 display: flex;
+                flex-direction: row;
                 align-items: flex-start;
                 gap: 8px;
-                max-width: 80%;
-
-                &.user-message {
-                    flex-direction: row;
-                    justify-content: flex-end;
-                }
-
+                width: 80%;
                 &.bot-message {
-                    flex-direction: row;
+                    width: 90%;
                 }
-
                 .bubble-wrap {
-                    display: inline-block;
+                    display: block;
+                    width: 100%;
                     position: relative;
-                    padding-top: 18px;
-                    vertical-align: top;
                 }
 
                 .message-bubble {
-                    display: inline-block;
                     padding: 10px 14px;
-                    border-radius: 18px;
-                    max-width: 100%;
+                    border-radius: 12px;
                     word-break: break-word;
-                    overflow-wrap: break-word;
-                    word-wrap: break-word;
                     white-space: pre-wrap;
                     line-height: 1.4;
                     font-size: 14px;
-                    margin-top: 6px;
+                    margin-top: 12px;
                 }
 
                 &.user-message .bubble-wrap {
@@ -403,9 +327,9 @@ onUnmounted(() => {
                     background-color: var(--theme-color);
                     color: #fff;
                     border-top-right-radius: 0;
-                    border-top-left-radius: 18px;
-                    border-bottom-left-radius: 18px;
-                    border-bottom-right-radius: 18px;
+                    border-top-left-radius: 12px;
+                    border-bottom-left-radius: 12px;
+                    border-bottom-right-radius: 12px;
                 }
 
                 &.bot-message .message-bubble {
@@ -431,11 +355,7 @@ onUnmounted(() => {
                 }
 
                 .bubble-text {
-                    display: inline-block;
-                    max-width: 100%;
-                    word-break: break-word;
                     overflow-wrap: break-word;
-                    word-wrap: break-word;
                 }
 
                 .message-time {
@@ -511,7 +431,6 @@ onUnmounted(() => {
     }
 }
 
-/* Fade-in animation for send button */
 .fade-send-enter-active,
 .fade-send-leave-active {
     transition: opacity 0.3s ease;
@@ -525,14 +444,6 @@ onUnmounted(() => {
 .fade-send-enter-to,
 .fade-send-leave-from {
     opacity: 1;
-}
-
-/* Typing cursor animation */
-.typing-cursor {
-    display: inline-block;
-    margin-left: 2px;
-    animation: cursorBlink 0.8s infinite;
-    font-weight: 100;
 }
 
 @keyframes cursorBlink {

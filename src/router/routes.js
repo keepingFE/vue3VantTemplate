@@ -28,7 +28,7 @@ export const constantRoutes = [
         component: () => import('@/views/home/index.vue'),
         meta: {
           title: '首页',
-          requiresAuth: false,
+          requiresAuth: true,
           keepAlive: true,
           icon: 'home-o'
         }

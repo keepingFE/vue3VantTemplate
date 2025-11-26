@@ -115,6 +115,16 @@ export default {
     content: 'Content'
   },
   
+  chat: {
+    title: 'Chat',
+    noMessages: 'No messages',
+    placeholder: 'Type a message...',
+    send: 'Send',
+    inputPlaceholder: 'Type a message...',
+    emptyContent: 'Please enter message content',
+    maxLengthError: 'Message length cannot exceed {max} characters'
+  },
+  
   message: {
     loginSuccess: 'Login successful',
     logoutSuccess: 'Logout successful',

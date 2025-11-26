@@ -8,29 +8,6 @@ import { useUserStore } from '@/store/modules/user'
 import { usePermissionStore } from '@/store/modules/permission'
 
 /**
- * 白名单路由（不需要登录即可访问）
- */
-const WHITE_LIST = ['/login', '/404', '/403']
-
-/**
- * 检查路由是否需要登录
- * @param {Object} route - 路由对象
- * @returns {Boolean} 是否需要登录
- */
-function requiresAuth(route) {
-  // 如果明确设置了 requiresAuth，以此为准
-  if (route.meta?.requiresAuth !== undefined) {
-    return route.meta.requiresAuth
-  }
-  // 如果设置了 roles，则默认需要登录
-  if (route.meta?.roles && route.meta.roles.length > 0) {
-    return true
-  }
-  // 默认需要登录（安全优先）
-  return true
-}
-
-/**
  * 检查路由是否需要特定角色
  * @param {Object} route - 路由对象
  * @returns {Boolean} 是否需要特定角色
@@ -67,22 +44,14 @@ export function setupRouterGuards(router) {
     const permissionStore = usePermissionStore()
     const token = userStore.token
 
-    // 1. 检查是否在白名单中
-    if (WHITE_LIST.includes(to.path)) {
+    // 1. 检查是否在白名单中（使用 config 中的配置）
+    if (config.whiteList.includes(to.path)) {
+      // 白名单路由直接放行
       next()
       return
     }
 
-    // 2. 检查路由是否需要登录
-    const needAuth = requiresAuth(to)
-    
-    // 3. 如果不需要登录，直接放行
-    if (!needAuth) {
-      next()
-      return
-    }
-
-    // 4. 需要登录，检查是否已登录
+    // 2. 不在白名单中的路由，必须验证 token
     if (!token) {
       // 未登录，重定向到登录页
       const redirect = to.fullPath !== '/' ? to.fullPath : ''
@@ -90,13 +59,13 @@ export function setupRouterGuards(router) {
       return
     }
 
-    // 5. 已登录，访问登录页时重定向到首页
+    // 3. 已登录，访问登录页时重定向到首页
     if (to.path === '/login') {
       next({ path: '/' })
       return
     }
 
-    // 6. 已登录，检查是否已获取用户信息
+    // 4. 已登录，检查是否已获取用户信息
     if (!userStore.userInfo) {
       try {
         // 获取用户信息
@@ -123,7 +92,7 @@ export function setupRouterGuards(router) {
       }
     }
 
-    // 7. 已有用户信息，检查角色权限
+    // 5. 已有用户信息，检查角色权限
     const needRoles = requiresRoles(to)
     
     if (needRoles) {

@@ -115,6 +115,16 @@ export default {
     content: '内容'
   },
   
+  chat: {
+    title: '对话',
+    noMessages: '暂无消息',
+    placeholder: '请输入消息...',
+    send: '发送',
+    inputPlaceholder: '输入消息...',
+    emptyContent: '请输入消息内容',
+    maxLengthError: '消息长度不能超过{max}个字符'
+  },
+  
   message: {
     loginSuccess: '登录成功',
     logoutSuccess: '退出成功',
