@@ -9,67 +9,58 @@
           <van-button type="primary" block @click="previewPdf">预览PDF</van-button>
         </van-cell>
       </van-cell-group>
-
-      <van-cell-group inset style="margin-top: 16px;">
-        <van-cell title="示例PDF" is-link @click="loadSamplePdf" />
-        <van-cell title="本地PDF" is-link @click="loadLocalPdf" />
-      </van-cell-group>
     </div>
-
     <!-- PDF预览弹窗 -->
-    <van-popup v-model:show="showPdfPreview" position="right" :style="{ width: '100%', height: '100%' }">
+    <van-popup
+      v-model:show="showPdfPreview"
+      position="right"
+      :style="{ width: '100%', height: '100%' }"
+    >
       <PdfPreview :src="currentPdfUrl" :title="pdfTitle" @back="closePdfPreview" />
     </van-popup>
   </div>
 </template>
 
 <script setup>
-  import { ref } from 'vue'
-  import PdfPreview from '@/components/common/PdfPreview.vue'
+import { ref } from 'vue'
+import PdfPreview from '@/components/common/pdfView'
 
-  const pdfUrl = ref('/test.pdf')
-  const showPdfPreview = ref(false)
-  const currentPdfUrl = ref('')
-  const pdfTitle = ref('PDF预览')
+const pdfUrl = ref('/test.pdf')
+const showPdfPreview = ref(false)
+const currentPdfUrl = ref('')
+const pdfTitle = ref('PDF预览')
 
-  // 预览PDF
-  const previewPdf = () => {
-    if (!pdfUrl.value) {
-      return
-    }
-    currentPdfUrl.value = pdfUrl.value
-    pdfTitle.value = 'PDF预览'
-    showPdfPreview.value = true
+// 预览PDF
+const previewPdf = () => {
+  if (!pdfUrl.value) {
+    return
   }
+  currentPdfUrl.value = pdfUrl.value
+  pdfTitle.value = 'PDF预览'
+  showPdfPreview.value = true
+}
 
-  // 加载示例PDF
-  const loadSamplePdf = () => {
-    currentPdfUrl.value = 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf'
-    pdfTitle.value = '示例PDF'
-    showPdfPreview.value = true
-  }
+// 加载本地PDF
+const loadLocalPdf = () => {
+  // 本地PDF文件放在public目录下
+  currentPdfUrl.value = '/test.pdf'
+  pdfTitle.value = '本地PDF'
+  showPdfPreview.value = true
+}
 
-  // 加载本地PDF
-  const loadLocalPdf = () => {
-    // 本地PDF文件放在public目录下
-    currentPdfUrl.value = '/test.pdf'
-    pdfTitle.value = '本地PDF'
-    showPdfPreview.value = true
-  }
-
-  // 关闭PDF预览
-  const closePdfPreview = () => {
-    showPdfPreview.value = false
-  }
+// 关闭PDF预览
+const closePdfPreview = () => {
+  showPdfPreview.value = false
+}
 </script>
 
 <style scoped>
-  .pdf-demo-page {
-    height: 100vh;
-    background-color: #f7f8fa;
-  }
+.pdf-demo-page {
+  height: 100vh;
+  background-color: #f7f8fa;
+}
 
-  .demo-content {
-    padding: 16px 0;
-  }
+.demo-content {
+  padding: 16px 0;
+}
 </style>

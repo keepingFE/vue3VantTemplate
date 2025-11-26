@@ -76,7 +76,9 @@ import * as pdfjsLib from 'pdfjs-dist'
  */
 
 // 设置 PDF.js worker - 使用本地文件（PDF.js 2.16.105）
-pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.js'
+// 使用相对路径引用同目录下的 worker 文件
+import workerUrl from './pdf.worker.js?url'
+pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl
 
 const props = defineProps({
   src: {
