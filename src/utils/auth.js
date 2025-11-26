@@ -13,6 +13,46 @@ const TOKEN_KEY = 'app-token'
 const TOKEN_EXPIRE_KEY = 'app-token-expire'
 const USER_STORE_KEY = 'user-store' // Pinia 持久化使用
 
+// Token 刷新相关
+let isRefreshing = false // 是否正在刷新 token
+let refreshSubscribers = [] // 等待 token 刷新的请求队列
+
+/**
+ * 添加请求到刷新队列
+ * @param {Function} callback - 刷新成功后的回调
+ */
+export const subscribeTokenRefresh = (callback) => {
+  refreshSubscribers.push(callback)
+}
+
+/**
+ * 通知所有等待的请求
+ * @param {string} token - 新的 token
+ */
+export const onTokenRefreshed = (token) => {
+  refreshSubscribers.forEach(callback => callback(token))
+  refreshSubscribers = []
+}
+
+/**
+ * Token 刷新失败，清空队列
+ */
+export const onTokenRefreshFailed = () => {
+  refreshSubscribers = []
+}
+
+/**
+ * 获取刷新状态
+ */
+export const getRefreshingStatus = () => isRefreshing
+
+/**
+ * 设置刷新状态
+ */
+export const setRefreshingStatus = (status) => {
+  isRefreshing = status
+}
+
 /**
  * 获取 Token
  * @returns {string} token - 返回有效的 token，过期则返回空字符串

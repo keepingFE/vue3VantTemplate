@@ -4,7 +4,17 @@
 
 import axios from 'axios'
 import { showToast, showLoadingToast, closeToast } from 'vant'
-import { getToken, clearToken, isTokenExpiringSoon } from '@/utils/auth'
+import { 
+  getToken, 
+  clearToken, 
+  isTokenExpiringSoon, 
+  setToken,
+  getRefreshingStatus,
+  setRefreshingStatus,
+  subscribeTokenRefresh,
+  onTokenRefreshed,
+  onTokenRefreshFailed
+} from '@/utils/auth'
 import router from '@/router'
 import i18n from '@/locales'
 
@@ -34,19 +44,96 @@ const service = axios.create({
   }
 })
 
+/**
+ * 刷新 Token
+ * @returns {Promise<string>} 新的 token
+ */
+const refreshTokenRequest = async () => {
+  try {
+    // 直接调用刷新接口，避免循环依赖
+    const response = await axios.post(
+      `${resolveBaseURL()}/user/refresh-token`,
+      {},
+      {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('app-token')}`,
+          'Content-Type': 'application/json;charset=UTF-8'
+        }
+      }
+    )
+    
+    const { code, data } = response.data
+    if (code === 200 || code === 0) {
+      return data.token || data
+    }
+    throw new Error('Token refresh failed')
+  } catch (error) {
+    console.error('刷新 token 失败：', error)
+    throw error
+  }
+}
+
 // 请求拦截器
 service.interceptors.request.use(
-  config => {
+  async config => {
     // 添加 token
     const token = getToken()
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`
       
       // 检查 token 是否即将过期（提前 5 分钟提醒）
-      if (isTokenExpiringSoon()) {
-        console.warn('Token 即将过期，建议刷新')
-        // 可以在这里触发 token 刷新逻辑
-        // 或者提示用户重新登录
+      if (isTokenExpiringSoon() && !config.url.includes('/user/refresh-token')) {
+        // 如果正在刷新，将请求加入队列
+        if (getRefreshingStatus()) {
+          return new Promise((resolve) => {
+            subscribeTokenRefresh((newToken) => {
+              config.headers['Authorization'] = `Bearer ${newToken}`
+              resolve(config)
+            })
+          })
+        }
+        
+        // 开始刷新 token
+        setRefreshingStatus(true)
+        
+        try {
+          console.log(t('http.tokenExpiringSoon'))
+          showToast({
+            message: t('http.tokenExpiringSoon'),
+            duration: 1500
+          })
+          
+          const newToken = await refreshTokenRequest()
+          
+          // 更新 token（默认 2 小时有效期）
+          setToken(newToken, 7200)
+          
+          // 更新当前请求的 token
+          config.headers['Authorization'] = `Bearer ${newToken}`
+          
+          // 通知所有等待的请求
+          onTokenRefreshed(newToken)
+          
+          showToast({
+            message: t('http.tokenRefreshSuccess'),
+            duration: 1500
+          })
+          
+          console.log('Token 刷新成功')
+        } catch (error) {
+          // 刷新失败，清除 token 并跳转登录
+          onTokenRefreshFailed()
+          clearToken()
+          
+          showToast(t('http.tokenRefreshFailed'))
+          
+          const redirect = router.currentRoute?.value?.fullPath || '/'
+          router.push(`/login?redirect=${encodeURIComponent(redirect)}`)
+          
+          return Promise.reject(error)
+        } finally {
+          setRefreshingStatus(false)
+        }
       }
     }
     

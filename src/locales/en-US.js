@@ -168,6 +168,9 @@ export default {
     badRequest: 'Invalid request parameters',
     timeout: 'Request timeout, please try again later',
     networkError: 'Network connection failed',
-    retryLater: 'Request failed, please try again later'
+    retryLater: 'Request failed, please try again later',
+    tokenExpiringSoon: 'Login expiring soon, auto-refreshing...',
+    tokenRefreshSuccess: 'Login auto-refreshed',
+    tokenRefreshFailed: 'Login refresh failed, please login again'
   }
 }

@@ -36,6 +36,11 @@ export const userApi = {
    * @param {object} data - { oldPassword, newPassword }
    * @returns {Promise}
    */
-  changePassword: (data) => request.post('/user/password', data)
+  changePassword: (data) => request.post('/user/password', data),
+  
+  /**
+   * 刷新 Token
+   * @returns {Promise} - 返回新的 token
+   */
+  refreshToken: () => request.post('/user/refresh-token', {}, { loading: false })
 }
-

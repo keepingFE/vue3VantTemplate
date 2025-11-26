@@ -168,6 +168,9 @@ export default {
     badRequest: '请求参数错误',
     timeout: '请求超时，请稍后重试',
     networkError: '网络连接失败',
-    retryLater: '请求失败，请稍后重试'
+    retryLater: '请求失败，请稍后重试',
+    tokenExpiringSoon: '登录即将过期，正在自动续期...',
+    tokenRefreshSuccess: '登录已自动续期',
+    tokenRefreshFailed: '登录续期失败，请重新登录'
   }
 }

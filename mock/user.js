@@ -163,6 +163,38 @@ export default [
     }
   },
   
+  // 刷新 Token
+  {
+    url: '/api/user/refresh-token',
+    method: 'post',
+    timeout: 300,
+    response: ({ headers }) => {
+      const token = headers.authorization?.replace('Bearer ', '')
+      
+      if (!token) {
+        return {
+          code: 401,
+          message: 'Token 不存在',
+          data: null
+        }
+      }
+      
+      // 从旧 token 中解析用户 ID
+      const userId = parseInt(token.split('-')[2]) || 1
+      
+      // 生成新的 token
+      const newToken = `mock-token-${userId}-${Date.now()}`
+      
+      return {
+        code: 200,
+        message: 'Token 刷新成功',
+        data: {
+          token: newToken
+        }
+      }
+    }
+  },
+  
   // 获取用户列表
   {
     url: '/api/user/list',
