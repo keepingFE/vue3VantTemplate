@@ -1,58 +1,148 @@
 <template>
   <div class="profile-page">
-    <van-nav-bar :title="$t('user.profile')" left-arrow fixed placeholder @click-left="handleBack" />
+    <van-nav-bar
+      :title="$t('user.profile')"
+      left-arrow
+      fixed
+      placeholder
+      @click-left="handleBack"
+    />
 
     <div class="profile-content">
-      <section class="profile-section">
-        <div class="profile-section__title">{{ $t('user.avatar') }}</div>
-        <div class="profile-avatar-card">
-          <van-image round width="80" height="80" :src="form.avatar || defaultAvatar" />
-          <div class="profile-avatar-card__action">
-            <div class="avatar-tip">{{ $t('user.avatarTip') }}</div>
-            <van-uploader :after-read="handleAvatarUpload" :max-count="1" :preview-image="false" accept="image/*"
-              result-type="dataUrl">
-              <template #default>
-                <van-button size="small" plain type="primary">
-                  {{ $t('user.changeAvatar') }}
-                </van-button>
-              </template>
-            </van-uploader>
+      <!-- Avatar Section -->
+      <div class="avatar-section">
+        <van-uploader
+          :after-read="handleAvatarUpload"
+          :max-count="1"
+          :preview-image="false"
+          accept="image/*"
+          result-type="dataUrl"
+        >
+          <div class="avatar-wrapper">
+            <van-image
+              round
+              width="100"
+              height="100"
+              fit="cover"
+              :src="form.avatar || defaultAvatar"
+            />
+            <div class="camera-icon">
+              <van-icon name="photograph" />
+            </div>
           </div>
-        </div>
-      </section>
+        </van-uploader>
+        <div class="avatar-tip">{{ $t('user.avatarTip') }}</div>
+      </div>
 
       <van-form @submit="handleSubmit">
-        <section class="profile-section">
-          <div class="profile-section__title">{{ $t('user.basicInfo') }}</div>
-          <van-cell-group inset>
-            <van-field v-model="form.username" name="username" :label="$t('user.usernameLabel')" clearable maxlength="20"
-              :rules="[{ required: true, message: $t('validation.required') }]" />
-            <van-field v-model="form.bio" name="bio" :label="$t('user.bioLabel')" type="textarea" rows="3"
-              :maxlength="100" show-word-limit />
-          </van-cell-group>
-        </section>
+        <!-- Basic Info -->
+        <div class="section-title">{{ $t('user.basicInfo') }}</div>
+        <van-cell-group inset>
+          <van-field
+            v-model="form.username"
+            name="username"
+            :label="$t('user.usernameLabel')"
+            :placeholder="$t('user.usernameLabel')"
+            input-align="right"
+            :rules="[{ required: true, message: $t('validation.required') }]"
+          />
+          
+          <!-- Gender -->
+          <van-field
+            v-model="genderText"
+            is-link
+            readonly
+            name="gender"
+            :label="$t('user.genderLabel')"
+            :placeholder="$t('user.selectGender')"
+            input-align="right"
+            @click="showGenderSheet = true"
+          />
 
-        <section class="profile-section">
-          <div class="profile-section__title">{{ $t('user.contactInfo') }}</div>
-          <van-cell-group inset>
-            <van-field v-model="form.email" name="email" type="email" :label="$t('user.emailLabel')" clearable
-              :rules="[{ required: true, message: $t('validation.required') }, { validator: validateEmail, message: $t('validation.email') }]" />
-            <van-field v-model="form.phone" name="phone" type="tel" :label="$t('user.phoneLabel')" clearable
-              :rules="[{ validator: validatePhone, message: $t('validation.phone') }]" />
-          </van-cell-group>
-        </section>
+          <!-- Birthday -->
+          <van-field
+            v-model="form.birthday"
+            is-link
+            readonly
+            name="birthday"
+            :label="$t('user.birthdayLabel')"
+            :placeholder="$t('user.selectBirthday')"
+            input-align="right"
+            @click="showBirthdayPicker = true"
+          />
+
+          <van-field
+            v-model="form.bio"
+            name="bio"
+            :label="$t('user.bioLabel')"
+            :placeholder="$t('user.bioLabel')"
+            type="textarea"
+            rows="2"
+            autosize
+            maxlength="100"
+            show-word-limit
+            input-align="right"
+          />
+        </van-cell-group>
+
+        <!-- Contact Info -->
+        <div class="section-title">{{ $t('user.contactInfo') }}</div>
+        <van-cell-group inset>
+          <van-field
+            v-model="form.email"
+            name="email"
+            type="email"
+            :label="$t('user.emailLabel')"
+            :placeholder="$t('user.emailLabel')"
+            input-align="right"
+            :rules="[
+              { required: true, message: $t('validation.required') },
+              { validator: validateEmail, message: $t('validation.email') }
+            ]"
+          />
+          <van-field
+            v-model="form.phone"
+            name="phone"
+            type="tel"
+            :label="$t('user.phoneLabel')"
+            :placeholder="$t('user.phoneLabel')"
+            input-align="right"
+            :rules="[{ validator: validatePhone, message: $t('validation.phone') }]"
+          />
+        </van-cell-group>
 
         <div class="profile-updated" v-if="lastUpdateTime">
-          {{ $t('user.updateTime') }}{{ lastUpdateTime }}
+          {{ $t('user.updateTime') }} {{ lastUpdateTime }}
         </div>
 
-        <div class="profile-actions">
+        <div class="submit-bar">
           <van-button block round type="primary" native-type="submit" :loading="saving">
             {{ $t('user.saveProfile') }}
           </van-button>
         </div>
       </van-form>
     </div>
+
+    <!-- Gender Action Sheet -->
+    <van-action-sheet
+      v-model:show="showGenderSheet"
+      :actions="genderActions"
+      @select="onGenderSelect"
+      :cancel-text="$t('common.cancel')"
+      close-on-click-action
+    />
+
+    <!-- Birthday Picker -->
+    <van-popup v-model:show="showBirthdayPicker" position="bottom" round>
+      <van-date-picker
+        v-model="currentDate"
+        :title="$t('user.selectBirthday')"
+        :min-date="minDate"
+        :max-date="maxDate"
+        @confirm="onBirthdayConfirm"
+        @cancel="showBirthdayPicker = false"
+      />
+    </van-popup>
   </div>
 </template>
 
@@ -62,6 +152,7 @@ import { useRouter } from 'vue-router'
 import { showToast } from 'vant'
 import { useUserStore } from '@/store/modules/user'
 import { useI18n } from 'vue-i18n'
+import { isValidPhone } from '@/utils/validate'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -69,12 +160,33 @@ const { t } = useI18n()
 
 const defaultAvatar = 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg'
 const saving = ref(false)
+const showGenderSheet = ref(false)
+const showBirthdayPicker = ref(false)
+
+// Date Picker config
+const minDate = new Date(1900, 0, 1)
+const maxDate = new Date()
+const currentDate = ref(['2000', '01', '01'])
+
 const form = reactive({
   avatar: '',
   username: '',
   email: '',
   phone: '',
-  bio: ''
+  bio: '',
+  gender: 0, // 0: Secret, 1: Male, 2: Female
+  birthday: ''
+})
+
+const genderActions = computed(() => [
+  { name: t('user.male'), value: 1 },
+  { name: t('user.female'), value: 2 },
+  { name: t('user.secret'), value: 0 }
+])
+
+const genderText = computed(() => {
+  const action = genderActions.value.find(item => item.value === form.gender)
+  return action ? action.name : t('user.secret')
 })
 
 const lastUpdateTime = computed(() => userStore.userInfo?.updateTime || '')
@@ -86,6 +198,12 @@ const syncForm = (info) => {
   form.email = info.email || ''
   form.phone = info.phone || ''
   form.bio = info.bio || ''
+  form.gender = info.gender !== undefined ? info.gender : 0
+  form.birthday = info.birthday || ''
+  
+  if (form.birthday) {
+    currentDate.value = form.birthday.split('-')
+  }
 }
 
 watch(
@@ -110,7 +228,7 @@ onMounted(async () => {
 })
 
 const validateEmail = (val) => !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)
-const validatePhone = (val) => !val || /^1[3-9]\d{9}$/.test(val)
+const validatePhone = (val) => !val || isValidPhone(val)
 
 const handleAvatarUpload = (file) => {
   const target = Array.isArray(file) ? file[0] : file
@@ -135,6 +253,15 @@ const handleAvatarUpload = (file) => {
   }
 }
 
+const onGenderSelect = (action) => {
+  form.gender = action.value
+}
+
+const onBirthdayConfirm = ({ selectedValues }) => {
+  form.birthday = selectedValues.join('-')
+  showBirthdayPicker.value = false
+}
+
 const handleSubmit = async () => {
   saving.value = true
   try {
@@ -155,52 +282,66 @@ const handleBack = () => {
 <style lang="scss" scoped>
 .profile-page {
   min-height: 100vh;
-  background-color: var(--bg-color);
+  background-color: var(--bg-color, #f7f8fa);
+  padding-bottom: 40px;
 }
 
 .profile-content {
-  padding: $spacing-md;
-  padding-bottom: 80px;
+  padding-top: $spacing-md;
 }
 
-.profile-section {
-  margin-bottom: $spacing-lg;
-
-  &__title {
-    font-size: $font-size-base;
-    font-weight: 600;
-    color: var(--text-secondary);
-    margin-bottom: $spacing-sm;
-  }
-}
-
-.profile-avatar-card {
+.avatar-section {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  padding: $spacing-md;
-  background-color: var(--bg-white);
-  border-radius: $border-radius-lg;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
-
-  &__action {
-    margin-left: $spacing-md;
+  padding: $spacing-xl 0;
+  background-color: transparent;
+  
+  .avatar-wrapper {
+    position: relative;
+    border: 4px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    
+    .camera-icon {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 32px;
+      height: 32px;
+      background-color: var(--van-primary-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      border: 2px solid #fff;
+      font-size: 18px;
+    }
   }
 
   .avatar-tip {
-    font-size: 12px;
-    color: var(--text-regular);
-    margin-bottom: $spacing-xs;
+    margin-top: $spacing-md;
+    font-size: $font-size-sm;
+    color: var(--text-secondary);
   }
 }
 
-.profile-updated {
-  font-size: 12px;
-  color: var(--text-regular);
-  text-align: center;
-  margin-bottom: $spacing-sm;
+.section-title {
+  padding: $spacing-md $spacing-lg $spacing-xs;
+  font-size: $font-size-md;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
-.profile-actions {
-  padding: 0 $spacing-sm;
+.profile-updated {
+  margin-top: $spacing-lg;
+  font-size: $font-size-xs;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.submit-bar {
+  margin: $spacing-xl $spacing-lg;
 }
 </style>

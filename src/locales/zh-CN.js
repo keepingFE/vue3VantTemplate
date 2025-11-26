@@ -93,7 +93,14 @@ export default {
     language: '语言设置',
     lightMode: '浅色模式',
     darkMode: '深色模式',
-    autoMode: '跟随系统'
+    autoMode: '跟随系统',
+    genderLabel: '性别',
+    birthdayLabel: '生日',
+    male: '男',
+    female: '女',
+    secret: '保密',
+    selectGender: '选择性别',
+    selectBirthday: '选择生日'
   },
   
   messages: {

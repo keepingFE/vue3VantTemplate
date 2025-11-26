@@ -107,7 +107,7 @@ export function setQueryParams(params) {
  * @param {number} num
  * @returns {string}
  */
-export function formatNumber(num) {
+export function thousandSeparator(num) {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 }
 
@@ -124,3 +124,15 @@ export function formatFileSize(bytes) {
   return (bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i]
 }
 
+
+/**
+ * 保留小数点位数
+ * @param {number|string} num
+ * @param {number} precision
+ * @returns {string}
+ */
+export function formatDecimal(num, precision = 2) {
+  const n = Number(num)
+  if (isNaN(n)) return ''
+  return n.toFixed(precision)
+}
