@@ -14,9 +14,6 @@
             </div>
           </div>
         </van-uploader>
-        <div class="avatar-tip">
-          {{ $t('user.avatarTip') }}
-        </div>
       </div>
 
       <van-form @submit="handleSubmit">
@@ -57,10 +54,6 @@
             :placeholder="$t('user.phoneLabel')" input-align="right"
             :rules="[{ validator: validatePhone, message: $t('validation.phone') }]" />
         </van-cell-group>
-
-        <div class="profile-updated" v-if="lastUpdateTime">
-          {{ $t('user.updateTime') }} {{ lastUpdateTime }}
-        </div>
 
         <div class="submit-bar">
           <van-button block round type="primary" native-type="submit" :loading="saving">
@@ -229,6 +222,11 @@
       border: 4px solid #fff;
       border-radius: 50%;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 108px;
+      height: 108px;
 
       .camera-icon {
         position: absolute;
@@ -246,12 +244,6 @@
         font-size: 18px;
       }
     }
-
-    .avatar-tip {
-      margin-top: $spacing-md;
-      font-size: $font-size-sm;
-      color: var(--text-secondary);
-    }
   }
 
   .section-title {
@@ -259,13 +251,6 @@
     font-size: $font-size-md;
     font-weight: 600;
     color: var(--text-primary);
-  }
-
-  .profile-updated {
-    margin-top: $spacing-lg;
-    font-size: $font-size-xs;
-    color: var(--text-secondary);
-    text-align: center;
   }
 
   .submit-bar {

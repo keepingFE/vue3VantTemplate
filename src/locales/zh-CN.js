@@ -37,7 +37,7 @@ export default {
     deleteSuccess: '删除成功',
     deleteConfirm: '确定要删除吗？'
   },
-  
+
   route: {
     home: '首页',
     list: '列表',
@@ -50,7 +50,7 @@ export default {
     notFound: '页面不存在',
     forbidden: '无权限'
   },
-  
+
   login: {
     title: '用户登录',
     username: '用户名',
@@ -67,7 +67,7 @@ export default {
     usernameRequired: '请输入用户名',
     passwordRequired: '请输入密码'
   },
-  
+
   user: {
     profile: '个人信息',
     chat: '消息中心',
@@ -104,7 +104,7 @@ export default {
     selectDate: '选择日期',
     selectTime: '选择时间'
   },
-  
+
   messages: {
     title: '消息中心',
     all: '全部',
@@ -123,7 +123,7 @@ export default {
     time: '时间',
     content: '内容'
   },
-  
+
   chat: {
     title: '对话',
     noMessages: '暂无消息',
@@ -133,7 +133,7 @@ export default {
     emptyContent: '请输入消息内容',
     maxLengthError: '消息长度不能超过{max}个字符'
   },
-  
+
   message: {
     loginSuccess: '登录成功',
     logoutSuccess: '退出成功',
@@ -150,7 +150,7 @@ export default {
     timeout: '请求超时',
     unknownError: '未知错误'
   },
-  
+
   validation: {
     required: '此项为必填项',
     email: '请输入有效的邮箱地址',
@@ -163,7 +163,7 @@ export default {
     integer: '请输入整数',
     positive: '请输入正数'
   },
-  
+
   http: {
     loading: '加载中...',
     requestError: '请求错误',

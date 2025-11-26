@@ -53,126 +53,126 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useUserStore } from '@/store/modules/user'
-import { useTheme } from '@/hooks/useTheme'
-import { setLocale } from '@/locales'
-import { showToast, showConfirmDialog } from 'vant'
-import { useI18n } from 'vue-i18n'
+  import { ref } from 'vue'
+  import { useRouter } from 'vue-router'
+  import { useUserStore } from '@/store/modules/user'
+  import { useTheme } from '@/hooks/useTheme'
+  import { setLocale } from '@/locales'
+  import { showToast, showConfirmDialog } from 'vant'
+  import { useI18n } from 'vue-i18n'
 
-const router = useRouter()
-const userStore = useUserStore()
-const { changeThemeColor, getAllThemeColors } = useTheme()
-const { t } = useI18n()
+  const router = useRouter()
+  const userStore = useUserStore()
+  const { changeThemeColor, getAllThemeColors } = useTheme()
+  const { t } = useI18n()
 
-const showThemePopup = ref(false)
-const showLanguagePopup = ref(false)
+  const showThemePopup = ref(false)
+  const showLanguagePopup = ref(false)
 
-// 主题色选项
-const themeColors = getAllThemeColors().map(item => ({
-  text: item.name,
-  value: item.key
-}))
+  // 主题色选项
+  const themeColors = getAllThemeColors().map(item => ({
+    text: item.name,
+    value: item.key
+  }))
 
-// 语言选项
-const languages = [
-  { text: '简体中文', value: 'zh-CN' },
-  { text: 'English', value: 'en-US' }
-]
+  // 语言选项
+  const languages = [
+    { text: '简体中文', value: 'zh-CN' },
+    { text: 'English', value: 'en-US' }
+  ]
 
-const handleProfile = () => {
-  router.push('/user/profile')
-}
-
-const handleChat = () => {
-  router.push('/message')
-}
-
-const handleAiChat = () => {
-  router.push('/ai-chat')
-}
-
-const handleSettings = () => {
-  showToast(t('common.success'))
-}
-
-const handleThemeConfirm = ({ selectedOptions }) => {
-  const colorKey = selectedOptions[0].value
-  changeThemeColor(colorKey)
-  showThemePopup.value = false
-  showToast(t('common.success'))
-}
-
-const handleLanguageConfirm = ({ selectedOptions }) => {
-  const locale = selectedOptions[0].value
-  setLocale(locale)
-  showLanguagePopup.value = false
-  showToast(t('common.success'))
-}
-
-const handleLogin = () => {
-  router.push('/login')
-}
-
-const handleLogout = async () => {
-  try {
-    await showConfirmDialog({
-      title: t('common.tips'),
-      message: t('user.logoutConfirm')
-    })
-    await userStore.logout()
-    showToast(t('user.logoutSuccess'))
-    router.push('/login')
-  } catch (error) {
-    console.log(error)
+  const handleProfile = () => {
+    router.push('/user/profile')
   }
-}
+
+  const handleChat = () => {
+    router.push('/message')
+  }
+
+  const handleAiChat = () => {
+    router.push('/ai-chat')
+  }
+
+  const handleSettings = () => {
+    showToast(t('common.success'))
+  }
+
+  const handleThemeConfirm = ({ selectedOptions }) => {
+    const colorKey = selectedOptions[0].value
+    changeThemeColor(colorKey)
+    showThemePopup.value = false
+    showToast(t('common.success'))
+  }
+
+  const handleLanguageConfirm = ({ selectedOptions }) => {
+    const locale = selectedOptions[0].value
+    setLocale(locale)
+    showLanguagePopup.value = false
+    showToast(t('common.success'))
+  }
+
+  const handleLogin = () => {
+    router.push('/login')
+  }
+
+  const handleLogout = async () => {
+    try {
+      await showConfirmDialog({
+        title: t('common.tips'),
+        message: t('user.logoutConfirm')
+      })
+      await userStore.logout()
+      showToast(t('user.logoutSuccess'))
+      router.push('/login')
+    } catch (error) {
+      console.log(error)
+    }
+  }
 </script>
 
 <style lang="scss" scoped>
-.user-container {
-  background-color: var(--bg-color);
+  .user-container {
+    background-color: var(--bg-color);
 
-  .user-content {
-    padding-bottom: 60px;
+    .user-content {
+      padding-bottom: 60px;
 
-    .user-card {
-      background: linear-gradient(135deg, var(--theme-color) 0%, var(--theme-color-dark) 100%);
-      padding: $spacing-xl;
-      display: flex;
-      align-items: center;
-      margin-bottom: $spacing-md;
+      .user-card {
+        background: linear-gradient(135deg, var(--theme-color) 0%, var(--theme-color-dark) 100%);
+        padding: $spacing-xl;
+        display: flex;
+        align-items: center;
+        margin-bottom: $spacing-md;
 
-      .user-avatar {
-        margin-right: $spacing-md;
-      }
-
-      .user-info {
-        flex: 1;
-
-        .user-name {
-          font-size: $font-size-xl;
-          font-weight: 600;
-          color: #fff;
-          margin-bottom: $spacing-xs;
+        .user-avatar {
+          margin-right: $spacing-md;
         }
 
-        .user-desc {
-          font-size: $font-size-sm;
-          color: rgba(255, 255, 255, 0.8);
+        .user-info {
+          flex: 1;
+
+          .user-name {
+            font-size: $font-size-xl;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: $spacing-xs;
+          }
+
+          .user-desc {
+            font-size: $font-size-sm;
+            color: rgba(255, 255, 255, 0.8);
+          }
         }
       }
-    }
 
-    .user-settings {
-      margin-bottom: $spacing-md;
-    }
+      .user-settings {
+        margin-bottom: $spacing-md;
+      }
 
-    .user-logout,
-    .user-login {
-      padding: $spacing-md;
+      .user-logout,
+      .user-login {
+        padding: $spacing-md;
+      }
     }
   }
-}
 </style>

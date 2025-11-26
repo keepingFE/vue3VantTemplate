@@ -1,6 +1,5 @@
 <template>
   <div>
-    <van-field :value="formattedCurrentTime" readonly :placeholder="$t('user.selectBirthday')" @click="onClickField" />
     <van-popup :show="show" @update:show="$emit('update:show', $event)" position="bottom" round>
       <van-picker v-model="pickerValue" :columns="pickerColumns" :title="title || $t('user.selectBirthday')"
         @confirm="onConfirm" @cancel="onCancel" @change="onPickerChange" />
@@ -308,16 +307,6 @@
     second: new Date().getSeconds().toString().padStart(2, '0')
   })
 
-  // 格式化后的当前时间
-  const formattedCurrentTime = computed(() => {
-    // 如果提供了modelValue，使用它（它应该已经是正确的格式）
-    if (props.modelValue) {
-      return props.modelValue
-    }
-    // 否则，格式化当前时间
-    return formatDateTime(internalDate.value, props.format)
-  })
-
   // ==================== 选择器初始化和更新逻辑 ====================
 
   /**
@@ -443,12 +432,7 @@
     emit('update:show', false)
   }
 
-  /**
-   * 点击字段
-   */
-  const onClickField = () => {
-    emit('update:show', true)
-  }
+
 
   // ==================== 监听器 ====================
 
