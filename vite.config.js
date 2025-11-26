@@ -24,14 +24,14 @@ export default defineConfig(({ command, mode }) => {
         eslintrc: {
           enabled: true,
           filepath: './.eslintrc-auto-import.json',
-          globalsPropValue: true,
-        },
+          globalsPropValue: true
+        }
       }),
 
       // 自动导入 Vant 组件
       Components({
         resolvers: [VantResolver()],
-        dts: 'src/components.d.ts',
+        dts: 'src/components.d.ts'
       }),
 
       // Mock 数据服务
@@ -39,57 +39,59 @@ export default defineConfig(({ command, mode }) => {
         mockPath: 'mock',
         enable: useMock && command === 'serve', // 根据环境变量控制是否启用
         watchFiles: true, // 监听文件变化
-        logger: true, // 显示请求日志
-      }),
+        logger: true // 显示请求日志
+      })
     ],
-  
-  // 路径别名
-  resolve: {
-    alias: {
-      '@': resolve(__dirname, 'src'),
-      '@components': resolve(__dirname, 'src/components'),
-      '@views': resolve(__dirname, 'src/views'),
-      '@utils': resolve(__dirname, 'src/utils'),
-      '@api': resolve(__dirname, 'src/api'),
-      '@store': resolve(__dirname, 'src/store'),
-      '@assets': resolve(__dirname, 'src/assets'),
-    }
-  },
-  
-  // CSS 配置
-  css: {
-    postcss: {
-      plugins: [
-        postcssPxtorem({
-          rootValue: 37.5, // 375 设计稿基准；若设计稿标注为 750px，请先除以 2
-          propList: ['*'], // 需要转换的属性
-          selectorBlackList: [], // 保持 Vant 也参与 rem 适配，避免和自定义样式缩放不一致
-          // 仅排除非 Vant 的 node_modules，保证 Vant 也参与 rem 转换
-          exclude: (filePath) => /node_modules/i.test(filePath) && !filePath.includes('vant'),
-        })
-      ]
-    },
-    preprocessorOptions: {
-      scss: {
-        // 使用 @use 可以避免循环引用问题
-        additionalData: `@use "@/assets/styles/variables.scss" as *;`
+
+    // 路径别名
+    resolve: {
+      alias: {
+        '@': resolve(__dirname, 'src'),
+        '@components': resolve(__dirname, 'src/components'),
+        '@views': resolve(__dirname, 'src/views'),
+        '@utils': resolve(__dirname, 'src/utils'),
+        '@api': resolve(__dirname, 'src/api'),
+        '@store': resolve(__dirname, 'src/store'),
+        '@assets': resolve(__dirname, 'src/assets')
       }
-    }
-  },
-  
+    },
+
+    // CSS 配置
+    css: {
+      postcss: {
+        plugins: [
+          postcssPxtorem({
+            rootValue: 37.5, // 375 设计稿基准；若设计稿标注为 750px，请先除以 2
+            propList: ['*'], // 需要转换的属性
+            selectorBlackList: [], // 保持 Vant 也参与 rem 适配，避免和自定义样式缩放不一致
+            // 仅排除非 Vant 的 node_modules，保证 Vant 也参与 rem 转换
+            exclude: filePath => /node_modules/i.test(filePath) && !filePath.includes('vant')
+          })
+        ]
+      },
+      preprocessorOptions: {
+        scss: {
+          // 使用 @use 可以避免循环引用问题
+          additionalData: `@use "@/assets/styles/variables.scss" as *;`
+        }
+      }
+    },
+
     // 开发服务器配置
     server: {
       port: 3000,
       host: '0.0.0.0',
       open: true,
       // 只有在不使用 Mock 时才启用 proxy
-      proxy: useMock ? {} : {
-        '/api': {
-          target: 'http://localhost:8080',
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, '')
-        }
-      }
+      proxy: useMock
+        ? {}
+        : {
+            '/api': {
+              target: 'http://localhost:8080',
+              changeOrigin: true,
+              rewrite: path => path.replace(/^\/api/, '')
+            }
+          }
     },
 
     // 构建配置
@@ -119,4 +121,3 @@ export default defineConfig(({ command, mode }) => {
     }
   }
 })
-
