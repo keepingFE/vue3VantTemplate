@@ -35,9 +35,10 @@ export default {
     assignee: 'Assignee',
     editSuccess: 'Edit successful',
     deleteSuccess: 'Delete successful',
-    deleteConfirm: 'Are you sure you want to delete?'
+    deleteConfirm: 'Are you sure you want to delete?',
+    secondsLater: 's to resend'
   },
-  
+
   route: {
     home: 'Home',
     list: 'List',
@@ -50,7 +51,7 @@ export default {
     notFound: 'Not Found',
     forbidden: 'Forbidden'
   },
-  
+
   login: {
     title: 'User Login',
     username: 'Username',
@@ -65,9 +66,20 @@ export default {
     loginSuccess: 'Login successful',
     loginFailed: 'Login failed',
     usernameRequired: 'Please enter username',
-    passwordRequired: 'Please enter password'
+    passwordRequired: 'Please enter password',
+    phone: 'Phone/Email',
+    phonePlaceholder: 'Please enter phone or email',
+    phoneRequired: 'Please enter phone or email',
+    verifyCode: 'Verification Code',
+    verifyCodePlaceholder: 'Please enter verification code',
+    verifyCodeRequired: 'Please enter verification code',
+    sendVerifyCode: 'Send Code',
+    sendVerifyCodeSuccess: 'Verification code sent',
+    sendVerifyCodeFailed: 'Failed to send verification code',
+    invalidPhone: 'Please enter a valid phone number',
+    invalidEmail: 'Please enter a valid email address'
   },
-  
+
   user: {
     profile: 'Profile',
     chat: 'Messages',
@@ -104,7 +116,7 @@ export default {
     selectDate: 'Select Date',
     selectTime: 'Select Time'
   },
-  
+
   messages: {
     title: 'Message Center',
     all: 'All',
@@ -123,7 +135,7 @@ export default {
     time: 'Time',
     content: 'Content'
   },
-  
+
   chat: {
     title: 'Chat',
     noMessages: 'No messages',
@@ -133,7 +145,7 @@ export default {
     emptyContent: 'Please enter message content',
     maxLengthError: 'Message length cannot exceed {max} characters'
   },
-  
+
   message: {
     loginSuccess: 'Login successful',
     logoutSuccess: 'Logout successful',
@@ -150,7 +162,7 @@ export default {
     timeout: 'Request timeout',
     unknownError: 'Unknown error'
   },
-  
+
   validation: {
     required: 'This field is required',
     email: 'Please enter a valid email address',
@@ -163,7 +175,7 @@ export default {
     integer: 'Please enter an integer',
     positive: 'Please enter a positive number'
   },
-  
+
   http: {
     loading: 'Loading...',
     requestError: 'Request error',

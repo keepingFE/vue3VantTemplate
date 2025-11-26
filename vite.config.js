@@ -113,11 +113,22 @@ export default defineConfig(({ command, mode }) => {
           assetFileNames: '[ext]/[name]-[hash].[ext]',
           manualChunks: {
             'vue-vendor': ['vue', 'vue-router', 'pinia'],
-            'vant-vendor': ['vant']
+            'vant-vendor': ['vant'],
+            // 将 pdfjs-dist 单独打包，避免影响主包大小
+            'pdfjs': ['pdfjs-dist']
           }
         }
       },
       chunkSizeWarningLimit: 1000
+    },
+
+    // 优化配置
+    optimizeDeps: {
+      include: ['pdfjs-dist'],
+      esbuildOptions: {
+        // 解决 pdfjs-dist 的私有字段问题
+        target: 'esnext'
+      }
     }
   }
 })

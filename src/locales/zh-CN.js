@@ -35,7 +35,8 @@ export default {
     assignee: '负责人',
     editSuccess: '编辑成功',
     deleteSuccess: '删除成功',
-    deleteConfirm: '确定要删除吗？'
+    deleteConfirm: '确定要删除吗？',
+    secondsLater: '秒后重新发送'
   },
 
   route: {
@@ -65,7 +66,18 @@ export default {
     loginSuccess: '登录成功',
     loginFailed: '登录失败',
     usernameRequired: '请输入用户名',
-    passwordRequired: '请输入密码'
+    passwordRequired: '请输入密码',
+    phone: '手机号/邮箱',
+    phonePlaceholder: '请输入手机号或邮箱',
+    phoneRequired: '请输入手机号或邮箱',
+    verifyCode: '验证码',
+    verifyCodePlaceholder: '请输入验证码',
+    verifyCodeRequired: '请输入验证码',
+    sendVerifyCode: '获取验证码',
+    sendVerifyCodeSuccess: '验证码已发送',
+    sendVerifyCodeFailed: '验证码发送失败',
+    invalidPhone: '请输入正确的手机号',
+    invalidEmail: '请输入正确的邮箱地址'
   },
 
   user: {

@@ -5,16 +5,26 @@
     </div>
 
     <van-form @submit="handleLogin" class="login-form">
-      <van-cell-group inset>
+      <van-cell-group>
         <van-field v-model="loginForm.username" name="username" :label="$t('login.username')"
           :placeholder="$t('login.usernamePlaceholder')"
           :rules="[{ required: true, message: $t('login.usernameRequired') }]" clearable />
         <van-field v-model="loginForm.password" type="password" name="password" :label="$t('login.password')"
           :placeholder="$t('login.passwordPlaceholder')"
           :rules="[{ required: true, message: $t('login.passwordRequired') }]" clearable />
-      </van-cell-group>
-      <van-cell-group inset>
-        <div class="login-options">
+        <van-field v-model="loginForm.phone" name="phone" :label="$t('login.phone')"
+          :placeholder="$t('login.phonePlaceholder')" :rules="[{ required: true, message: $t('login.phoneRequired') }]"
+          clearable />
+        <van-field v-model="loginForm.verifyCode" name="verifyCode" :label="$t('login.verifyCode')"
+          :placeholder="$t('login.verifyCodePlaceholder')"
+          :rules="[{ required: true, message: $t('login.verifyCodeRequired') }]" clearable
+          style="--van-field-input-width: calc(100% - 100px);">
+          <template #button>
+            <CountdownButton :target="loginForm.phone" @send="handleSendVerifyCode" :disabled="!loginForm.phone"
+              style="width: 90px; padding: 0; font-size: 12px;" />
+          </template>
+        </van-field>
+        <div class="remember-me-cell">
           <van-checkbox v-model="loginForm.rememberMe">
             {{ $t('login.rememberMe') }}
           </van-checkbox>
@@ -26,15 +36,23 @@
         </van-button>
       </div>
     </van-form>
+
+    <!-- 版权和版本信息 -->
+    <div class="copyright-info">
+      <p>© 2025 Vue3 Vant Mobile Template</p>
+      <p>Version: {{ appVersion }}</p>
+    </div>
   </div>
 </template>
 
 <script setup>
-  import { reactive, ref } from 'vue'
+  import { reactive, ref, onMounted } from 'vue'
   import { useRouter, useRoute } from 'vue-router'
   import { useUserStore } from '@/store/modules/user'
   import { showToast } from 'vant'
   import { useI18n } from 'vue-i18n'
+  import CountdownButton from '@/components/common/CountdownButton.vue'
+  import packageInfo from '../../../package.json'
 
   const router = useRouter()
   const route = useRoute()
@@ -42,10 +60,33 @@
   const { t } = useI18n()
 
   const loading = ref(false)
+  const appVersion = ref(packageInfo.version)
   const loginForm = reactive({
     username: '',
     password: '',
+    phone: '',
+    verifyCode: '',
     rememberMe: false
+  })
+
+  // 页面加载时检查本地存储，自动填充已保存的用户名和密码
+  onMounted(() => {
+    const savedUsername = localStorage.getItem('remembered_username')
+    const savedPassword = localStorage.getItem('remembered_password')
+    const savedPhone = localStorage.getItem('remembered_phone')
+
+    if (savedUsername) {
+      loginForm.username = savedUsername
+      loginForm.rememberMe = true
+    }
+
+    if (savedPassword) {
+      loginForm.password = savedPassword
+    }
+
+    if (savedPhone) {
+      loginForm.phone = savedPhone
+    }
   })
 
   const handleLogin = async () => {
@@ -54,8 +95,22 @@
     try {
       await userStore.login({
         username: loginForm.username,
-        password: loginForm.password
+        password: loginForm.password,
+        phone: loginForm.phone,
+        verifyCode: loginForm.verifyCode
       })
+
+      // 根据记住我选项决定是否保存登录信息
+      if (loginForm.rememberMe) {
+        localStorage.setItem('remembered_username', loginForm.username)
+        localStorage.setItem('remembered_password', loginForm.password)
+        localStorage.setItem('remembered_phone', loginForm.phone)
+      } else {
+        // 如果没有勾选记住我，清除已保存的信息
+        localStorage.removeItem('remembered_username')
+        localStorage.removeItem('remembered_password')
+        localStorage.removeItem('remembered_phone')
+      }
 
       showToast(t('login.loginSuccess'))
 
@@ -68,13 +123,34 @@
       loading.value = false
     }
   }
+
+  // 发送验证码
+  const handleSendVerifyCode = async (target) => {
+    // 这里可以调用API发送验证码
+    console.log('发送验证码到:', target)
+    // 实际项目中，这里应该调用API
+    // 例如: await sendVerifyCodeAPI(target)
+    return Promise.resolve()
+  }
 </script>
 
 <style lang="scss" scoped>
   .login-container {
     min-height: 100vh;
-    padding: $spacing-xl;
-    background: linear-gradient(135deg, var(--theme-color-lighter) 0%, var(--bg-white) 100%);
+    padding: $spacing-lg 16px;
+    background: linear-gradient(to bottom, #1e88e5, #42a5f5, #90caf9);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    .login-form {
+      max-width: 400px;
+      padding: 20px 0;
+      border-radius: 15px;
+      overflow: hidden;
+      background-color: #fff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
 
     .login-header {
       padding: 60px 0 40px;
@@ -83,7 +159,7 @@
       .login-title {
         font-size: 28px;
         font-weight: 600;
-        color: var(--text-primary);
+        color: white;
         margin: 0;
       }
     }
@@ -97,7 +173,12 @@
 
       // 输入框样式优化
       :deep(.van-cell-group) {
+        width: 100%;
+        border-radius: 15px;
+        overflow: hidden;
+
         .van-field {
+          --van-field-label-width: 90px;
 
           // 错误状态样式
           &.van-field--error {
@@ -121,11 +202,13 @@
         }
       }
 
-      .login-options {
-        padding: $spacing-md 0;
+      .remember-me-container,
+      .remember-me-cell {
+        padding: var(--van-cell-vertical-padding) var(--van-cell-horizontal-padding); // 使用Vant的默认padding值
         display: flex;
-        justify-content: space-between;
+        justify-content: flex-start;
         align-items: center;
+        margin-left: 0; // 去掉左侧margin
 
         // 优化复选框字体大小，与输入框保持一致
         :deep(.van-checkbox) {
@@ -138,6 +221,7 @@
 
       .login-button {
         margin-top: $spacing-lg;
+        padding: 0 16px; // 添加内边距，确保按钮不会贴边
 
         :deep(.van-button) {
 
@@ -146,6 +230,19 @@
             opacity: 0.8;
           }
         }
+      }
+    }
+
+    // 版权和版本信息样式
+    .copyright-info {
+      text-align: center;
+      padding: 20px 0;
+      color: rgba(255, 255, 255, 1);
+      font-size: 12px;
+      line-height: 1.5;
+
+      p {
+        margin: 5px 0;
       }
     }
 
