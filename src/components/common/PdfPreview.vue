@@ -14,20 +14,23 @@
 
       <div v-if="!loading && !error" class="pdf-content">
         <div class="pdf-controls">
-          <van-button size="small" @click="prevPage" :disabled="currentPage <= 1">
-            上一页
-          </van-button>
-          <span class="page-info">{{ currentPage }} / {{ totalPages }}</span>
-          <van-button size="small" @click="nextPage" :disabled="currentPage >= totalPages">
-            下一页
-          </van-button>
-          <van-button size="small" @click="zoomOut" :disabled="scale <= 0.5">缩小</van-button>
+          <span class="page-info">第 {{ currentPage }} 页 / 共 {{ totalPages }} 页</span>
+          <van-button size="small" icon="minus" @click="zoomOut" :disabled="scale <= 0.5" />
           <span class="zoom-info">{{ Math.round(scale * 100) }}%</span>
-          <van-button size="small" @click="zoomIn" :disabled="scale >= 5">放大</van-button>
+          <van-button size="small" icon="plus" @click="zoomIn" :disabled="scale >= 5" />
+          <van-button size="small" icon="replay" @click="fitToWidth" />
         </div>
 
-        <div class="pdf-canvas-container" ref="canvasContainer">
-          <canvas ref="pdfCanvas"></canvas>
+        <div class="pdf-canvas-container" ref="canvasContainer" @scroll="onScroll">
+          <div
+            v-for="pageNum in totalPages"
+            :key="pageNum"
+            class="pdf-page-wrapper"
+            :data-page="pageNum"
+            :style="{ minHeight: pageHeights[pageNum] ? pageHeights[pageNum] + 'px' : '200px' }"
+          >
+            <canvas :ref="el => setCanvasRef(el, pageNum)"></canvas>
+          </div>
         </div>
       </div>
     </div>
@@ -57,13 +60,23 @@ const emit = defineEmits(['back'])
 
 const pdfContainer = ref(null)
 const canvasContainer = ref(null)
-const pdfCanvas = ref(null)
+const canvasRefs = ref({})
+const pageHeights = ref({}) // 存储每页的高度，用于占位
+const renderedPages = ref(new Set()) // 记录已渲染的页面
+const visibleRatios = ref({}) // 记录页面可见比例
+let observer = null // IntersectionObserver 实例
+
+const setCanvasRef = (el, pageNum) => {
+  if (el) {
+    canvasRefs.value[pageNum] = el
+  }
+}
 
 const loading = ref(true)
 const error = ref(false)
 const currentPage = ref(1)
 const totalPages = ref(0)
-const scale = ref(1.5)
+const scale = ref(1.0)
 // 使用 shallowRef 避免 PDF.js 对象被 Vue 响应式系统深度包装
 const pdfDocument = shallowRef(null)
 
@@ -95,8 +108,11 @@ const loadPdf = async () => {
     // 等待 DOM 更新完成
     await nextTick()
 
-    // 渲染第一页
-    await renderPage(currentPage.value)
+    // 计算自适应缩放比例
+    await fitToWidth()
+
+    // 初始化 IntersectionObserver
+    initIntersectionObserver()
   } catch (err) {
     console.error('PDF加载失败:', err)
     console.log('错误类型:', err.name)
@@ -121,34 +137,30 @@ const loadPdf = async () => {
 }
 
 // 渲染指定页面
-const renderPage = async (pageNum) => {
-  try {
-    console.log('开始渲染页面:', pageNum, '缩放比例:', scale.value)
+// 渲染指定页面
+const renderPage = async pageNum => {
+  // 如果已经渲染过且缩放比例没变，就不重复渲染（这里简单处理，实际缩放变化时会清空 renderedPages）
+  if (renderedPages.value.has(pageNum)) return
 
-    if (!pdfDocument.value) {
-      throw new Error('PDF文档未加载')
-    }
+  try {
+    // console.log('开始渲染页面:', pageNum, '缩放比例:', scale.value)
+
+    if (!pdfDocument.value) return
 
     const page = await pdfDocument.value.getPage(pageNum)
-
-    // PDF.js 2.x 版本使用不同的 API
     const viewport = page.getViewport({ scale: scale.value })
 
-    const canvas = pdfCanvas.value
-    if (!canvas) {
-      throw new Error('Canvas元素未找到')
-    }
+    // 更新页面高度占位
+    pageHeights.value[pageNum] = viewport.height
+
+    const canvas = canvasRefs.value[pageNum]
+    if (!canvas) return
 
     const context = canvas.getContext('2d')
-    if (!context) {
-      throw new Error('无法获取Canvas上下文')
-    }
+    if (!context) return
 
-    // 设置canvas尺寸
     canvas.height = viewport.height
     canvas.width = viewport.width
-
-    console.log('Canvas尺寸:', canvas.width, 'x', canvas.height)
 
     // 清除canvas内容
     context.clearRect(0, 0, canvas.width, canvas.height)
@@ -158,41 +170,84 @@ const renderPage = async (pageNum) => {
       viewport: viewport
     }
 
-    const renderTask = page.render(renderContext)
-    await renderTask.promise
-
-    console.log('页面渲染成功:', pageNum)
-
-    // 滚动到顶部
-    if (canvasContainer.value) {
-      canvasContainer.value.scrollTop = 0
-    }
+    await page.render(renderContext).promise
+    renderedPages.value.add(pageNum)
+    // console.log('页面渲染成功:', pageNum)
   } catch (err) {
-    console.error('页面渲染失败:', err)
-    showToast({ type: 'fail', message: `第${pageNum}页渲染失败` })
+    console.error(`第${pageNum}页渲染失败:`, err)
   }
 }
 
-// 上一页
-const prevPage = () => {
-  if (currentPage.value <= 1) return
-  currentPage.value--
-  renderPage(currentPage.value)
+// 初始化 IntersectionObserver 实现懒加载
+const initIntersectionObserver = () => {
+  if (observer) {
+    observer.disconnect()
+  }
+
+  const options = {
+    root: canvasContainer.value,
+    rootMargin: '100px',
+    threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+  }
+
+  observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      const pageNum = parseInt(entry.target.dataset.page)
+      if (!pageNum) return
+
+      if (entry.isIntersecting) {
+        renderPage(pageNum)
+        visibleRatios.value[pageNum] = entry.intersectionRatio
+      } else {
+        delete visibleRatios.value[pageNum]
+      }
+    })
+
+    // 找出可见比例最大的页面作为当前页
+    let maxRatio = 0
+    let maxPage = currentPage.value
+
+    for (const [pageNum, ratio] of Object.entries(visibleRatios.value)) {
+      if (ratio > maxRatio) {
+        maxRatio = ratio
+        maxPage = parseInt(pageNum)
+      }
+    }
+
+    if (maxPage !== currentPage.value) {
+      currentPage.value = maxPage
+    }
+  }, options)
+
+  // 观察所有页面容器
+  nextTick(() => {
+    const pages = canvasContainer.value.querySelectorAll('.pdf-page-wrapper')
+    pages.forEach(page => observer.observe(page))
+  })
 }
 
-// 下一页
-const nextPage = () => {
-  if (currentPage.value >= totalPages.value) return
-  currentPage.value++
-  renderPage(currentPage.value)
+// 监听滚动更新当前页码（辅助 IntersectionObserver）
+const onScroll = () => {
+  // 这里可以添加更精确的当前页码计算逻辑，如果需要的话
 }
+
+// 重新渲染所有可见页面（用于缩放后）
+const rerenderVisiblePages = () => {
+  renderedPages.value.clear()
+  // 重新初始化观察者会触发可见页面的渲染
+  initIntersectionObserver()
+}
+
+// 移除上一页/下一页函数
+// const prevPage = ...
+// const nextPage = ...
 
 // 放大
 const zoomIn = () => {
   const newScale = Math.min(scale.value + 0.5, 5)
   console.log('放大：', scale.value, '->', newScale)
   scale.value = newScale
-  renderPage(currentPage.value)
+  rerenderVisiblePages()
 }
 
 // 缩小
@@ -200,7 +255,29 @@ const zoomOut = () => {
   const newScale = Math.max(scale.value - 0.5, 0.5)
   console.log('缩小：', scale.value, '->', newScale)
   scale.value = newScale
-  renderPage(currentPage.value)
+  rerenderVisiblePages()
+}
+
+// 自适应宽度（重置）
+const fitToWidth = async () => {
+  if (!pdfDocument.value) return
+
+  try {
+    const page = await pdfDocument.value.getPage(currentPage.value)
+    const originalViewport = page.getViewport({ scale: 1.0 })
+
+    if (canvasContainer.value) {
+      const containerWidth = canvasContainer.value.clientWidth
+      // 减去左右 padding (20px) + 预留滚动条宽度及安全边距 (20px) = 40px
+      if (containerWidth > 0 && originalViewport.width > 0) {
+        scale.value = (containerWidth - 40) / originalViewport.width
+        console.log('重置自适应比例:', scale.value)
+        rerenderVisiblePages()
+      }
+    }
+  } catch (err) {
+    console.error('自适应计算失败:', err)
+  }
 }
 
 // 重试加载
@@ -214,12 +291,15 @@ const onClickLeft = () => {
 }
 
 // 监听src变化，重新加载PDF
-watch(() => props.src, () => {
-  if (props.src) {
-    currentPage.value = 1
-    loadPdf()
+watch(
+  () => props.src,
+  () => {
+    if (props.src) {
+      currentPage.value = 1
+      loadPdf()
+    }
   }
-})
+)
 
 onMounted(() => {
   if (props.src) {
@@ -273,6 +353,7 @@ onMounted(() => {
   margin: 0 8px;
   min-width: 50px;
   text-align: center;
+  font-variant-numeric: tabular-nums; /* 防止数字宽度变化导致抖动 */
 }
 
 .zoom-info {
@@ -288,8 +369,9 @@ onMounted(() => {
   flex: 1;
   overflow: auto;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: column;
+  /* 移除 align-items: center，避免放大后左侧被裁剪且无法滚动 */
+  /* align-items: center; */
   padding: 10px;
   background-color: #f7f8fa;
 }
@@ -302,5 +384,17 @@ canvas {
   display: block;
   /* 确保canvas不会被压缩 */
   flex-shrink: 0;
+}
+
+.pdf-page-wrapper {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: center;
+  /* 确保宽度至少为100%，允许内容撑开 */
+  min-width: 100%;
+  width: fit-content;
+  /* 在父容器中居中 */
+  margin-left: auto;
+  margin-right: auto;
 }
 </style>
