@@ -1,6 +1,6 @@
 <div align="center">
   <h1>Vue3 移动端项目模板</h1>
-  <p>基于 Vue 3 + Vite + Vant 4 的移动端项目模板，开箱即用</p>
+  <p>基于 Vue 3 + Vite + Vant 4 的移动端项目模板，开箱即用的企业级移动端项目模板。集成主题切换、国际化、权限管理、图表可视化等完整功能，提供最佳实践和丰富示例。</p>
 
   [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
   [![Vue](https://img.shields.io/badge/vue-3.3+-brightgreen.svg)](https://vuejs.org/)
