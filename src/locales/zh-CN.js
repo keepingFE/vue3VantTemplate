@@ -100,7 +100,9 @@ export default {
     female: '女',
     secret: '保密',
     selectGender: '选择性别',
-    selectBirthday: '选择生日'
+    selectBirthday: '选择生日',
+    selectDate: '选择日期',
+    selectTime: '选择时间'
   },
   
   messages: {

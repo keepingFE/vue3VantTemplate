@@ -93,7 +93,16 @@ export default {
     language: 'Language',
     lightMode: 'Light Mode',
     darkMode: 'Dark Mode',
-    autoMode: 'Auto Mode'
+    autoMode: 'Auto Mode',
+    genderLabel: 'Gender',
+    birthdayLabel: 'Birthday',
+    male: 'Male',
+    female: 'Female',
+    secret: 'Secret',
+    selectGender: 'Select Gender',
+    selectBirthday: 'Select Birthday',
+    selectDate: 'Select Date',
+    selectTime: 'Select Time'
   },
   
   messages: {

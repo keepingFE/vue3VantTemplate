@@ -1,31 +1,14 @@
 <template>
   <div class="profile-page">
-    <van-nav-bar
-      :title="$t('user.profile')"
-      left-arrow
-      fixed
-      placeholder
-      @click-left="handleBack"
-    />
+    <van-nav-bar :title="$t('user.profile')" left-arrow fixed placeholder @click-left="handleBack" />
 
     <div class="profile-content">
       <!-- Avatar Section -->
       <div class="avatar-section">
-        <van-uploader
-          :after-read="handleAvatarUpload"
-          :max-count="1"
-          :preview-image="false"
-          accept="image/*"
-          result-type="dataUrl"
-        >
+        <van-uploader :after-read="handleAvatarUpload" :max-count="1" :preview-image="false" accept="image/*"
+          result-type="dataUrl">
           <div class="avatar-wrapper">
-            <van-image
-              round
-              width="100"
-              height="100"
-              fit="cover"
-              :src="form.avatar || defaultAvatar"
-            />
+            <van-image round width="100" height="100" fit="cover" :src="form.avatar || defaultAvatar" />
             <div class="camera-icon">
               <van-icon name="photograph" />
             </div>
@@ -38,77 +21,33 @@
         <!-- Basic Info -->
         <div class="section-title">{{ $t('user.basicInfo') }}</div>
         <van-cell-group inset>
-          <van-field
-            v-model="form.username"
-            name="username"
-            :label="$t('user.usernameLabel')"
-            :placeholder="$t('user.usernameLabel')"
-            input-align="right"
-            :rules="[{ required: true, message: $t('validation.required') }]"
-          />
-          
+          <van-field v-model="form.username" name="username" :label="$t('user.usernameLabel')"
+            :placeholder="$t('user.usernameLabel')" input-align="right"
+            :rules="[{ required: true, message: $t('validation.required') }]" />
+
           <!-- Gender -->
-          <van-field
-            v-model="genderText"
-            is-link
-            readonly
-            name="gender"
-            :label="$t('user.genderLabel')"
-            :placeholder="$t('user.selectGender')"
-            input-align="right"
-            @click="showGenderSheet = true"
-          />
+          <van-field v-model="genderText" is-link readonly name="gender" :label="$t('user.genderLabel')"
+            :placeholder="$t('user.selectGender')" input-align="right" @click="showGenderSheet = true" />
 
           <!-- Birthday -->
-          <van-field
-            v-model="form.birthday"
-            is-link
-            readonly
-            name="birthday"
-            :label="$t('user.birthdayLabel')"
-            :placeholder="$t('user.selectBirthday')"
-            input-align="right"
-            @click="showBirthdayPicker = true"
-          />
+          <van-field v-model="form.birthday" is-link readonly name="birthday" :label="$t('user.birthdayLabel')"
+            :placeholder="$t('user.selectBirthday')" input-align="right" @click="showBirthdayPicker = true" />
 
-          <van-field
-            v-model="form.bio"
-            name="bio"
-            :label="$t('user.bioLabel')"
-            :placeholder="$t('user.bioLabel')"
-            type="textarea"
-            rows="2"
-            autosize
-            maxlength="100"
-            show-word-limit
-            input-align="right"
-          />
+          <van-field v-model="form.bio" name="bio" :label="$t('user.bioLabel')" :placeholder="$t('user.bioLabel')"
+            type="textarea" rows="2" autosize maxlength="100" show-word-limit input-align="right" />
         </van-cell-group>
 
         <!-- Contact Info -->
         <div class="section-title">{{ $t('user.contactInfo') }}</div>
         <van-cell-group inset>
-          <van-field
-            v-model="form.email"
-            name="email"
-            type="email"
-            :label="$t('user.emailLabel')"
-            :placeholder="$t('user.emailLabel')"
-            input-align="right"
-            :rules="[
+          <van-field v-model="form.email" name="email" type="email" :label="$t('user.emailLabel')"
+            :placeholder="$t('user.emailLabel')" input-align="right" :rules="[
               { required: true, message: $t('validation.required') },
               { validator: validateEmail, message: $t('validation.email') }
-            ]"
-          />
-          <van-field
-            v-model="form.phone"
-            name="phone"
-            type="tel"
-            :label="$t('user.phoneLabel')"
-            :placeholder="$t('user.phoneLabel')"
-            input-align="right"
-            :rules="[{ validator: validatePhone, message: $t('validation.phone') }]"
-          />
+            ]" />
+          <van-field v-model="form.phone" name="phone" type="tel" :label="$t('user.phoneLabel')"
+            :placeholder="$t('user.phoneLabel')" input-align="right"
+            :rules="[{ validator: validatePhone, message: $t('validation.phone') }]" />
         </van-cell-group>
 
         <div class="profile-updated" v-if="lastUpdateTime">
@@ -124,25 +63,12 @@
     </div>
 
     <!-- Gender Action Sheet -->
-    <van-action-sheet
-      v-model:show="showGenderSheet"
-      :actions="genderActions"
-      @select="onGenderSelect"
-      :cancel-text="$t('common.cancel')"
-      close-on-click-action
-    />
+    <van-action-sheet v-model:show="showGenderSheet" :actions="genderActions" @select="onGenderSelect"
+      :cancel-text="$t('common.cancel')" close-on-click-action />
 
     <!-- Birthday Picker -->
-    <van-popup v-model:show="showBirthdayPicker" position="bottom" round>
-      <van-date-picker
-        v-model="currentDate"
-        :title="$t('user.selectBirthday')"
-        :min-date="minDate"
-        :max-date="maxDate"
-        @confirm="onBirthdayConfirm"
-        @cancel="showBirthdayPicker = false"
-      />
-    </van-popup>
+    <BirthdayPicker v-model:show="showBirthdayPicker" v-model:modelValue="form.birthday"
+      :title="$t('user.selectBirthday')" />
   </div>
 </template>
 
@@ -153,6 +79,7 @@ import { showToast } from 'vant'
 import { useUserStore } from '@/store/modules/user'
 import { useI18n } from 'vue-i18n'
 import { isValidPhone } from '@/utils/validate'
+import BirthdayPicker from '@/components/common/BirthdayPicker.vue'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -162,11 +89,6 @@ const defaultAvatar = 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg'
 const saving = ref(false)
 const showGenderSheet = ref(false)
 const showBirthdayPicker = ref(false)
-
-// Date Picker config
-const minDate = new Date(1900, 0, 1)
-const maxDate = new Date()
-const currentDate = ref(['2000', '01', '01'])
 
 const form = reactive({
   avatar: '',
@@ -200,10 +122,6 @@ const syncForm = (info) => {
   form.bio = info.bio || ''
   form.gender = info.gender !== undefined ? info.gender : 0
   form.birthday = info.birthday || ''
-  
-  if (form.birthday) {
-    currentDate.value = form.birthday.split('-')
-  }
 }
 
 watch(
@@ -258,7 +176,8 @@ const onGenderSelect = (action) => {
 }
 
 const onBirthdayConfirm = ({ selectedValues }) => {
-  form.birthday = selectedValues.join('-')
+  const [y, m, d, h, min, s] = selectedValues
+  form.birthday = `${y}-${m}-${d} ${h}:${min}:${s}`
   showBirthdayPicker.value = false
 }
 
@@ -296,13 +215,13 @@ const handleBack = () => {
   align-items: center;
   padding: $spacing-xl 0;
   background-color: transparent;
-  
+
   .avatar-wrapper {
     position: relative;
     border: 4px solid #fff;
     border-radius: 50%;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    
+
     .camera-icon {
       position: absolute;
       bottom: 0;
