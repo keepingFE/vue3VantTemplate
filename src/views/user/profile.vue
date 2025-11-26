@@ -14,13 +14,16 @@
             </div>
           </div>
         </van-uploader>
-        <div class="avatar-tip">{{ $t('user.avatarTip') }}</div>
+        <div class="avatar-tip">
+          {{ $t('user.avatarTip') }}
+        </div>
       </div>
 
       <van-form @submit="handleSubmit">
         <!-- Basic Info -->
         <div class="section-title">{{ $t('user.basicInfo') }}</div>
         <van-cell-group inset>
+          <!-- Username -->
           <van-field v-model="form.username" name="username" :label="$t('user.usernameLabel')"
             :placeholder="$t('user.usernameLabel')" input-align="right"
             :rules="[{ required: true, message: $t('validation.required') }]" />
@@ -33,18 +36,23 @@
           <van-field v-model="form.birthday" is-link readonly name="birthday" :label="$t('user.birthdayLabel')"
             :placeholder="$t('user.selectBirthday')" input-align="right" @click="showBirthdayPicker = true" />
 
+          <!-- Bio -->
           <van-field v-model="form.bio" name="bio" :label="$t('user.bioLabel')" :placeholder="$t('user.bioLabel')"
             type="textarea" rows="2" autosize maxlength="100" show-word-limit input-align="right" />
         </van-cell-group>
 
         <!-- Contact Info -->
-        <div class="section-title">{{ $t('user.contactInfo') }}</div>
+        <div class="section-title">
+          {{ $t('user.contactInfo') }}
+        </div>
         <van-cell-group inset>
+          <!-- Email -->
           <van-field v-model="form.email" name="email" type="email" :label="$t('user.emailLabel')"
             :placeholder="$t('user.emailLabel')" input-align="right" :rules="[
               { required: true, message: $t('validation.required') },
               { validator: validateEmail, message: $t('validation.email') }
             ]" />
+          <!-- Phone -->
           <van-field v-model="form.phone" name="phone" type="tel" :label="$t('user.phoneLabel')"
             :placeholder="$t('user.phoneLabel')" input-align="right"
             :rules="[{ validator: validatePhone, message: $t('validation.phone') }]" />
@@ -68,199 +76,199 @@
 
     <!-- Birthday Picker -->
     <BirthdayPicker v-model:show="showBirthdayPicker" v-model:modelValue="form.birthday"
-      :title="$t('user.selectBirthday')" />
+      :title="$t('user.selectBirthday')" min-date="2020-01-01" max-date="2026-05-21" format="YYYY-MM-DD" />
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
-import { showToast } from 'vant'
-import { useUserStore } from '@/store/modules/user'
-import { useI18n } from 'vue-i18n'
-import { isValidPhone } from '@/utils/validate'
-import BirthdayPicker from '@/components/common/BirthdayPicker.vue'
+  import { computed, onMounted, reactive, ref, watch } from 'vue'
+  import { useRouter } from 'vue-router'
+  import { showToast } from 'vant'
+  import { useUserStore } from '@/store/modules/user'
+  import { useI18n } from 'vue-i18n'
+  import { isValidPhone } from '@/utils/validate'
+  import BirthdayPicker from '@/components/common/BirthdayPicker.vue'
 
-const router = useRouter()
-const userStore = useUserStore()
-const { t } = useI18n()
+  const router = useRouter()
+  const userStore = useUserStore()
+  const { t } = useI18n()
 
-const defaultAvatar = 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg'
-const saving = ref(false)
-const showGenderSheet = ref(false)
-const showBirthdayPicker = ref(false)
+  const defaultAvatar = 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg'
+  const saving = ref(false)
+  const showGenderSheet = ref(false)
+  const showBirthdayPicker = ref(false)
 
-const form = reactive({
-  avatar: '',
-  username: '',
-  email: '',
-  phone: '',
-  bio: '',
-  gender: 0, // 0: Secret, 1: Male, 2: Female
-  birthday: ''
-})
+  const form = reactive({
+    avatar: '',
+    username: '',
+    email: '',
+    phone: '',
+    bio: '',
+    gender: 0, // 0: Secret, 1: Male, 2: Female
+    birthday: ''
+  })
 
-const genderActions = computed(() => [
-  { name: t('user.male'), value: 1 },
-  { name: t('user.female'), value: 2 },
-  { name: t('user.secret'), value: 0 }
-])
+  const genderActions = computed(() => [
+    { name: t('user.male'), value: 1 },
+    { name: t('user.female'), value: 2 },
+    { name: t('user.secret'), value: 0 }
+  ])
 
-const genderText = computed(() => {
-  const action = genderActions.value.find(item => item.value === form.gender)
-  return action ? action.name : t('user.secret')
-})
+  const genderText = computed(() => {
+    const action = genderActions.value.find(item => item.value === form.gender)
+    return action ? action.name : t('user.secret')
+  })
 
-const lastUpdateTime = computed(() => userStore.userInfo?.updateTime || '')
+  const lastUpdateTime = computed(() => userStore.userInfo?.updateTime || '')
 
-const syncForm = (info) => {
-  if (!info) return
-  form.avatar = info.avatar || ''
-  form.username = info.username || ''
-  form.email = info.email || ''
-  form.phone = info.phone || ''
-  form.bio = info.bio || ''
-  form.gender = info.gender !== undefined ? info.gender : 0
-  form.birthday = info.birthday || ''
-}
-
-watch(
-  () => userStore.userInfo,
-  (info) => {
-    if (info) {
-      syncForm(info)
-    }
-  },
-  { immediate: true }
-)
-
-onMounted(async () => {
-  if (!userStore.userInfo) {
-    try {
-      const info = await userStore.getUserInfo()
-      syncForm(info)
-    } catch (error) {
-      console.error('[profile] getUserInfo failed', error)
-    }
-  }
-})
-
-const validateEmail = (val) => !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)
-const validatePhone = (val) => !val || isValidPhone(val)
-
-const handleAvatarUpload = (file) => {
-  const target = Array.isArray(file) ? file[0] : file
-  if (!target) return
-
-  if (target.content) {
-    form.avatar = target.content
-    showToast(t('message.operationSuccess'))
-    return
+  const syncForm = (info) => {
+    if (!info) return
+    form.avatar = info.avatar || ''
+    form.username = info.username || ''
+    form.email = info.email || ''
+    form.phone = info.phone || ''
+    form.bio = info.bio || ''
+    form.gender = info.gender !== undefined ? info.gender : 0
+    form.birthday = info.birthday || ''
   }
 
-  if (target.file) {
-    const reader = new FileReader()
-    reader.onload = (event) => {
-      form.avatar = event.target?.result || ''
+  watch(
+    () => userStore.userInfo,
+    (info) => {
+      if (info) {
+        syncForm(info)
+      }
+    },
+    { immediate: true }
+  )
+
+  onMounted(async () => {
+    if (!userStore.userInfo) {
+      try {
+        const info = await userStore.getUserInfo()
+        syncForm(info)
+      } catch (error) {
+        console.error('[profile] getUserInfo failed', error)
+      }
+    }
+  })
+
+  const validateEmail = (val) => !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)
+  const validatePhone = (val) => !val || isValidPhone(val)
+
+  const handleAvatarUpload = (file) => {
+    const target = Array.isArray(file) ? file[0] : file
+    if (!target) return
+
+    if (target.content) {
+      form.avatar = target.content
       showToast(t('message.operationSuccess'))
+      return
     }
-    reader.onerror = () => {
-      showToast(t('message.operationFailed'))
+
+    if (target.file) {
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        form.avatar = event.target?.result || ''
+        showToast(t('message.operationSuccess'))
+      }
+      reader.onerror = () => {
+        showToast(t('message.operationFailed'))
+      }
+      reader.readAsDataURL(target.file)
     }
-    reader.readAsDataURL(target.file)
   }
-}
 
-const onGenderSelect = (action) => {
-  form.gender = action.value
-}
-
-const onBirthdayConfirm = ({ selectedValues }) => {
-  const [y, m, d, h, min, s] = selectedValues
-  form.birthday = `${y}-${m}-${d} ${h}:${min}:${s}`
-  showBirthdayPicker.value = false
-}
-
-const handleSubmit = async () => {
-  saving.value = true
-  try {
-    await userStore.updateUserInfo({ ...form })
-    showToast(t('message.updateSuccess'))
-  } catch (error) {
-    showToast(error.message || t('message.operationFailed'))
-  } finally {
-    saving.value = false
+  const onGenderSelect = (action) => {
+    form.gender = action.value
   }
-}
 
-const handleBack = () => {
-  router.back()
-}
+  const onBirthdayConfirm = ({ selectedValues }) => {
+    const [y, m, d, h, min, s] = selectedValues
+    form.birthday = `${y}-${m}-${d} ${h}:${min}:${s}`
+    showBirthdayPicker.value = false
+  }
+
+  const handleSubmit = async () => {
+    saving.value = true
+    try {
+      await userStore.updateUserInfo({ ...form })
+      showToast(t('message.updateSuccess'))
+    } catch (error) {
+      showToast(error.message || t('message.operationFailed'))
+    } finally {
+      saving.value = false
+    }
+  }
+
+  const handleBack = () => {
+    router.back()
+  }
 </script>
 
 <style lang="scss" scoped>
-.profile-page {
-  min-height: 100vh;
-  background-color: var(--bg-color, #f7f8fa);
-  padding-bottom: 40px;
-}
+  .profile-page {
+    min-height: 100vh;
+    background-color: var(--bg-color, #f7f8fa);
+    padding-bottom: 40px;
+  }
 
-.profile-content {
-  padding-top: $spacing-md;
-}
+  .profile-content {
+    padding-top: $spacing-md;
+  }
 
-.avatar-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: $spacing-xl 0;
-  background-color: transparent;
+  .avatar-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: $spacing-xl 0;
+    background-color: transparent;
 
-  .avatar-wrapper {
-    position: relative;
-    border: 4px solid #fff;
-    border-radius: 50%;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-
-    .camera-icon {
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      width: 32px;
-      height: 32px;
-      background-color: var(--van-primary-color);
+    .avatar-wrapper {
+      position: relative;
+      border: 4px solid #fff;
       border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      border: 2px solid #fff;
-      font-size: 18px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+      .camera-icon {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 32px;
+        height: 32px;
+        background-color: var(--van-primary-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        border: 2px solid #fff;
+        font-size: 18px;
+      }
+    }
+
+    .avatar-tip {
+      margin-top: $spacing-md;
+      font-size: $font-size-sm;
+      color: var(--text-secondary);
     }
   }
 
-  .avatar-tip {
-    margin-top: $spacing-md;
-    font-size: $font-size-sm;
-    color: var(--text-secondary);
+  .section-title {
+    padding: $spacing-md $spacing-lg $spacing-xs;
+    font-size: $font-size-md;
+    font-weight: 600;
+    color: var(--text-primary);
   }
-}
 
-.section-title {
-  padding: $spacing-md $spacing-lg $spacing-xs;
-  font-size: $font-size-md;
-  font-weight: 600;
-  color: var(--text-primary);
-}
+  .profile-updated {
+    margin-top: $spacing-lg;
+    font-size: $font-size-xs;
+    color: var(--text-secondary);
+    text-align: center;
+  }
 
-.profile-updated {
-  margin-top: $spacing-lg;
-  font-size: $font-size-xs;
-  color: var(--text-secondary);
-  text-align: center;
-}
-
-.submit-bar {
-  margin: $spacing-xl $spacing-lg;
-}
+  .submit-bar {
+    margin: $spacing-xl $spacing-lg;
+  }
 </style>
