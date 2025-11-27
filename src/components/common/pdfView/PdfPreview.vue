@@ -15,24 +15,12 @@
       <div v-if="!loading && !error" class="pdf-content">
         <div class="pdf-controls">
           <span class="page-info">{{ currentPage }} / {{ totalPages }}</span>
-          <van-button
-            size="small"
-            icon="arrow-up"
-            @click="scrollToTop"
-            v-if="totalPages > 1"
-            title="回到首页"
-          />
+          <van-button size="small" icon="arrow-up" @click="scrollToTop" v-if="totalPages > 1" title="回到首页" />
           <van-button size="small" icon="minus" @click="zoomOut" :disabled="scale <= 0.5" />
           <span class="zoom-info">{{ Math.round(scale * 100) }}%</span>
           <van-button size="small" icon="plus" @click="zoomIn" :disabled="scale >= 5" />
           <van-button size="small" icon="replay" @click="fitToWidth" />
-          <van-button
-            size="small"
-            icon="down"
-            @click="downloadPdf"
-            type="primary"
-            title="下载PDF"
-          />
+          <van-button size="small" icon="down" @click="downloadPdf" type="primary" title="下载PDF" />
         </div>
 
         <!-- 进度条 -->
@@ -40,14 +28,9 @@
           <div class="pdf-progress-inner" :style="{ width: scrollProgress + '%' }"></div>
         </div>
 
-        <div class="pdf-canvas-container" ref="canvasContainer" @scroll="onScroll">
-          <div
-            v-for="pageNum in totalPages"
-            :key="pageNum"
-            class="pdf-page-wrapper"
-            :data-page="pageNum"
-            :style="{ minHeight: pageHeights[pageNum] ? pageHeights[pageNum] + 'px' : '200px' }"
-          >
+        <div class="pdf-canvas-container" :class="{ 'fit-mode': isFitMode }" ref="canvasContainer" @scroll="onScroll">
+          <div v-for="pageNum in totalPages" :key="pageNum" class="pdf-page-wrapper" :data-page="pageNum"
+            :style="{ minHeight: pageHeights[pageNum] ? pageHeights[pageNum] + 'px' : '200px' }">
             <canvas :ref="el => setCanvasRef(el, pageNum)"></canvas>
           </div>
         </div>
@@ -124,6 +107,7 @@ const currentPage = ref(1)
 const totalPages = ref(0)
 const scale = ref(1.0)
 const scrollProgress = ref(0)
+const isFitMode = ref(true)
 // 使用 shallowRef 避免 PDF.js 对象被 Vue 响应式系统深度包装
 const pdfDocument = shallowRef(null)
 
@@ -225,6 +209,7 @@ const recycleCanvasIfNeeded = () => {
   }
 }
 
+<<<<<<< HEAD
 // 处理渲染队列
 const processRenderQueue = async () => {
   while (renderQueue.length > 0 && activeRenderCount < MAX_CONCURRENT_RENDERS) {
@@ -255,9 +240,23 @@ const doRenderPage = async pageNum => {
   if (renderedPages.value.has(pageNum)) return
 
   // 如果该页面正在渲染，先取消之前的渲染任务
+=======
+// 正在渲染中的页面标记
+const renderingPages = new Set()
+
+// 渲染指定页面
+const renderPage = async pageNum => {
+  // 如果已经渲染过且缩放比例没变，就不重复渲染
+  if (renderedPages.value.has(pageNum)) return
+
+  // 如果该页面正在渲染中，直接返回避免重复渲染
+  if (renderingPages.has(pageNum)) return
+
+  // 如果该页面有未完成的渲染任务，先取消
+>>>>>>> develop
   if (renderTasks[pageNum]) {
     try {
-      await renderTasks[pageNum].cancel()
+      renderTasks[pageNum].cancel()
     } catch (e) {
       // 取消渲染会抛出异常，忽略即可
     }
@@ -267,8 +266,14 @@ const doRenderPage = async pageNum => {
     await new Promise(resolve => setTimeout(resolve, 50))
   }
 
+  // 标记为正在渲染
+  renderingPages.add(pageNum)
+
   try {
-    if (!pdfDocument.value) return
+    if (!pdfDocument.value) {
+      renderingPages.delete(pageNum)
+      return
+    }
 
     const page = await pdfDocument.value.getPage(pageNum)
     const viewport = page.getViewport({ scale: scale.value })
@@ -277,10 +282,16 @@ const doRenderPage = async pageNum => {
     pageHeights.value[pageNum] = viewport.height
 
     const canvas = canvasRefs.value[pageNum]
-    if (!canvas) return
+    if (!canvas) {
+      renderingPages.delete(pageNum)
+      return
+    }
 
     const context = canvas.getContext('2d')
-    if (!context) return
+    if (!context) {
+      renderingPages.delete(pageNum)
+      return
+    }
 
     // 再次检查是否有渲染任务（双重检查，防止竞态条件）
     if (renderTasks[pageNum]) {
@@ -321,6 +332,9 @@ const doRenderPage = async pageNum => {
       return
     }
     console.error(`第${pageNum}页渲染失败:`, err)
+  } finally {
+    // 无论成功失败，都清除渲染中标记
+    renderingPages.delete(pageNum)
   }
 }
 
@@ -404,6 +418,13 @@ const initIntersectionObserver = () => {
   nextTick(() => {
     const pages = canvasContainer.value.querySelectorAll('.pdf-page-wrapper')
     pages.forEach(page => observer.observe(page))
+
+    // 确保首页立即渲染（解决初始化时 IntersectionObserver 可能未触发的问题）
+    setTimeout(() => {
+      if (!renderedPages.value.has(1)) {
+        renderPage(1)
+      }
+    }, 100)
   })
 }
 
@@ -458,6 +479,7 @@ const rerenderVisiblePages = () => {
 const zoomIn = () => {
   const newScale = Math.min(scale.value + 0.5, 5)
   console.log('放大：', scale.value, '->', newScale)
+  isFitMode.value = false
   scale.value = newScale
   // 使用防抖优化，避免快速点击时频繁渲染
   debounceRerenderVisiblePages()
@@ -467,6 +489,7 @@ const zoomIn = () => {
 const zoomOut = () => {
   const newScale = Math.max(scale.value - 0.5, 0.5)
   console.log('缩小：', scale.value, '->', newScale)
+  isFitMode.value = false
   scale.value = newScale
   // 使用防抖优化，避免快速点击时频繁渲染
   debounceRerenderVisiblePages()
@@ -483,18 +506,28 @@ const debounceRerenderVisiblePages = () => {
   }, 300)
 }
 
+<<<<<<< HEAD
 // 回到第一页（带平滑滚动动画）
+=======
+// 回到第一页（带平滑过渡效果）
+>>>>>>> develop
 const scrollToTop = () => {
   if (canvasContainer.value) {
     canvasContainer.value.scrollTo({
       top: 0,
+<<<<<<< HEAD
       behavior: 'smooth' // 平滑滚动动画
     })
     // currentPage 会通过 IntersectionObserver 自动更新
+=======
+      behavior: 'smooth'
+    })
+    currentPage.value = 1
+>>>>>>> develop
   }
 }
 
-// 自适应宽度（重置）
+// 自适应宽度（重置）- 等比缩放到一页展示
 const fitToWidth = async () => {
   if (!pdfDocument.value) return
 
@@ -504,9 +537,15 @@ const fitToWidth = async () => {
 
     if (canvasContainer.value) {
       const containerWidth = canvasContainer.value.clientWidth
-      // 减去左右 padding (20px) + 预留滚动条宽度及安全边距 (20px) = 40px
-      if (containerWidth > 0 && originalViewport.width > 0) {
-        scale.value = (containerWidth - 40) / originalViewport.width
+      // 减去左右 padding (20px) + 预留垂直滚动条宽度 (17px)
+      const scrollbarWidth = 17
+      const availableWidth = containerWidth - 20 - scrollbarWidth
+
+      if (availableWidth > 0 && originalViewport.width > 0) {
+        // 只按宽度缩放，确保没有水平滚动条
+        scale.value = availableWidth / originalViewport.width
+        isFitMode.value = true
+        canvasContainer.value.scrollLeft = 0
         console.log('重置自适应比例:', scale.value)
         debounceRerenderVisiblePages()
       }
@@ -619,6 +658,10 @@ onMounted(() => {
   gap: 8px;
   background-color: #f7f8fa;
   border-bottom: 1px solid #ebedf0;
+  /* 固定高度防止抖动 */
+  height: 44px;
+  min-height: 44px;
+  flex-shrink: 0;
 }
 
 .pdf-progress-bar {
@@ -639,9 +682,12 @@ onMounted(() => {
   font-size: 14px;
   color: #323233;
   margin: 0 8px;
-  min-width: 50px;
+  /* 增加宽度以适应三位数页码 */
+  min-width: 70px;
   text-align: center;
-  font-variant-numeric: tabular-nums; /* 防止数字宽度变化导致抖动 */
+  font-variant-numeric: tabular-nums;
+  /* 防止数字宽度变化导致抖动 */
+  white-space: nowrap;
 }
 
 .zoom-info {
@@ -657,10 +703,18 @@ onMounted(() => {
   overflow: auto;
   display: flex;
   flex-direction: column;
-  /* 移除 align-items: center，避免放大后左侧被裁剪且无法滚动 */
-  /* align-items: center; */
+  /* 默认不居中，避免放大后左侧被裁剪且无法滚动 */
   padding: 10px;
   background-color: #f7f8fa;
+  /* 添加平滑滚动效果 */
+  scroll-behavior: smooth;
+}
+
+.pdf-canvas-container.fit-mode {
+  align-items: center;
+  justify-content: flex-start;
+  /* 自适应模式下隐藏水平滚动条 */
+  overflow-x: hidden;
 }
 
 canvas {

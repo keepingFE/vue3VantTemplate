@@ -11,11 +11,7 @@
       </van-cell-group>
     </div>
     <!-- PDF预览弹窗 -->
-    <van-popup
-      v-model:show="showPdfPreview"
-      position="right"
-      :style="{ width: '100%', height: '100%' }"
-    >
+    <van-popup v-model:show="showPdfPreview" position="right" :style="{ width: '100%', height: '100%' }">
       <PdfPreview :src="currentPdfUrl" :title="pdfTitle" @back="closePdfPreview" />
     </van-popup>
   </div>
@@ -23,7 +19,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import PdfPreview from '@/components/common/pdfView'
+import PdfPreview from '@/components/common/PdfView'
 
 const pdfUrl = ref('/test.pdf')
 const showPdfPreview = ref(false)

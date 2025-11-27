@@ -36,7 +36,7 @@ const tabbarItems = [
     icon: 'chart-trending-o',
     text: t('route.chart')
   },
-   {
+  {
     name: 'message',
     to: '/message',
     icon: 'chat-o',

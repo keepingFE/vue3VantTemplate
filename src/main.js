@@ -16,7 +16,6 @@ import 'vant/lib/index.css'
 import 'amfe-flexible'
 
 // 引入vconsole调试工具
-import VConsole from 'vconsole'
 
 // 限制 PC 端的 rem 基准，避免页面过度放大
 const setRemUnit = () => {
@@ -75,8 +74,10 @@ appStore.initTheme()
 
 // 根据环境变量初始化vconsole调试工具
 if (import.meta.env.VITE_USE_VCONSOLE === 'true') {
-  new VConsole()
-  console.log('VConsole 已启用')
+  import('vconsole').then(({ default: VConsole }) => {
+    new VConsole()
+    console.log('VConsole 已启用')
+  })
 }
 
 

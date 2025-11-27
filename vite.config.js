@@ -12,6 +12,7 @@ export default defineConfig(({ command, mode }) => {
   // 加载环境变量
   const env = loadEnv(mode, process.cwd())
   const useMock = env.VITE_USE_MOCK === 'true'
+  const enableSourceMap = env.VITE_BUILD_SOURCEMAP === 'true'
 
   return {
     plugins: [
@@ -98,14 +99,12 @@ export default defineConfig(({ command, mode }) => {
     build: {
       outDir: 'dist',
       assetsDir: 'assets',
-      sourcemap: false,
-      minify: 'terser',
-      terserOptions: {
-        compress: {
-          drop_console: true,
-          drop_debugger: true
-        }
-      },
+      sourcemap: enableSourceMap,
+      minify: 'esbuild',
+      cssCodeSplit: true,
+      reportCompressedSize: false,
+      target: 'es2019',
+      cssTarget: 'ios12',
       rollupOptions: {
         output: {
           chunkFileNames: 'js/[name]-[hash].js',
@@ -115,7 +114,9 @@ export default defineConfig(({ command, mode }) => {
             'vue-vendor': ['vue', 'vue-router', 'pinia'],
             'vant-vendor': ['vant'],
             // 将 pdfjs-dist 单独打包，避免影响主包大小
-            'pdfjs': ['pdfjs-dist']
+            'pdfjs': ['pdfjs-dist'],
+            'echarts': ['echarts', 'vue-echarts'],
+            'markdown': ['markdown-it', 'highlight.js']
           }
         }
       },
@@ -124,11 +125,14 @@ export default defineConfig(({ command, mode }) => {
 
     // 优化配置
     optimizeDeps: {
-      include: ['pdfjs-dist'],
+      include: ['pdfjs-dist', 'echarts', 'vue-echarts', 'markdown-it', 'highlight.js'],
       esbuildOptions: {
-        // 解决 pdfjs-dist 的私有字段问题
         target: 'esnext'
       }
+    },
+    esbuild: {
+      drop: mode === 'production' ? ['console', 'debugger'] : [],
+      legalComments: 'none'
     }
   }
 })
