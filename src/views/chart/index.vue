@@ -47,6 +47,7 @@ import {
   LegendComponent,
   GridComponent
 } from 'echarts/components'
+import { LegacyGridContainLabel } from 'echarts/features'
 import VChart from 'vue-echarts'
 
 // 按需注册 ECharts 组件
@@ -58,7 +59,8 @@ use([
   TitleComponent,
   TooltipComponent,
   LegendComponent,
-  GridComponent
+  GridComponent,
+  LegacyGridContainLabel
 ])
 
 // 折线图配置
@@ -295,7 +297,6 @@ const areaOption = ref({
 .chart-container {
   min-height: 100vh;
   background-color: var(--bg-color);
-  padding-bottom: 60px;
 
   .content {
     padding: 16px;
@@ -306,6 +307,10 @@ const areaOption = ref({
       padding: 16px;
       margin-bottom: 16px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+      &:last-of-type {
+        margin-bottom: 0;
+      }
 
       .chart-title {
         font-size: 16px;

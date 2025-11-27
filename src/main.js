@@ -75,11 +75,17 @@ appStore.initTheme()
 // 根据环境变量初始化vconsole调试工具
 if (import.meta.env.VITE_USE_VCONSOLE === 'true') {
   import('vconsole').then(({ default: VConsole }) => {
-    new VConsole()
-    console.log('VConsole 已启用')
+    const vConsole = new VConsole({
+      defaultPlugins: ['system', 'network', 'element', 'storage'],
+      defaultSticky: false, // 设置默认关闭状态
+      onReady: () => {
+        console.log('VConsole 已启用（默认关闭状态）')
+        // 确保初始状态是关闭的
+        vConsole.hide()
+      }
+    })
   })
 }
-
 
 // 挂载应用
 app.mount('#app')

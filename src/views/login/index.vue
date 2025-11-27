@@ -4,6 +4,18 @@
       <h1 class="login-title">{{ $t('login.title') }}</h1>
     </div>
 
+    <!-- 语言切换 -->
+    <div class="lang-switch">
+      <van-popover v-model:show="showLangPopover" :actions="langActions" @select="onSelectLang" placement="bottom-end" theme="light">
+        <template #reference>
+          <div class="lang-btn">
+            <van-icon name="exchange" size="20" />
+            <span class="lang-text">{{ currentLangText }}</span>
+          </div>
+        </template>
+      </van-popover>
+    </div>
+
     <van-form @submit="handleLogin" class="login-form">
       <van-cell-group>
         <van-field
@@ -71,18 +83,35 @@
 </template>
 
 <script setup>
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from '@/store/modules/user'
 import { showToast } from 'vant'
 import { useI18n } from 'vue-i18n'
+import { setLocale } from '@/locales'
 import CountdownButton from '@/components/common/CountdownButton.vue'
 import packageInfo from '../../../package.json'
 
 const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
-const { t } = useI18n()
+
+const { t, locale } = useI18n()
+
+const showLangPopover = ref(false)
+const langActions = [
+  { text: '简体中文', value: 'zh-CN' },
+  { text: 'English', value: 'en-US' }
+]
+
+const currentLangText = computed(() => {
+  const lang = langActions.find(item => item.value === locale.value)
+  return lang ? lang.text : 'Language'
+})
+
+const onSelectLang = (action) => {
+  setLocale(action.value)
+}
 
 const loading = ref(false)
 const appVersion = ref(packageInfo.version)
@@ -161,6 +190,7 @@ const handleSendVerifyCode = async target => {
 
 <style lang="scss" scoped>
 .login-container {
+  position: relative;
   min-height: 100vh;
   padding: $spacing-lg 16px;
   background: linear-gradient(to bottom, #1e88e5, #42a5f5, #90caf9);
@@ -187,6 +217,36 @@ const handleSendVerifyCode = async target => {
       font-weight: 600;
       color: white;
       margin: 0;
+    }
+  }
+
+  .lang-switch {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 10;
+
+    .lang-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 14px;
+      padding: 6px 12px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      backdrop-filter: blur(4px);
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:active {
+        background-color: rgba(255, 255, 255, 0.2);
+        transform: scale(0.95);
+      }
+
+      .lang-text {
+        font-weight: 500;
+      }
     }
   }
 
