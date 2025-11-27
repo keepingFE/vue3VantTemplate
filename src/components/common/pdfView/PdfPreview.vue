@@ -98,6 +98,7 @@ const props = defineProps({
 
 const emit = defineEmits(['back'])
 
+
 const pdfContainer = ref(null)
 const canvasContainer = ref(null)
 const canvasRefs = ref({})
@@ -106,6 +107,10 @@ const renderedPages = ref(new Set()) // 记录已渲染的页面
 const visibleRatios = ref({}) // 记录页面可见比例
 let observer = null // IntersectionObserver 实例
 const renderTasks = {} // 存储渲染任务，用于取消
+let renderQueue = [] // 渲染队列
+let activeRenderCount = 0 // 当前正在渲染的页面数量
+const MAX_CONCURRENT_RENDERS = 2 // 最大并发渲染数量
+
 
 const setCanvasRef = (el, pageNum) => {
   if (el) {
@@ -220,12 +225,36 @@ const recycleCanvasIfNeeded = () => {
   }
 }
 
-// 渲染指定页面
-const renderPage = async pageNum => {
-  // 如果已经渲染过且缩放比例没变，就不重复渲染
+// 处理渲染队列
+const processRenderQueue = async () => {
+  while (renderQueue.length > 0 && activeRenderCount < MAX_CONCURRENT_RENDERS) {
+    const pageNum = renderQueue.shift()
+    if (pageNum && !renderedPages.value.has(pageNum)) {
+      activeRenderCount++
+      doRenderPage(pageNum).finally(() => {
+        activeRenderCount--
+        processRenderQueue() // 继续处理队列
+      })
+    }
+  }
+}
+
+// 将页面加入渲染队列
+const queueRenderPage = (pageNum) => {
+  // 如果已经在队列中或已经渲染，跳过
+  if (renderQueue.includes(pageNum) || renderedPages.value.has(pageNum)) {
+    return
+  }
+  renderQueue.push(pageNum)
+  processRenderQueue()
+}
+
+// 实际执行渲染的函数
+const doRenderPage = async pageNum => {
+  // 如果已经渲染过，跳过
   if (renderedPages.value.has(pageNum)) return
 
-  // 如果该页面正在渲染，取消之前的渲染任务
+  // 如果该页面正在渲染，先取消之前的渲染任务
   if (renderTasks[pageNum]) {
     try {
       await renderTasks[pageNum].cancel()
@@ -233,6 +262,9 @@ const renderPage = async pageNum => {
       // 取消渲染会抛出异常，忽略即可
     }
     delete renderTasks[pageNum]
+    
+    // 等待一小段时间，确保取消操作完全完成
+    await new Promise(resolve => setTimeout(resolve, 50))
   }
 
   try {
@@ -249,6 +281,12 @@ const renderPage = async pageNum => {
 
     const context = canvas.getContext('2d')
     if (!context) return
+
+    // 再次检查是否有渲染任务（双重检查，防止竞态条件）
+    if (renderTasks[pageNum]) {
+      console.warn(`页面 ${pageNum} 仍在渲染中，跳过`)
+      return
+    }
 
     canvas.height = viewport.height
     canvas.width = viewport.width
@@ -273,12 +311,22 @@ const renderPage = async pageNum => {
     // 渲染完成后检查是否需要回收 Canvas
     recycleCanvasIfNeeded()
   } catch (err) {
+    // 清理失败的渲染任务
+    if (renderTasks[pageNum]) {
+      delete renderTasks[pageNum]
+    }
+    
     // 忽略取消渲染的错误
     if (err?.name === 'RenderingCancelledException') {
       return
     }
     console.error(`第${pageNum}页渲染失败:`, err)
   }
+}
+
+// 渲染指定页面（保持原有接口，内部使用队列）
+const renderPage = (pageNum) => {
+  queueRenderPage(pageNum)
 }
 
 // 初始化 IntersectionObserver 实现懒加载
@@ -435,11 +483,14 @@ const debounceRerenderVisiblePages = () => {
   }, 300)
 }
 
-// 回到第一页
+// 回到第一页（带平滑滚动动画）
 const scrollToTop = () => {
   if (canvasContainer.value) {
-    canvasContainer.value.scrollTop = 0
-    currentPage.value = 1
+    canvasContainer.value.scrollTo({
+      top: 0,
+      behavior: 'smooth' // 平滑滚动动画
+    })
+    // currentPage 会通过 IntersectionObserver 自动更新
   }
 }
 
@@ -633,4 +684,6 @@ canvas {
   margin-left: auto;
   margin-right: auto;
 }
+
+
 </style>
