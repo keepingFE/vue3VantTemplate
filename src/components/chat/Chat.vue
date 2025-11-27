@@ -1,464 +1,254 @@
 <template>
     <div class="chat-container">
+        <!-- Header -->
+        <ChatHeader :title="title" @back="handleBack" @menu="handleMenu" />
+
         <!-- Messages Area -->
         <div class="chat-messages" ref="messagesContainer">
-            <div v-if="messages.length === 0" class="empty-state">
-                <van-empty :description="$t('chat.noMessages')" />
-            </div>
-            <div v-for="(message, index) in messages" :key="index" class="message-item" :class="message.type">
-                <!-- User Message -->
-                <div v-if="message.type === 'user'" class="message-group">
-                    <div class="message-content user-message">
-                        <div class="bubble-wrap">
-                            <div class="message-bubble">
-                                <div class="bubble-text">{{ message.content }}</div>
-                            </div>
-                        </div>
-                        <van-image :src="message.avatar || userAvatar" round width="32" height="32"
-                            class="message-avatar user-avatar" />
-                    </div>
-                </div>
+            <!-- Welcome Section (shown when no messages) -->
+            <template v-if="messages.length === 0">
+                <WelcomeSection :welcome-message="welcomeMessage" />
+                <!-- 快捷问题 -->
+                <QuickQuestions :questions="quickQuestions" @question-click="handleQuestionClick" />
+                <!-- 上传文件 -->
+                <UploadOptions :options="uploadOptions" @option-click="handleUploadOption" />
+            </template>
 
-                <!-- Bot/Assistant Message -->
-                <div v-else-if="message.type === 'bot' || message.type === 'assistant'" class="message-group">
-                    <div class="message-content bot-message">
-                        <van-image :src="message.avatar || botAvatar" round width="32" height="32"
-                            class="message-avatar" />
-                        <div class="bubble-wrap">
-                            <div class="message-bubble">
-                                <div class="bubble-text">
-                                    <span>
-                                        {{ message.content }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- System Message -->
-                <div v-else-if="message.type === 'system'" class="message-group">
-                    <div class="message-content system-message">
-                        <div class="system-content">{{ message.content }}</div>
-                    </div>
-                </div>
-
-                <!-- Text Message (default) -->
-                <div v-else class="message-group">
-                    <div class="message-content user-message">
-                        <div class="bubble-wrap">
-                            <div class="message-bubble">
-                                <div class="bubble-text">{{ message.content }}</div>
-                            </div>
-                        </div>
-                        <van-image :src="message.avatar || userAvatar" round width="32" height="32"
-                            class="message-avatar user-avatar" />
-                    </div>
-                </div>
-            </div>
+            <!-- 消息列表 -->
+            <template v-else>
+                <MessageItem v-for="(message, index) in messages" :key="index" :message="message"
+                    :user-avatar="userAvatar" :bot-avatar="botAvatar" @typing-complete="onTypingComplete(index)" />
+            </template>
         </div>
 
-        <!-- Input Area (shown by default) -->
-        <div class="chat-input-area">
-            <div class="input-wrapper">
-                <van-field ref="inputField" v-model="inputValue" type="textarea" :placeholder="$t('chat.placeholder')"
-                    rows="1" autosize maxlength="500" @keydown="handleKeyDown" class="message-input" />
-                <!-- Send button with fade-in animation -->
-                <Transition name="fade-send">
-                    <van-button v-if="inputValue.trim()" type="primary" size="small" round :loading="isSending"
-                        @click="sendMessage" class="send-btn">
-                        {{ $t('chat.send') }}
-                    </van-button>
-                </Transition>
-            </div>
-        </div>
+        <!-- Chat Input -->
+        <ChatInput v-model="inputValue" :placeholder="placeholder" :max-length="maxLength" @send="sendMessage"
+            @voice-click="handleVoiceClick" @add-click="handleAddClick" />
+
+        <!-- Hidden File Input -->
+        <input type="file" ref="fileInput" style="display: none" @change="handleFileChange" />
     </div>
 </template>
 
 <script setup>
-import { ref, reactive, watch, nextTick, onUnmounted } from 'vue'
-import { showToast } from 'vant'
-import { useI18n } from 'vue-i18n'
+    import { ref, watch, nextTick } from 'vue'
+    import { showToast } from 'vant'
+    import { useI18n } from 'vue-i18n'
+    import { useRouter } from 'vue-router'
 
-const { t } = useI18n()
+    // Import components
+    import ChatHeader from './ChatHeader.vue'
+    import WelcomeSection from './WelcomeSection.vue'
+    import QuickQuestions from './QuickQuestions.vue'
+    import UploadOptions from './UploadOptions.vue'
+    import BottomNavigation from './BottomNavigation.vue'
+    import ChatInput from './ChatInput.vue'
+    import MessageItem from './MessageItem.vue'
 
-// Props
-const props = defineProps({
-    title: {
-        type: String,
-        default: 'chat.title'
-    },
-    messages: {
-        type: Array,
-        default: () => []
-    },
-    isLoading: {
-        type: Boolean,
-        default: false
-    },
-    isSending: {
-        type: Boolean,
-        default: false
-    },
-    placeholder: {
-        type: String,
-        default: 'chat.inputPlaceholder'
-    },
-    maxLength: {
-        type: Number,
-        default: 500
-    },
-    userAvatar: {
-        type: String,
-        default: 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg'
-    },
-    botAvatar: {
-        type: String,
-        default: 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg'
-    }
-})
+    const { t } = useI18n()
+    const router = useRouter()
 
-// Emits
-const emit = defineEmits(['send-message', 'update:messages'])
-
-// Refs
-const messagesContainer = ref(null)
-const inputValue = ref('')
-const showInput = ref(true)
-const inputField = ref(null)
-
-
-// Methods
-const sendMessage = () => {
-    const message = inputValue.value.trim()
-
-    if (!message) {
-        showToast(t('chat.emptyContent'))
-        return
-    }
-
-    if (message.length > props.maxLength) {
-        showToast(t('chat.maxLengthError', { max: props.maxLength }))
-        return
-    }
-
-    emit('send-message', message)
-    inputValue.value = ''
-    scrollToBottom()
-}
-
-const toggleInput = (visible) => {
-    showInput.value = visible
-    if (visible) {
-        nextTick(() => {
-            if (inputField.value && inputField.value.focus) {
-                try { inputField.value.focus() } catch (e) { }
-                const el = inputField.value?.$el?.querySelector('textarea, input')
-                if (el) el.focus()
-            }
-        })
-    }
-}
-
-const handleKeyDown = (event) => {
-    // Ctrl/Cmd + Enter to send
-    if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
-        event.preventDefault()
-        sendMessage()
-    }
-}
-
-const formatTime = (time) => {
-    if (typeof time === 'string') {
-        return time
-    }
-    if (time instanceof Date) {
-        return time.toLocaleTimeString('zh-CN', {
-            hour: '2-digit',
-            minute: '2-digit'
-        })
-    }
-    return ''
-}
-
-const scrollToBottom = () => {
-    nextTick(() => {
-        if (messagesContainer.value) {
-            messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
+    // Props
+    const props = defineProps({
+        title: {
+            type: String,
+            default: 'AI健康助手'
+        },
+        messages: {
+            type: Array,
+            default: () => []
+        },
+        isLoading: {
+            type: Boolean,
+            default: false
+        },
+        isSending: {
+            type: Boolean,
+            default: false
+        },
+        placeholder: {
+            type: String,
+            default: '请输入消息...'
+        },
+        maxLength: {
+            type: Number,
+            default: 500
+        },
+        userAvatar: {
+            type: String,
+            default: 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg'
+        },
+        botAvatar: {
+            type: String,
+            default: 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg'
+        },
+        welcomeMessage: {
+            type: String,
+            default: '您好，我是你的AI健康助手~'
         }
     })
-}
 
-// Watch messages to auto-scroll and start typing effect
-watch(
-    () => props.messages,
-    (newMessages, oldMessages) => {
-        scrollToBottom()
+    // Emits
+    const emit = defineEmits([
+        'send-message',
+        'update:messages',
+        'back',
+        'menu',
+        'question-click',
+        'upload-option',
+        'nav-click',
+        'voice-click',
+        'add-click',
+        'send-file'
+    ])
 
-        // 检查是否有新的机器人消息需要打字效果
-        if (newMessages.length > (oldMessages?.length || 0)) {
-            const lastMessage = newMessages[newMessages.length - 1]
-            const lastIndex = newMessages.length - 1
+    // Refs
+    const messagesContainer = ref(null)
+    const inputValue = ref('')
+    const fileInput = ref(null)
 
-            // 如果是机器人消息且设置了 typing 属性
-            if ((lastMessage.type === 'bot' || lastMessage.type === 'assistant') && lastMessage.typing) {
-                nextTick(() => {
-                    startTyping(lastMessage, lastIndex)
-                })
-            }
+    // Data
+    const quickQuestions = ref([
+        { text: '高血压饮食应注意什么？', value: 'hypertension_diet' },
+        { text: '三伏天养生注意事项？', value: 'summer_health' },
+        { text: '吃哪些食物有助于降低血糖？', value: 'lower_blood_sugar' }
+    ])
+
+    const uploadOptions = ref([
+        { text: '上传报告照片', icon: 'photo-o', action: '去上传', type: 'photo' },
+        { text: '拍照上传报告', icon: 'photograph', action: '去拍照', type: 'camera' },
+        { text: '上传报告文件', icon: 'description', action: '去上传', type: 'file' }
+    ])
+
+    const navItems = ref([
+        { text: '健康咨询', icon: 'chat-o', active: true, type: 'consult' },
+        { text: '报告解读', icon: 'description', badge: '54人', active: false, type: 'report' },
+        { text: '智能导诊', icon: 'orders-o', badge: '64人', active: false, type: 'guide' }
+    ])
+
+    // Methods
+    const handleBack = () => {
+        emit('back')
+        router.back()
+    }
+
+    const handleMenu = () => {
+        emit('menu')
+        showToast('菜单功能')
+    }
+
+    const handleQuestionClick = (question) => {
+        emit('question-click', question)
+        sendMessage(question.text)
+    }
+
+    const handleReportClick = () => {
+        emit('report-click')
+        showToast('报告解读功能')
+    }
+
+    const handleUploadOption = (option) => {
+        emit('upload-option', option)
+        showToast(`${option.text}功能`)
+    }
+
+    const handleNavClick = (item) => {
+        emit('nav-click', item)
+        navItems.value.forEach(nav => {
+            nav.active = nav.type === item.type
+        })
+    }
+
+    const handleVoiceClick = () => {
+        emit('voice-click')
+        showToast('语音输入功能')
+    }
+
+    const handleAddClick = () => {
+        fileInput.value.click()
+    }
+
+    const handleFileChange = (event) => {
+        const file = event.target.files[0]
+        if (!file) return
+
+        emit('send-file', file)
+        event.target.value = ''
+    }
+
+    const sendMessage = (messageText) => {
+        const message = messageText || inputValue.value.trim()
+
+        if (!message) {
+            showToast(t('chat.emptyContent') || '请输入内容')
+            return
         }
-    },
-    { deep: true }
-)
 
-watch(
-    () => props.isLoading,
-    () => {
+        if (message.length > props.maxLength) {
+            showToast(t('chat.maxLengthError', { max: props.maxLength }) || `内容不能超过${props.maxLength}字`)
+            return
+        }
+
+        emit('send-message', message)
+        inputValue.value = ''
         scrollToBottom()
     }
-)
+
+    // 打字完成回调
+    const onTypingComplete = (messageIndex) => {
+        const updatedMessages = [...props.messages]
+        if (updatedMessages[messageIndex]) {
+            updatedMessages[messageIndex].typingComplete = true
+            emit('update:messages', updatedMessages)
+        }
+    }
+
+    const scrollToBottom = () => {
+        nextTick(() => {
+            if (messagesContainer.value) {
+                messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
+            }
+        })
+    }
+
+    watch(
+        () => props.isLoading,
+        () => {
+            scrollToBottom()
+        }
+    )
 
 </script>
 
+
 <style lang="scss" scoped>
-.chat-container {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    background-color: var(--bg-color);
-
-    .chat-header {
-        padding: 12px 16px;
-        background-color: var(--theme-color);
-        color: #fff;
-        font-size: 16px;
-        font-weight: 600;
-        border-bottom: 1px solid #eee;
-
-        .header-title {
-            text-align: center;
-        }
-    }
-
-    .chat-messages {
-        flex: 1;
-        overflow-y: auto;
-        overflow-x: hidden;
-        padding: 16px;
+    .chat-container {
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        height: 100vh;
+        background: linear-gradient(180deg, #e3f2fd 0%, #f5f5f5 100%);
 
-        .empty-state {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-        }
-
-        .message-item {
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 16px;
             display: flex;
             flex-direction: column;
-            margin-bottom: 8px;
+            gap: 12px;
 
-            &.user {
-                align-items: flex-end;
-
-                .message-group {
-                    width: 100%;
-                }
+            &::-webkit-scrollbar {
+                width: 4px;
             }
 
-            &.bot,
-            &.assistant {
-                align-items: flex-start;
+            &::-webkit-scrollbar-thumb {
+                background: rgba(0, 0, 0, 0.2);
+                border-radius: 4px;
             }
 
-            &.system {
-                align-items: center;
-            }
-
-            &.loading {
-                align-items: flex-start;
-            }
-
-            .message-group {
-                display: flex;
-                flex-direction: column;
-                align-items: inherit;
-                padding-bottom: 20px;
-            }
-
-            .message-content {
-                display: flex;
-                flex-direction: row;
-                align-items: flex-start;
-                gap: 8px;
-                width: 80%;
-
-                &.bot-message {
-                    width: 90%;
-                }
-
-                .bubble-wrap {
-                    display: block;
-                    width: 100%;
-                    position: relative;
-                }
-
-                .message-bubble {
-                    padding: 10px 14px;
-                    border-radius: 12px;
-                    word-break: break-word;
-                    white-space: pre-wrap;
-                    line-height: 1.4;
-                    font-size: 14px;
-                    margin-top: 12px;
-                }
-
-                &.user-message .bubble-wrap {
-                    .message-time {
-                        position: absolute;
-                        top: 0;
-                        right: 0;
-                        font-size: 12px;
-                        color: #999;
-                    }
-                }
-
-                &.user-message .message-bubble {
-                    background-color: var(--theme-color);
-                    color: #fff;
-                    border-top-right-radius: 0;
-                    border-top-left-radius: 12px;
-                    border-bottom-left-radius: 12px;
-                    border-bottom-right-radius: 12px;
-                }
-
-                &.bot-message .message-bubble {
-                    background-color: #f0f0f0;
-                    color: #333;
-                    position: relative;
-                    border-top-left-radius: 0;
-                    border-top-right-radius: 18px;
-                    border-bottom-right-radius: 18px;
-                    border-bottom-left-radius: 18px;
-                }
-
-                .message-content.bot-message .message-bubble::before {
-                    content: '';
-                    position: absolute;
-                    top: 6px;
-                    left: -8px;
-                    width: 0;
-                    height: 0;
-                    border-top: 8px solid transparent;
-                    border-bottom: 8px solid transparent;
-                    border-left: 8px solid #f0f0f0;
-                }
-
-                .bubble-text {
-                    overflow-wrap: break-word;
-                }
-
-                .message-time {
-                    position: absolute;
-                    top: 0;
-                    font-size: 12px;
-                    color: #999;
-                }
-
-                .message-content.bot-message .message-time {
-                    left: 0;
-                    right: auto;
-                    text-align: left;
-                }
-
-                .message-item.user .message-time {
-                    right: 0;
-                }
-
-                .message-avatar {
-                    flex-shrink: 0;
-                    align-self: flex-start;
-
-                    &.user-avatar {
-                        order: 2;
-                    }
-                }
-            }
-
-            .system-content {
-                padding: 8px 12px;
-                background-color: #f5f5f5;
-                color: #999;
-                font-size: 12px;
-                border-radius: 8px;
-                text-align: center;
+            &::-webkit-scrollbar-track {
+                background: transparent;
             }
         }
     }
-
-    .chat-input-area {
-        background-color: #fff;
-        border-top: 1px solid #eee;
-        transition: transform 0.18s ease, opacity 0.18s ease;
-
-        .input-wrapper {
-            display: flex;
-            align-items: center;
-
-            :deep(.van-field) {
-                flex: 1;
-            }
-
-            :deep(.van-field__control) {
-                padding: 8px 12px;
-                border: 1px solid #ddd;
-                border-radius: 8px;
-                resize: none;
-                font-size: 14px;
-                overflow: hidden;
-
-                &:focus {
-                    border-color: var(--theme-color);
-                }
-            }
-
-            .send-btn {
-                flex-shrink: 0;
-                min-width: 60px;
-                margin-right: 15px;
-            }
-        }
-    }
-}
-
-.fade-send-enter-active,
-.fade-send-leave-active {
-    transition: opacity 0.3s ease;
-}
-
-.fade-send-enter-from,
-.fade-send-leave-to {
-    opacity: 0;
-}
-
-.fade-send-enter-to,
-.fade-send-leave-from {
-    opacity: 1;
-}
-
-@keyframes cursorBlink {
-
-    0%,
-    49% {
-        opacity: 1;
-    }
-
-    50%,
-    100% {
-        opacity: 0;
-    }
-}
 </style>
