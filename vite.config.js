@@ -6,7 +6,8 @@ import Components from 'unplugin-vue-components/vite'
 import { VantResolver } from '@vant/auto-import-resolver'
 import postcssPxtorem from 'postcss-pxtorem'
 import { viteMockServe } from 'vite-plugin-mock'
-
+import viteCompression from 'vite-plugin-compression'
+import { visualizer } from 'rollup-plugin-visualizer'
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
   // 加载环境变量
@@ -35,6 +36,23 @@ export default defineConfig(({ command, mode }) => {
         dts: 'src/components.d.ts'
       }),
 
+      // 压缩
+      viteCompression({
+        algorithm: 'gzip',
+        ext: '.gz',
+        threshold: 10240  // 10KB 以上才压缩
+      }),
+
+      // 构建分析
+      /*
+      visualizer({
+        open: false,
+        gzipSize: true,
+        brotliSize: true,
+        filename: 'dist/stats.html'
+      }),
+      */
+     
       // Mock 数据服务
       viteMockServe({
         mockPath: 'mock',
@@ -100,8 +118,8 @@ export default defineConfig(({ command, mode }) => {
       outDir: 'dist',
       assetsDir: 'assets',
       sourcemap: enableSourceMap,
-      minify: 'esbuild',
-      cssCodeSplit: true,
+      minify: 'terser',
+      cssCodeSplit: false, // 所有 CSS 打包到一个文件
       reportCompressedSize: false,
       target: 'es2019',
       cssTarget: 'ios12',
