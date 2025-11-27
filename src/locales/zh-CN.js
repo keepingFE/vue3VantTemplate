@@ -193,5 +193,14 @@ export default {
     tokenExpiringSoon: '登录即将过期，正在自动续期...',
     tokenRefreshSuccess: '登录已自动续期',
     tokenRefreshFailed: '登录续期失败，请重新登录'
+  },
+
+  pdfPreview: {
+    back: '返回',
+    loading: '加载中...',
+    loadFailed: 'PDF加载失败',
+    retry: '重试',
+    home: '回到首页',
+    download: '下载PDF'
   }
 }

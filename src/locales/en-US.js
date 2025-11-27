@@ -193,5 +193,14 @@ export default {
     tokenExpiringSoon: 'Login expiring soon, auto-refreshing...',
     tokenRefreshSuccess: 'Login auto-refreshed',
     tokenRefreshFailed: 'Login refresh failed, please login again'
+  },
+
+  pdfPreview: {
+    back: 'Back',
+    loading: 'Loading...',
+    loadFailed: 'PDF loading failed',
+    retry: 'Retry',
+    home: 'Back to Home',
+    download: 'Download PDF'
   }
 }
