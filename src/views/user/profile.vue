@@ -69,7 +69,7 @@
 
     <!-- Birthday Picker -->
     <BirthdayPicker v-model:show="showBirthdayPicker" v-model:modelValue="form.birthday"
-      :title="$t('user.selectBirthday')" min-date="2020-01-01" max-date="2026-05-21" format="YYYY-MM-DD" />
+      :title="$t('user.selectBirthday')" format="YYYY-MM-DD HH:mm:ss" />
   </div>
 </template>
 
@@ -174,12 +174,6 @@
 
   const onGenderSelect = (action) => {
     form.gender = action.value
-  }
-
-  const onBirthdayConfirm = ({ selectedValues }) => {
-    const [y, m, d, h, min, s] = selectedValues
-    form.birthday = `${y}-${m}-${d} ${h}:${min}:${s}`
-    showBirthdayPicker.value = false
   }
 
   const handleSubmit = async () => {

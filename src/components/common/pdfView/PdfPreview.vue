@@ -209,7 +209,6 @@ const recycleCanvasIfNeeded = () => {
   }
 }
 
-<<<<<<< HEAD
 // 处理渲染队列
 const processRenderQueue = async () => {
   while (renderQueue.length > 0 && activeRenderCount < MAX_CONCURRENT_RENDERS) {
@@ -234,26 +233,15 @@ const queueRenderPage = (pageNum) => {
   processRenderQueue()
 }
 
+// 正在渲染中的页面标记
+const renderingPages = new Set()
+
 // 实际执行渲染的函数
 const doRenderPage = async pageNum => {
   // 如果已经渲染过，跳过
   if (renderedPages.value.has(pageNum)) return
 
   // 如果该页面正在渲染，先取消之前的渲染任务
-=======
-// 正在渲染中的页面标记
-const renderingPages = new Set()
-
-// 渲染指定页面
-const renderPage = async pageNum => {
-  // 如果已经渲染过且缩放比例没变，就不重复渲染
-  if (renderedPages.value.has(pageNum)) return
-
-  // 如果该页面正在渲染中，直接返回避免重复渲染
-  if (renderingPages.has(pageNum)) return
-
-  // 如果该页面有未完成的渲染任务，先取消
->>>>>>> develop
   if (renderTasks[pageNum]) {
     try {
       renderTasks[pageNum].cancel()
@@ -506,24 +494,14 @@ const debounceRerenderVisiblePages = () => {
   }, 300)
 }
 
-<<<<<<< HEAD
 // 回到第一页（带平滑滚动动画）
-=======
-// 回到第一页（带平滑过渡效果）
->>>>>>> develop
 const scrollToTop = () => {
   if (canvasContainer.value) {
     canvasContainer.value.scrollTo({
       top: 0,
-<<<<<<< HEAD
       behavior: 'smooth' // 平滑滚动动画
     })
     // currentPage 会通过 IntersectionObserver 自动更新
-=======
-      behavior: 'smooth'
-    })
-    currentPage.value = 1
->>>>>>> develop
   }
 }
 
