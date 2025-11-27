@@ -2,13 +2,13 @@
  * 路由主文件
  */
 
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import { constantRoutes } from './routes'
 import { setupRouterGuards } from './guards'
 
 // 创建路由实例
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(),
   routes: constantRoutes,
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
@@ -23,4 +23,3 @@ const router = createRouter({
 setupRouterGuards(router)
 
 export default router
-
