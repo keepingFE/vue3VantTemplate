@@ -110,9 +110,9 @@ export const constantRoutes = [
     }
   },
   {
-    path: '/user/pdf-demo',
+    path: '/user/pdfPreview',
     name: 'PdfDemo',
-    component: () => import('@/views/user/pdf-demo.vue'),
+    component: () => import('@/views/user/pdfPreview.vue'),
     meta: {
       title: 'PDF预览',
       requiresAuth: false,

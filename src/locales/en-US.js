@@ -114,7 +114,13 @@ export default {
     selectGender: 'Select Gender',
     selectBirthday: 'Select Birthday',
     selectDate: 'Select Date',
-    selectTime: 'Select Time'
+    selectTime: 'Select Time',
+    guest: 'Guest',
+    notLoggedIn: 'Not Logged In',
+    pdfPreview: 'PDF Preview',
+    markdownPreview: 'Markdown Preview',
+    languageZhCN: 'Simplified Chinese',
+    languageEnUS: 'English'
   },
 
   messages: {

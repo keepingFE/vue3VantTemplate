@@ -6,19 +6,23 @@
       <!-- 用户信息卡片 -->
       <div class="user-card">
         <div class="user-avatar">
-          <van-image round width="80" height="80" src="https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg" />
+          <van-image round width="80" height="80" :src="defaultAvatar" />
         </div>
         <div class="user-info">
-          <div class="user-name">{{ userStore.username || '游客' }}</div>
-          <div class="user-desc">{{ userStore.userInfo?.email || '未登录' }}</div>
+          <div class="user-name">
+            {{ userStore.username || $t('user.guest') }}
+          </div>
+          <div class="user-desc">
+            {{ userStore.userInfo?.email || $t('user.notLoggedIn') }}
+          </div>
         </div>
       </div>
 
       <!-- 设置列表 -->
       <van-cell-group inset class="user-settings">
         <van-cell :title="$t('user.profile')" icon="user-o" is-link @click="handleProfile" />
-        <van-cell title="PDF 预览" icon="orders-o" is-link @click="handlePdfDemo" />
-        <van-cell title="Markdown 预览" icon="notes-o" is-link @click="handleMarkdownDemo" />
+        <van-cell :title="$t('user.pdfPreview')" icon="orders-o" is-link @click="handlePdfDemo" />
+        <van-cell :title="$t('user.markdownPreview')" icon="notes-o" is-link @click="handleMarkdownDemo" />
         <van-cell :title="$t('user.chat')" icon="chat-o" is-link @click="handleChat" />
         <van-cell :title="$t('user.aiChat')" icon="service-o" is-link @click="handleAiChat" />
         <van-cell :title="$t('user.theme')" icon="brush-o" is-link @click="showThemePopup = true" />
@@ -48,7 +52,7 @@
 
     <!-- 语言选择弹窗 -->
     <van-popup v-model:show="showLanguagePopup" position="bottom" round>
-      <van-picker :title="$t('user.language')" :columns="languages" @confirm="handleLanguageConfirm"
+      <van-picker :title="$t('user.language')" :columns="languageOptions" @confirm="handleLanguageConfirm"
         @cancel="showLanguagePopup = false" />
     </van-popup>
   </div>
@@ -62,7 +66,9 @@ import { useTheme } from '@/hooks/useTheme'
 import { setLocale } from '@/locales'
 import { showToast, showConfirmDialog } from 'vant'
 import { useI18n } from 'vue-i18n'
+import { languages } from '@/config'
 
+const defaultAvatar = new URL('@/assets/images/person.png', import.meta.url).href
 const router = useRouter()
 const userStore = useUserStore()
 const { changeThemeColor, getAllThemeColors } = useTheme()
@@ -78,17 +84,14 @@ const themeColors = getAllThemeColors().map(item => ({
 }))
 
 // 语言选项
-const languages = [
-  { text: '简体中文', value: 'zh-CN' },
-  { text: 'English', value: 'en-US' }
-]
+const languageOptions = languages(t)
 
 const handleProfile = () => {
   router.push('/user/profile')
 }
 
 const handlePdfDemo = () => {
-  router.push('/user/pdf-demo')
+  router.push('/user/pdfPreview')
 }
 
 const handleMarkdownDemo = () => {
@@ -145,8 +148,6 @@ const handleLogout = async () => {
   background-color: var(--bg-color);
 
   .user-content {
-    padding-bottom: 60px;
-
     .user-card {
       background: linear-gradient(135deg, var(--theme-color) 0%, var(--theme-color-dark) 100%);
       padding: $spacing-xl;

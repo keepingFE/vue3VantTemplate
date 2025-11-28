@@ -114,7 +114,13 @@ export default {
     selectGender: '选择性别',
     selectBirthday: '选择生日',
     selectDate: '选择日期',
-    selectTime: '选择时间'
+    selectTime: '选择时间',
+    guest: '游客',
+    notLoggedIn: '未登录',
+    pdfPreview: 'PDF 预览',
+    markdownPreview: 'Markdown 预览',
+    languageZhCN: '简体中文',
+    languageEnUS: 'English'
   },
 
   messages: {
