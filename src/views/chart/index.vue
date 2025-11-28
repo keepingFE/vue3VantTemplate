@@ -32,22 +32,37 @@
         <div class="chart-title">收入趋势</div>
         <v-chart class="chart" :option="areaOption" autoresize />
       </div>
+
+      <!-- 雷达图 -->
+      <div class="chart-card">
+        <div class="chart-title">能力雷达</div>
+        <v-chart class="chart" :option="radarOption" autoresize />
+      </div>
+
+      <!-- 地图 -->
+      <div class="chart-card">
+        <div class="chart-title">全国业务热力</div>
+        <v-chart v-if="isMapReady" class="chart" :option="mapOption" autoresize />
+        <div v-else class="chart map-loading">地图加载中...</div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { use } from 'echarts/core'
+import { ref, onMounted } from 'vue'
+import { use, registerMap } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
-import { LineChart, BarChart, PieChart } from 'echarts/charts'
+import { LineChart, BarChart, PieChart, RadarChart, MapChart } from 'echarts/charts'
 import {
   TitleComponent,
   TooltipComponent,
   LegendComponent,
   GridComponent,
   MarkAreaComponent,
-  MarkLineComponent
+  MarkLineComponent,
+  VisualMapComponent,
+  GeoComponent
 } from 'echarts/components'
 import { LegacyGridContainLabel } from 'echarts/features'
 import VChart from 'vue-echarts'
@@ -58,14 +73,45 @@ use([
   LineChart,
   BarChart,
   PieChart,
+  RadarChart,
+  MapChart,
   TitleComponent,
   TooltipComponent,
   LegendComponent,
   GridComponent,
   MarkAreaComponent,
   MarkLineComponent,
+  VisualMapComponent,
+  GeoComponent,
   LegacyGridContainLabel
 ])
+
+const isMapReady = ref(false)
+let hasRegisteredChinaMap = false
+
+// 加载并注册中国地图
+const loadChinaMap = async () => {
+  if (hasRegisteredChinaMap) {
+    isMapReady.value = true
+    return
+  }
+  try {
+    const response = await fetch('https://geo.datav.aliyun.com/areas_v3/bound/geojson?code=100000_full')
+    if (!response.ok) {
+      throw new Error('地图数据请求失败')
+    }
+    const geoJson = await response.json()
+    registerMap('china', geoJson)
+    hasRegisteredChinaMap = true
+    isMapReady.value = true
+  } catch (error) {
+    console.error('地图数据加载失败', error)
+  }
+}
+
+onMounted(() => {
+  loadChinaMap()
+})
 
 // 折线图配置
 const lineOption = ref({
@@ -358,6 +404,97 @@ const areaOption = ref({
     }
   ]
 })
+
+// 雷达图配置
+const radarOption = ref({
+  tooltip: {
+    trigger: 'item'
+  },
+  legend: {
+    bottom: '0%',
+    data: ['团队 A', '团队 B']
+  },
+  radar: {
+    indicator: [
+      { name: '产品', max: 100 },
+      { name: '研发', max: 100 },
+      { name: '运营', max: 100 },
+      { name: '市场', max: 100 },
+      { name: '销售', max: 100 }
+    ],
+    radius: '60%'
+  },
+  series: [
+    {
+      name: '团队能力对比',
+      type: 'radar',
+      data: [
+        {
+          value: [80, 90, 70, 85, 75],
+          name: '团队 A',
+          itemStyle: { color: '#1989fa' }
+        },
+        {
+          value: [70, 85, 85, 65, 90],
+          name: '团队 B',
+          itemStyle: { color: '#07c160' }
+        }
+      ]
+    }
+  ]
+})
+
+// 地图配置
+// 地图 tooltip 文案处理
+const formatMapTooltip = params => {
+  const value = Number.isFinite(params.value) ? params.value : 0
+  return `${params.name}<br/>业务量：${value}`
+}
+
+const mapOption = ref({
+  tooltip: {
+    trigger: 'item',
+    formatter: formatMapTooltip
+  },
+  visualMap: {
+    min: 0,
+    max: 1000,
+    left: 'left',
+    bottom: '5%',
+    text: ['高', '低'],
+    calculable: true,
+    inRange: {
+      color: ['#e0ffff', '#007bff']
+    }
+  },
+  series: [
+    {
+      name: '业务热度',
+      type: 'map',
+      map: 'china',
+      roam: true,
+      label: {
+        show: false
+      },
+      itemStyle: {
+        emphasis: {
+          areaColor: '#ff5722'
+        }
+      },
+      data: [
+        { name: '北京市', value: 820 },
+        { name: '上海市', value: 750 },
+        { name: '广东省', value: 960 },
+        { name: '浙江省', value: 680 },
+        { name: '江苏省', value: 720 },
+        { name: '四川省', value: 580 },
+        { name: '湖北省', value: 430 },
+        { name: '河南省', value: 510 },
+        { name: '陕西省', value: 460 }
+      ]
+    }
+  ]
+})
 </script>
 
 <style lang="scss" scoped>
@@ -391,6 +528,14 @@ const areaOption = ref({
       .chart {
         width: 100%;
         height: 300px;
+      }
+
+      .map-loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #969799;
+        background-color: #f7f7f7;
       }
     }
   }
