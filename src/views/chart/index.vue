@@ -5,7 +5,7 @@
     <div class="content">
       <!-- 折线图 -->
       <div class="chart-card">
-        <div class="chart-title">访问量趋势</div>
+        <div class="chart-title">血压监测</div>
         <v-chart class="chart" :option="lineOption" autoresize />
       </div>
 
@@ -45,7 +45,9 @@ import {
   TitleComponent,
   TooltipComponent,
   LegendComponent,
-  GridComponent
+  GridComponent,
+  MarkAreaComponent,
+  MarkLineComponent
 } from 'echarts/components'
 import { LegacyGridContainLabel } from 'echarts/features'
 import VChart from 'vue-echarts'
@@ -60,16 +62,25 @@ use([
   TooltipComponent,
   LegendComponent,
   GridComponent,
+  MarkAreaComponent,
+  MarkLineComponent,
   LegacyGridContainLabel
 ])
 
 // 折线图配置
 const lineOption = ref({
   tooltip: {
-    trigger: 'axis'
+    trigger: 'axis',
+    formatter: (params) => {
+      let result = `${params[0].axisValue}<br/>`
+      params.forEach(item => {
+        result += `${item.marker}${item.seriesName}: ${item.value} mmHg<br/>`
+      })
+      return result
+    }
   },
   legend: {
-    data: ['访问量', '浏览量'],
+    data: ['收缩压 (高压)', '舒张压 (低压)'],
     top: '0%',
     right: '4%'
   },
@@ -82,28 +93,84 @@ const lineOption = ref({
   xAxis: {
     type: 'category',
     boundaryGap: false,
-    data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+    data: ['2020-10-23', '2020-11-23', '2020-12-23', '2021-01-23', '2021-02-23', '2021-03-23', '2021-04-23']
   },
   yAxis: {
-    type: 'value'
+    type: 'value',
+    name: 'mmHg',
+    nameLocation: 'end',
+    nameTextStyle: {
+      align: 'right',
+      padding: [0, 0, 5, 0]
+    },
+    axisLabel: {
+      formatter: '{value}'
+    }
   },
   series: [
     {
-      name: '访问量',
+      name: '收缩压 (高压)',
       type: 'line',
-      data: [120, 132, 101, 134, 90, 230, 210],
+      data: [115, 95, 145, 130, 110, 92, 150],
       smooth: true,
+      shape: 'circle', // 使用圆形布局
+      gridSize: 10, // 网格大小
+      lineStyle: {
+        color: "#FF3141FF", // 第一条线的颜色
+      },
       itemStyle: {
-        color: '#1989fa'
+        color: "#FF3141FF", // 第一条线的颜色
+      },
+      markArea: {
+        data: [
+          [
+            {
+              yAxis: '90', //开始
+              itemStyle: {
+                color: '#FF3141FF',
+                opacity: 0.1
+              }
+            },
+            {
+              yAxis: '140'
+            }
+          ]
+        ]
       }
     },
     {
-      name: '浏览量',
+      name: '舒张压 (低压)',
       type: 'line',
-      data: [220, 182, 191, 234, 290, 330, 310],
+      data: [65, 95, 68, 55, 52, 68, 85],
       smooth: true,
       itemStyle: {
-        color: '#07c160'
+        color: '#1989fa'
+      },
+      lineStyle: {
+        width: 3
+      },
+      symbolSize: 8,
+      lineStyle: {
+        color: "#105cdf", // 第一条线的颜色
+      },
+      itemStyle: {
+        color: "#105cdf", // 第一条线的颜色
+      },
+      markArea: {
+        data: [
+          [
+            {
+              yAxis: '60', //开始
+              itemStyle: {
+                color: '#105cdf',
+                opacity: 0.1
+              }
+            },
+            {
+              yAxis: '90'
+            }
+          ]
+        ]
       }
     }
   ]

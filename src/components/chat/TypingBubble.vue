@@ -58,62 +58,63 @@
     let typingTimeout = null
     let startDelayTimeout = null
 
+    const typeNextChar = () => {
+        if (props.mode !== 'typing') return
+
+        const currentLength = displayedText.value.length
+        const targetText = props.text || ''
+
+        if (currentLength < targetText.length) {
+            const char = targetText[currentLength]
+            displayedText.value += char
+            emit('typing-char', { char, index: currentLength })
+
+            // Calculate dynamic delay for natural typing effect
+            let delay = props.typingSpeed
+            
+            // Add variance
+            delay += Math.random() * 20 - 10
+
+            // Pause longer on punctuation
+            if (['.', '!', '?', '。', '！', '？', '\n'].includes(char)) {
+                delay += 200
+            } else if ([',', '，', ';', '；'].includes(char)) {
+                delay += 100
+            }
+
+            typingTimeout = setTimeout(typeNextChar, delay)
+        } else {
+            stopTyping()
+        }
+    }
+
     const startTyping = () => {
         if (isTyping.value || props.mode === 'indicator') return
 
-        // Clear any existing timeouts
         clearTimeout(startDelayTimeout)
         clearTimeout(typingTimeout)
 
-        const beginTyping = () => {
+        const begin = () => {
             isTyping.value = true
-            displayedText.value = ''
             emit('typing-start')
-
-            let currentIndex = 0
-            const totalLength = props.text.length
-
-            const typeNextChar = () => {
-                if (currentIndex < totalLength) {
-                    const char = props.text[currentIndex]
-                    displayedText.value += char
-                    emit('typing-char', { char, index: currentIndex })
-                    currentIndex++
-
-                    // Calculate dynamic delay for natural typing effect
-                    let delay = props.typingSpeed
-                    
-                    // Add variance
-                    delay += Math.random() * 20 - 10
-
-                    // Pause longer on punctuation
-                    if (['.', '!', '?', '。', '！', '？', '\n'].includes(char)) {
-                        delay += 200
-                    } else if ([',', '，', ';', '；'].includes(char)) {
-                        delay += 100
-                    }
-
-                    typingTimeout = setTimeout(typeNextChar, delay)
-                } else {
-                    stopTyping()
-                }
-            }
-
             typeNextChar()
         }
 
-        if (props.startDelay > 0) {
-            startDelayTimeout = setTimeout(beginTyping, props.startDelay)
+        // Only apply start delay if we are starting from the beginning
+        if (displayedText.value.length === 0 && props.startDelay > 0) {
+            startDelayTimeout = setTimeout(begin, props.startDelay)
         } else {
-            beginTyping()
+            begin()
         }
     }
 
     const stopTyping = () => {
         clearTimeout(typingTimeout)
         clearTimeout(startDelayTimeout)
-        isTyping.value = false
-        emit('typing-complete')
+        if (isTyping.value) {
+            isTyping.value = false
+            emit('typing-complete')
+        }
     }
 
     const reset = () => {
@@ -123,9 +124,20 @@
 
     // Watch for text changes
     watch(() => props.text, (newText) => {
-        if (props.autoStart && props.mode === 'typing') {
+        if (props.mode !== 'typing') return
+
+        // If new text is a continuation of displayed text, just ensure we keep typing
+        if (newText.startsWith(displayedText.value)) {
+            if (!isTyping.value && displayedText.value.length < newText.length) {
+                startTyping()
+            }
+            // If already typing, the loop will automatically pick up the new length
+        } else {
+            // Text content changed completely, reset and restart
             reset()
-            startTyping()
+            if (props.autoStart) {
+                startTyping()
+            }
         }
     })
 
