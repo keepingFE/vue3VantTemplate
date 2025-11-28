@@ -16,7 +16,7 @@
     padding: 16px;
     align-items: flex-start;
     animation: pulse 1.5s infinite ease-in-out;
-    
+
     .avatar-skeleton {
         width: 32px;
         height: 32px;
@@ -24,13 +24,13 @@
         background-color: #f0f0f0;
         flex-shrink: 0;
     }
-    
+
     .content-skeleton {
         flex: 1;
         display: flex;
         flex-direction: column;
         gap: 8px;
-        
+
         .line {
             height: 14px;
             background-color: #f0f0f0;
@@ -43,9 +43,11 @@
     0% {
         opacity: 0.6;
     }
+
     50% {
         opacity: 1;
     }
+
     100% {
         opacity: 0.6;
     }

@@ -1,15 +1,15 @@
 <template>
     <div class="quick-questions">
-        <div class="questions-hint">你可以向我提问任何健康相关问题，例如：</div>
+        <div class="questions-hint">
+            你可以向我提问任何健康相关问题，例如：
+        </div>
         <div class="questions-list">
-            <div 
-                v-for="(question, index) in questions" 
-                :key="index"
-                class="question-card"
-                @click="handleQuestionClick(question)"
-            >
+            <div v-for="(question, index) in questions" :key="index" class="question-card"
+                @click="handleQuestionClick(question)">
                 <van-icon name="chat-o" class="question-icon" />
-                <span class="question-text">{{ question.text }}</span>
+                <span class="question-text">
+                    {{ question.text }}
+                </span>
             </div>
         </div>
     </div>

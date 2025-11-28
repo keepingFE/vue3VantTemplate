@@ -5,7 +5,9 @@
                 <van-icon name="user-circle-o" class="robot-icon" />
             </div>
         </div>
-        <div class="welcome-text">{{ welcomeMessage }}</div>
+        <div class="welcome-text">
+            {{ welcomeMessage }}
+        </div>
     </div>
 </template>
 
@@ -31,7 +33,7 @@ const props = defineProps({
 
     .robot-avatar {
         margin-bottom: 12px;
-        
+
         .avatar-container {
             width: 64px;
             height: 64px;
@@ -41,7 +43,7 @@ const props = defineProps({
             display: flex;
             align-items: center;
             justify-content: center;
-            
+
             .robot-icon {
                 font-size: 36px;
                 color: #fff;

@@ -74,180 +74,180 @@
 </template>
 
 <script setup>
-  import { computed, onMounted, reactive, ref, watch } from 'vue'
-  import { useRouter } from 'vue-router'
-  import { showToast } from 'vant'
-  import { useUserStore } from '@/store/modules/user'
-  import { useI18n } from 'vue-i18n'
-  import { isValidPhone } from '@/utils/validate'
-  import BirthdayPicker from '@/components/common/BirthdayPicker.vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
+import { showToast } from 'vant'
+import { useUserStore } from '@/store/modules/user'
+import { useI18n } from 'vue-i18n'
+import { isValidPhone } from '@/utils/validate'
+import BirthdayPicker from '@/components/common/BirthdayPicker.vue'
 
-  const router = useRouter()
-  const userStore = useUserStore()
-  const { t } = useI18n()
+const router = useRouter()
+const userStore = useUserStore()
+const { t } = useI18n()
 
-  const defaultAvatar = 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg'
-  const saving = ref(false)
-  const showGenderSheet = ref(false)
-  const showBirthdayPicker = ref(false)
+const defaultAvatar = 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg'
+const saving = ref(false)
+const showGenderSheet = ref(false)
+const showBirthdayPicker = ref(false)
 
-  const form = reactive({
-    avatar: '',
-    username: '',
-    email: '',
-    phone: '',
-    bio: '',
-    gender: 0, // 0: Secret, 1: Male, 2: Female
-    birthday: ''
-  })
+const form = reactive({
+  avatar: '',
+  username: '',
+  email: '',
+  phone: '',
+  bio: '',
+  gender: 0, // 0: Secret, 1: Male, 2: Female
+  birthday: ''
+})
 
-  const genderActions = computed(() => [
-    { name: t('user.male'), value: 1 },
-    { name: t('user.female'), value: 2 },
-    { name: t('user.secret'), value: 0 }
-  ])
+const genderActions = computed(() => [
+  { name: t('user.male'), value: 1 },
+  { name: t('user.female'), value: 2 },
+  { name: t('user.secret'), value: 0 }
+])
 
-  const genderText = computed(() => {
-    const action = genderActions.value.find(item => item.value === form.gender)
-    return action ? action.name : t('user.secret')
-  })
+const genderText = computed(() => {
+  const action = genderActions.value.find(item => item.value === form.gender)
+  return action ? action.name : t('user.secret')
+})
 
-  const lastUpdateTime = computed(() => userStore.userInfo?.updateTime || '')
+const lastUpdateTime = computed(() => userStore.userInfo?.updateTime || '')
 
-  const syncForm = (info) => {
-    if (!info) return
-    form.avatar = info.avatar || ''
-    form.username = info.username || ''
-    form.email = info.email || ''
-    form.phone = info.phone || ''
-    form.bio = info.bio || ''
-    form.gender = info.gender !== undefined ? info.gender : 0
-    form.birthday = info.birthday || ''
-  }
+const syncForm = (info) => {
+  if (!info) return
+  form.avatar = info.avatar || ''
+  form.username = info.username || ''
+  form.email = info.email || ''
+  form.phone = info.phone || ''
+  form.bio = info.bio || ''
+  form.gender = info.gender !== undefined ? info.gender : 0
+  form.birthday = info.birthday || ''
+}
 
-  watch(
-    () => userStore.userInfo,
-    (info) => {
-      if (info) {
-        syncForm(info)
-      }
-    },
-    { immediate: true }
-  )
-
-  onMounted(async () => {
-    if (!userStore.userInfo) {
-      try {
-        const info = await userStore.getUserInfo()
-        syncForm(info)
-      } catch (error) {
-        console.error('[profile] getUserInfo failed', error)
-      }
+watch(
+  () => userStore.userInfo,
+  (info) => {
+    if (info) {
+      syncForm(info)
     }
-  })
+  },
+  { immediate: true }
+)
 
-  const validateEmail = (val) => !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)
-  const validatePhone = (val) => !val || isValidPhone(val)
-
-  const handleAvatarUpload = (file) => {
-    const target = Array.isArray(file) ? file[0] : file
-    if (!target) return
-
-    if (target.content) {
-      form.avatar = target.content
-      showToast(t('message.operationSuccess'))
-      return
-    }
-
-    if (target.file) {
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        form.avatar = event.target?.result || ''
-        showToast(t('message.operationSuccess'))
-      }
-      reader.onerror = () => {
-        showToast(t('message.operationFailed'))
-      }
-      reader.readAsDataURL(target.file)
-    }
-  }
-
-  const onGenderSelect = (action) => {
-    form.gender = action.value
-  }
-
-  const handleSubmit = async () => {
-    saving.value = true
+onMounted(async () => {
+  if (!userStore.userInfo) {
     try {
-      await userStore.updateUserInfo({ ...form })
-      showToast(t('message.updateSuccess'))
+      const info = await userStore.getUserInfo()
+      syncForm(info)
     } catch (error) {
-      showToast(error.message || t('message.operationFailed'))
-    } finally {
-      saving.value = false
+      console.error('[profile] getUserInfo failed', error)
     }
   }
+})
 
-  const handleBack = () => {
-    router.back()
+const validateEmail = (val) => !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)
+const validatePhone = (val) => !val || isValidPhone(val)
+
+const handleAvatarUpload = (file) => {
+  const target = Array.isArray(file) ? file[0] : file
+  if (!target) return
+
+  if (target.content) {
+    form.avatar = target.content
+    showToast(t('message.operationSuccess'))
+    return
   }
+
+  if (target.file) {
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      form.avatar = event.target?.result || ''
+      showToast(t('message.operationSuccess'))
+    }
+    reader.onerror = () => {
+      showToast(t('message.operationFailed'))
+    }
+    reader.readAsDataURL(target.file)
+  }
+}
+
+const onGenderSelect = (action) => {
+  form.gender = action.value
+}
+
+const handleSubmit = async () => {
+  saving.value = true
+  try {
+    await userStore.updateUserInfo({ ...form })
+    showToast(t('message.updateSuccess'))
+  } catch (error) {
+    showToast(error.message || t('message.operationFailed'))
+  } finally {
+    saving.value = false
+  }
+}
+
+const handleBack = () => {
+  router.back()
+}
 </script>
 
 <style lang="scss" scoped>
-  .profile-page {
-    min-height: 100vh;
-    background-color: var(--bg-color, #f7f8fa);
-    padding-bottom: 40px;
-  }
+.profile-page {
+  min-height: 100vh;
+  background-color: var(--bg-color, #f7f8fa);
+  padding-bottom: 40px;
+}
 
-  .profile-content {
-    padding-top: $spacing-md;
-  }
+.profile-content {
+  padding-top: $spacing-md;
+}
 
-  .avatar-section {
+.avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: $spacing-xl 0;
+  background-color: transparent;
+
+  .avatar-wrapper {
+    position: relative;
+    border: 4px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     display: flex;
-    flex-direction: column;
     align-items: center;
-    padding: $spacing-xl 0;
-    background-color: transparent;
+    justify-content: center;
+    width: 108px;
+    height: 108px;
 
-    .avatar-wrapper {
-      position: relative;
-      border: 4px solid #fff;
+    .camera-icon {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 32px;
+      height: 32px;
+      background-color: var(--van-primary-color);
       border-radius: 50%;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 108px;
-      height: 108px;
-
-      .camera-icon {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        width: 32px;
-        height: 32px;
-        background-color: var(--van-primary-color);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #fff;
-        border: 2px solid #fff;
-        font-size: 18px;
-      }
+      color: #fff;
+      border: 2px solid #fff;
+      font-size: 18px;
     }
   }
+}
 
-  .section-title {
-    padding: $spacing-md $spacing-lg $spacing-xs;
-    font-size: $font-size-md;
-    font-weight: 600;
-    color: var(--text-primary);
-  }
+.section-title {
+  padding: $spacing-md $spacing-lg $spacing-xs;
+  font-size: $font-size-md;
+  font-weight: 600;
+  color: var(--text-primary);
+}
 
-  .submit-bar {
-    margin: $spacing-xl $spacing-lg;
-  }
+.submit-bar {
+  margin: $spacing-xl $spacing-lg;
+}
 </style>

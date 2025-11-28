@@ -17,7 +17,8 @@
       <!-- 设置列表 -->
       <van-cell-group inset class="user-settings">
         <van-cell :title="$t('user.profile')" icon="user-o" is-link @click="handleProfile" />
-        <van-cell title="PDF预览" icon="orders-o" is-link @click="handlePdfDemo" />
+        <van-cell title="PDF 预览" icon="orders-o" is-link @click="handlePdfDemo" />
+        <van-cell title="Markdown 预览" icon="notes-o" is-link @click="handleMarkdownDemo" />
         <van-cell :title="$t('user.chat')" icon="chat-o" is-link @click="handleChat" />
         <van-cell :title="$t('user.aiChat')" icon="service-o" is-link @click="handleAiChat" />
         <van-cell :title="$t('user.theme')" icon="brush-o" is-link @click="showThemePopup = true" />
@@ -54,130 +55,134 @@
 </template>
 
 <script setup>
-  import { ref } from 'vue'
-  import { useRouter } from 'vue-router'
-  import { useUserStore } from '@/store/modules/user'
-  import { useTheme } from '@/hooks/useTheme'
-  import { setLocale } from '@/locales'
-  import { showToast, showConfirmDialog } from 'vant'
-  import { useI18n } from 'vue-i18n'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/store/modules/user'
+import { useTheme } from '@/hooks/useTheme'
+import { setLocale } from '@/locales'
+import { showToast, showConfirmDialog } from 'vant'
+import { useI18n } from 'vue-i18n'
 
-  const router = useRouter()
-  const userStore = useUserStore()
-  const { changeThemeColor, getAllThemeColors } = useTheme()
-  const { t } = useI18n()
+const router = useRouter()
+const userStore = useUserStore()
+const { changeThemeColor, getAllThemeColors } = useTheme()
+const { t } = useI18n()
 
-  const showThemePopup = ref(false)
-  const showLanguagePopup = ref(false)
+const showThemePopup = ref(false)
+const showLanguagePopup = ref(false)
 
-  // 主题色选项
-  const themeColors = getAllThemeColors().map(item => ({
-    text: item.name,
-    value: item.key
-  }))
+// 主题色选项
+const themeColors = getAllThemeColors().map(item => ({
+  text: item.name,
+  value: item.key
+}))
 
-  // 语言选项
-  const languages = [
-    { text: '简体中文', value: 'zh-CN' },
-    { text: 'English', value: 'en-US' }
-  ]
+// 语言选项
+const languages = [
+  { text: '简体中文', value: 'zh-CN' },
+  { text: 'English', value: 'en-US' }
+]
 
-  const handleProfile = () => {
-    router.push('/user/profile')
-  }
+const handleProfile = () => {
+  router.push('/user/profile')
+}
 
-  const handlePdfDemo = () => {
-    router.push('/user/pdf-demo')
-  }
+const handlePdfDemo = () => {
+  router.push('/user/pdf-demo')
+}
 
-  const handleChat = () => {
-    router.push('/message')
-  }
+const handleMarkdownDemo = () => {
+  router.push('/markdown')
+}
 
-  const handleAiChat = () => {
-    router.push('/ai-chat')
-  }
+const handleChat = () => {
+  router.push('/message')
+}
 
-  const handleSettings = () => {
-    showToast(t('common.success'))
-  }
+const handleAiChat = () => {
+  router.push('/ai-chat')
+}
 
-  const handleThemeConfirm = ({ selectedOptions }) => {
-    const colorKey = selectedOptions[0].value
-    changeThemeColor(colorKey)
-    showThemePopup.value = false
-    showToast(t('common.success'))
-  }
+const handleSettings = () => {
+  showToast(t('common.success'))
+}
 
-  const handleLanguageConfirm = ({ selectedOptions }) => {
-    const locale = selectedOptions[0].value
-    setLocale(locale)
-    showLanguagePopup.value = false
-    showToast(t('common.success'))
-  }
+const handleThemeConfirm = ({ selectedOptions }) => {
+  const colorKey = selectedOptions[0].value
+  changeThemeColor(colorKey)
+  showThemePopup.value = false
+  showToast(t('common.success'))
+}
 
-  const handleLogin = () => {
+const handleLanguageConfirm = ({ selectedOptions }) => {
+  const locale = selectedOptions[0].value
+  setLocale(locale)
+  showLanguagePopup.value = false
+  showToast(t('common.success'))
+}
+
+const handleLogin = () => {
+  router.push('/login')
+}
+
+const handleLogout = async () => {
+  try {
+    await showConfirmDialog({
+      title: t('common.tips'),
+      message: t('user.logoutConfirm')
+    })
+    await userStore.logout()
+    showToast(t('user.logoutSuccess'))
     router.push('/login')
+  } catch (error) {
+    console.log(error)
   }
-
-  const handleLogout = async () => {
-    try {
-      await showConfirmDialog({
-        title: t('common.tips'),
-        message: t('user.logoutConfirm')
-      })
-      await userStore.logout()
-      showToast(t('user.logoutSuccess'))
-      router.push('/login')
-    } catch (error) {
-      console.log(error)
-    }
-  }
+}
 </script>
 
 <style lang="scss" scoped>
-  .user-container {
-    background-color: var(--bg-color);
+.user-container {
+  background-color: var(--bg-color);
 
-    .user-content {
-      padding-bottom: 60px;
+  .user-content {
+    padding-bottom: 60px;
 
-      .user-card {
-        background: linear-gradient(135deg, var(--theme-color) 0%, var(--theme-color-dark) 100%);
-        padding: $spacing-xl;
-        display: flex;
-        align-items: center;
-        margin-bottom: $spacing-md;
+    .user-card {
+      background: linear-gradient(135deg, var(--theme-color) 0%, var(--theme-color-dark) 100%);
+      padding: $spacing-xl;
+      display: flex;
+      align-items: center;
+      margin-bottom: $spacing-md;
 
-        .user-avatar {
-          margin-right: $spacing-md;
-        }
-
-        .user-info {
-          flex: 1;
-
-          .user-name {
-            font-size: $font-size-xl;
-            font-weight: 600;
-            color: #fff;
-            margin-bottom: $spacing-xs;
-          }
-
-          .user-desc {
-            font-size: $font-size-sm;
-            color: rgba(255, 255, 255, 0.8);
-          }
-        }
+      .user-avatar {
+        margin-right: $spacing-md;
       }
 
-      .user-settings {
-        margin-bottom: $spacing-md;
-      }
+      .user-info {
+        flex: 1;
 
-      .user-logout,
-      .user-login {
-        padding: $spacing-md;
+        .user-name {
+          font-size: $font-size-xl;
+          font-weight: 600;
+          color: #fff;
+          margin-bottom: $spacing-xs;
+        }
+
+        .user-desc {
+          font-size: $font-size-sm;
+          color: rgba(255, 255, 255, 0.8);
+        }
       }
     }
+
+    .user-settings {
+      margin-bottom: $spacing-md;
+    }
+
+    .user-logout,
+    .user-login {
+      padding: $spacing-md;
+    }
   }
+}
 </style>

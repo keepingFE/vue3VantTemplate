@@ -6,7 +6,8 @@
 
     <!-- 语言切换 -->
     <div class="lang-switch">
-      <van-popover v-model:show="showLangPopover" :actions="langActions" @select="onSelectLang" placement="bottom-end" theme="light">
+      <van-popover v-model:show="showLangPopover" :actions="langActions" @select="onSelectLang" placement="bottom-end"
+        theme="light">
         <template #reference>
           <div class="lang-btn">
             <van-icon name="exchange" size="20" />
@@ -18,47 +19,22 @@
 
     <van-form @submit="handleLogin" class="login-form">
       <van-cell-group>
-        <van-field
-          v-model="loginForm.username"
-          name="username"
-          :label="$t('login.username')"
+        <van-field v-model="loginForm.username" name="username" :label="$t('login.username')"
           :placeholder="$t('login.usernamePlaceholder')"
-          :rules="[{ required: true, message: $t('login.usernameRequired') }]"
-          clearable
-        />
-        <van-field
-          v-model="loginForm.password"
-          type="password"
-          name="password"
-          :label="$t('login.password')"
+          :rules="[{ required: true, message: $t('login.usernameRequired') }]" clearable />
+        <van-field v-model="loginForm.password" type="password" name="password" :label="$t('login.password')"
           :placeholder="$t('login.passwordPlaceholder')"
-          :rules="[{ required: true, message: $t('login.passwordRequired') }]"
-          clearable
-        />
-        <van-field
-          v-model="loginForm.phone"
-          name="phone"
-          :label="$t('login.phone')"
-          :placeholder="$t('login.phonePlaceholder')"
-          :rules="[{ required: true, message: $t('login.phoneRequired') }]"
-          clearable
-        />
-        <van-field
-          v-model="loginForm.verifyCode"
-          name="verifyCode"
-          :label="$t('login.verifyCode')"
+          :rules="[{ required: true, message: $t('login.passwordRequired') }]" clearable />
+        <van-field v-model="loginForm.phone" name="phone" :label="$t('login.phone')"
+          :placeholder="$t('login.phonePlaceholder')" :rules="[{ required: true, message: $t('login.phoneRequired') }]"
+          clearable />
+        <van-field v-model="loginForm.verifyCode" name="verifyCode" :label="$t('login.verifyCode')"
           :placeholder="$t('login.verifyCodePlaceholder')"
-          :rules="[{ required: true, message: $t('login.verifyCodeRequired') }]"
-          clearable
-          style="--van-field-input-width: calc(100% - 100px)"
-        >
+          :rules="[{ required: true, message: $t('login.verifyCodeRequired') }]" clearable
+          style="--van-field-input-width: calc(100% - 100px)">
           <template #button>
-            <CountdownButton
-              :target="loginForm.phone"
-              @send="handleSendVerifyCode"
-              :disabled="!loginForm.phone"
-              class="verify-code-btn"
-            />
+            <CountdownButton :target="loginForm.phone" @send="handleSendVerifyCode" :disabled="!loginForm.phone"
+              class="verify-code-btn" />
           </template>
         </van-field>
         <div class="remember-me-cell">
@@ -116,10 +92,10 @@ const onSelectLang = (action) => {
 const loading = ref(false)
 const appVersion = ref(packageInfo.version)
 const loginForm = reactive({
-  username: '',
-  password: '',
-  phone: '',
-  verifyCode: '',
+  username: 'admin',
+  password: '123456',
+  phone: '13656789878',
+  verifyCode: '1234',
   rememberMe: false
 })
 
@@ -251,6 +227,7 @@ const handleSendVerifyCode = async target => {
   }
 
   .login-form {
+
     // 错误抖动动画
     &.shake {
       animation: shake 0.5s ease-in-out;
@@ -309,6 +286,7 @@ const handleSendVerifyCode = async target => {
       padding: 0 16px; // 添加内边距，确保按钮不会贴边
 
       :deep(.van-button) {
+
         // 加载状态样式
         &.van-button--loading {
           opacity: 0.8;
@@ -387,6 +365,7 @@ const handleSendVerifyCode = async target => {
 
 // 动画定义
 @keyframes shake {
+
   0%,
   100% {
     transform: translateX(0);

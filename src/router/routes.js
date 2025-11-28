@@ -130,6 +130,16 @@ export const constantRoutes = [
     }
   },
   {
+    path: '/markdown',
+    name: 'MarkdownDemo',
+    component: () => import('@/views/markdown/index.vue'),
+    meta: {
+      title: 'Markdown 演示',
+      requiresAuth: false,
+      hidden: true
+    }
+  },
+  {
     path: '/404',
     name: 'NotFound',
     component: () => import('@/views/error/404.vue'),
