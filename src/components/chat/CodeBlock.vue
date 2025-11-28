@@ -71,7 +71,7 @@ const handleCopy = async () => {
     overflow: hidden;
     background-color: #282c34; // Matches atom-one-dark background
     font-family: 'Fira Code', monospace;
-    
+
     .code-header {
         display: flex;
         justify-content: space-between;
@@ -81,13 +81,13 @@ const handleCopy = async () => {
         color: #abb2bf;
         font-size: 12px;
         border-bottom: 1px solid #3e4451;
-        
+
         .language-label {
             text-transform: uppercase;
             font-weight: bold;
             color: #98c379;
         }
-        
+
         .copy-btn {
             display: flex;
             align-items: center;
@@ -95,22 +95,22 @@ const handleCopy = async () => {
             cursor: pointer;
             opacity: 0.7;
             transition: opacity 0.2s;
-            
+
             &:hover {
                 opacity: 1;
             }
-            
+
             .van-icon {
                 font-size: 14px;
             }
         }
     }
-    
+
     pre {
         margin: 0;
         padding: 12px;
         overflow-x: auto;
-        
+
         code {
             font-family: inherit;
             font-size: 13px;

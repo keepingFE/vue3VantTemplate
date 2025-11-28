@@ -74,6 +74,10 @@
 </template>
 
 <script setup>
+defineOptions({
+  name: 'UserProfile'
+})
+
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { showToast } from 'vant'

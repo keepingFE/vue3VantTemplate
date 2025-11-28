@@ -2,7 +2,7 @@
 module.exports = {
   root: true,
   extends: [
-    'plugin:vue/vue3-essential',
+    'plugin:vue/vue3-recommended',
     'eslint:recommended',
     './.eslintrc-auto-import.json'
   ],
@@ -10,7 +10,6 @@ module.exports = {
     ecmaVersion: 'latest'
   },
   rules: {
-    'vue/multi-word-component-names': 'off',
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off'
   }
