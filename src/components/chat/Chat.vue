@@ -22,11 +22,21 @@
         </div>
 
         <!-- Chat Input -->
-        <ChatInput v-model="inputValue" :placeholder="placeholder" :max-length="maxLength" @send="sendMessage"
-            @voice-click="handleVoiceClick" @add-click="handleAddClick" />
+        <ChatInput
+            v-model="inputValue" 
+            :placeholder="placeholder" 
+            :max-length="maxLength" 
+            :images="pendingImages"
+            :files="pendingFiles"
+            @send="sendMessage"
+            @voice-click="handleVoiceClick" 
+            @add-click="handleAddClick"
+            @remove-image="handleRemoveImage"
+            @remove-file="handleRemoveFile"
+        />
 
         <!-- Hidden File Input -->
-        <input type="file" ref="fileInput" style="display: none" @change="handleFileChange" />
+        <input type="file" ref="fileInput" :accept="fileInputAccept" style="display: none" @change="handleFileChange" />
     </div>
 </template>
 
@@ -106,6 +116,9 @@
     const messagesContainer = ref(null)
     const inputValue = ref('')
     const fileInput = ref(null)
+    const fileInputAccept = ref('*/*')
+    const pendingImages = ref([])
+    const pendingFiles = ref([])
 
     // Data
     const quickQuestions = ref([
@@ -148,8 +161,14 @@
     }
 
     const handleUploadOption = (option) => {
-        emit('upload-option', option)
-        showToast(`${option.text}功能`)
+        if (option.type === 'photo' || option.type === 'camera') {
+            fileInputAccept.value = 'image/*'
+        } else {
+            fileInputAccept.value = '*/*'
+        }
+        nextTick(() => {
+            fileInput.value.click()
+        })
     }
 
     const handleNavClick = (item) => {
@@ -165,32 +184,68 @@
     }
 
     const handleAddClick = () => {
-        fileInput.value.click()
+        fileInputAccept.value = '*/*'
+        nextTick(() => {
+            fileInput.value.click()
+        })
     }
 
     const handleFileChange = (event) => {
         const file = event.target.files[0]
         if (!file) return
 
-        emit('send-file', file)
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader()
+            reader.onload = (e) => {
+                pendingImages.value.push({
+                    name: file.name,
+                    url: e.target.result,
+                    file: file
+                })
+            }
+            reader.readAsDataURL(file)
+        } else {
+            pendingFiles.value.push({
+                name: file.name,
+                file: file
+            })
+        }
+        
         event.target.value = ''
+    }
+
+    const handleRemoveImage = (index) => {
+        pendingImages.value.splice(index, 1)
+    }
+
+    const handleRemoveFile = (index) => {
+        pendingFiles.value.splice(index, 1)
     }
 
     const sendMessage = (messageText) => {
         const message = messageText || inputValue.value.trim()
 
-        if (!message) {
+        if (!message && pendingImages.value.length === 0 && pendingFiles.value.length === 0) {
             showToast(t('chat.emptyContent') || '请输入内容')
             return
         }
 
-        if (message.length > props.maxLength) {
+        if (message && message.length > props.maxLength) {
             showToast(t('chat.maxLengthError', { max: props.maxLength }) || `内容不能超过${props.maxLength}字`)
             return
         }
 
-        emit('send-message', message)
+        if (message) {
+            emit('send-message', message)
+        }
+
+        // Send pending files
+        pendingImages.value.forEach(img => emit('send-file', img.file))
+        pendingFiles.value.forEach(file => emit('send-file', file.file))
+
         inputValue.value = ''
+        pendingImages.value = []
+        pendingFiles.value = []
         scrollToBottom()
     }
 

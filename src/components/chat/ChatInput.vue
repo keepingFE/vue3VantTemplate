@@ -1,5 +1,16 @@
 <template>
     <div class="chat-input">
+        <!-- Upload Preview -->
+        <div v-if="showPreview" class="preview-container">
+            <UploadPreview 
+                :images="images" 
+                :files="files" 
+                @remove-image="handleRemoveImage"
+                @remove-file="handleRemoveFile"
+                @add="handleAddClick"
+            />
+        </div>
+
         <div class="input-wrapper">
             <div class="voice-button" @click="handleVoiceClick">
                 <van-icon name="audio" class="voice-icon" />
@@ -14,18 +25,19 @@
                 @keydown="handleKeyDown"
                 class="message-input"
             />
-            <div v-if="!inputValue || !inputValue.trim()" class="add-button" @click="handleAddClick">
+            <div v-if="!inputValue && !hasContent" class="add-button" @click="handleAddClick">
                 <van-icon name="plus" class="add-icon" />
             </div>
             <div v-else class="send-button" @click="handleSendClick">
-                发送
+                <van-icon name="arrow-up" />
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
+import UploadPreview from './UploadPreview.vue'
 
 const props = defineProps({
     placeholder: {
@@ -39,18 +51,29 @@ const props = defineProps({
     modelValue: {
         type: String,
         default: ''
+    },
+    images: {
+        type: Array,
+        default: () => []
+    },
+    files: {
+        type: Array,
+        default: () => []
     }
 })
 
-const emit = defineEmits(['update:modelValue', 'send', 'voice-click', 'add-click'])
+const emit = defineEmits(['update:modelValue', 'send', 'voice-click', 'add-click', 'remove-image', 'remove-file'])
 
 const inputValue = ref(props.modelValue)
+
+const showPreview = computed(() => props.images.length > 0 || props.files.length > 0)
+const hasContent = computed(() => inputValue.value.trim() || showPreview.value)
 
 const handleKeyDown = (event) => {
     // Ctrl/Cmd + Enter to send
     if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
         event.preventDefault()
-        emit('send', inputValue.value)
+        handleSendClick()
     }
 }
 
@@ -62,8 +85,16 @@ const handleAddClick = () => {
     emit('add-click')
 }
 
+const handleRemoveImage = (index) => {
+    emit('remove-image', index)
+}
+
+const handleRemoveFile = (index) => {
+    emit('remove-file', index)
+}
+
 const handleSendClick = () => {
-    if (inputValue.value.trim()) {
+    if (hasContent.value) {
         emit('send', inputValue.value)
     }
 }
@@ -79,8 +110,14 @@ watch(inputValue, (newVal) => {
 
 <style lang="scss" scoped>
 .chat-input {
-    background: #fff;
-    border-top: 1px solid #f0f0f0;
+    background: #f7f8fa;
+    border-top: 1px solid #ebedf0;
+    padding-bottom: constant(safe-area-inset-bottom);
+    padding-bottom: env(safe-area-inset-bottom);
+
+    .preview-container {
+        padding: 12px 12px 0;
+    }
 
     .input-wrapper {
         display: flex;
@@ -118,19 +155,19 @@ watch(inputValue, (newVal) => {
         }
 
         .send-button {
-            height: 32px;
-            padding: 0 16px;
-            border-radius: 16px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
             background: #1989fa;
             color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
+            font-size: 20px;
             cursor: pointer;
             transition: all 0.3s ease;
             flex-shrink: 0;
-            margin-bottom: 4px; // Align with input bottom
+            margin-bottom: 2px; // Align with input bottom
             
             &:active {
                 opacity: 0.8;

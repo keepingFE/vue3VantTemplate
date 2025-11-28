@@ -29,17 +29,7 @@
                     class="message-avatar" 
                 />
                 <div class="bubble-wrap">
-                    <!-- 使用 TypingBubble 组件显示打字效果 -->
-                    <TypingBubble 
-                        v-if="message.typing && !message.typingComplete" 
-                        :text="message.content"
-                        :type="message.type" 
-                        :typing-speed="message.typingSpeed || 30"
-                        :auto-start="message.autoStart !== false" 
-                        @typing-complete="handleTypingComplete"
-                    />
-                    <!-- 打字完成后显示完整内容 -->
-                    <div v-else class="message-bubble">
+                    <div class="message-bubble">
                         <div class="bubble-text">
                             <span>{{ message.content }}</span>
                         </div>
@@ -100,7 +90,6 @@
 </template>
 
 <script setup>
-import TypingBubble from './TypingBubble.vue'
 
 const props = defineProps({
     message: {
@@ -117,11 +106,7 @@ const props = defineProps({
     }
 })
 
-const emit = defineEmits(['typing-complete'])
 
-const handleTypingComplete = () => {
-    emit('typing-complete')
-}
 
 const getFileIcon = (fileType) => {
     if (!fileType) return 'description'
