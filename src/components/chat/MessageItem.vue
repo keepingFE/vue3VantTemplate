@@ -23,9 +23,21 @@
                             <TypingBubble v-if="message.typing" :text="message.content"
                                 :typing-speed="message.typingSpeed || 50" :auto-start="true"
                                 @typing-complete="$emit('typing-complete')" />
-                            <span v-else>{{ message.content }}</span>
+                            <MarkdownRenderer v-else :content="message.content" />
                         </div>
                     </div>
+                    <!-- Feedback Component -->
+                    <MessageFeedback 
+                        v-if="!message.typing"
+                        :content="message.content"
+                        :message-id="message.id"
+                        :initial-status="message.feedbackStatus"
+                        :allow-regenerate="true"
+                        @like="(data) => handleFeedback('like', data)"
+                        @dislike="(data) => handleFeedback('dislike', data)"
+                        @copy="(content) => handleFeedback('copy', { content })"
+                        @regenerate="(id) => handleFeedback('regenerate', { id })"
+                    />
                 </div>
             </div>
         </div>
@@ -74,6 +86,8 @@
 
 <script setup>
     import TypingBubble from './TypingBubble.vue'
+    import MarkdownRenderer from '@/components/common/MarkdownRenderer.vue'
+    import MessageFeedback from './MessageFeedback.vue'
 
     const props = defineProps({
         message: {
@@ -90,9 +104,11 @@
         }
     })
 
-    const emit = defineEmits(['typing-complete'])
+    const emit = defineEmits(['typing-complete', 'feedback'])
 
-
+    const handleFeedback = (type, data) => {
+        emit('feedback', { type, ...data })
+    }
 
     const getFileIcon = (fileType) => {
         if (!fileType) return 'description'

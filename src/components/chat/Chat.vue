@@ -17,8 +17,31 @@
             <!-- 消息列表 -->
             <template v-else>
                 <MessageItem v-for="(message, index) in messages" :key="index" :message="message"
-                    :user-avatar="userAvatar" :bot-avatar="botAvatar" @typing-complete="onTypingComplete(index)" />
+                    :user-avatar="userAvatar" :bot-avatar="botAvatar" 
+                    @typing-complete="onTypingComplete(index)"
+                    @feedback="(data) => $emit('feedback', data)" 
+                />
+                
+                <!-- Loading Skeleton -->
+                <MessageSkeleton v-if="isLoading" />
+
+                <!-- Error Message -->
+                <ErrorMessage 
+                    v-if="error" 
+                    :message="typeof error === 'string' ? error : error.message" 
+                    @retry="$emit('retry')" 
+                />
             </template>
+        </div>
+
+        <!-- Streaming Controller -->
+        <div class="streaming-controls-wrapper" v-if="streamingStatus !== 'stopped'">
+            <StreamingController 
+                :status="streamingStatus"
+                @pause="$emit('pause-generation')"
+                @resume="$emit('resume-generation')"
+                @stop="$emit('stop-generation')"
+            />
         </div>
 
         <!-- Chat Input -->
@@ -54,6 +77,9 @@
     import BottomNavigation from './BottomNavigation.vue'
     import ChatInput from './ChatInput.vue'
     import MessageItem from './MessageItem.vue'
+    import ErrorMessage from './ErrorMessage.vue'
+    import StreamingController from './StreamingController.vue'
+    import MessageSkeleton from './MessageSkeleton.vue'
 
     const { t } = useI18n()
     const router = useRouter()
@@ -75,6 +101,14 @@
         isSending: {
             type: Boolean,
             default: false
+        },
+        error: {
+            type: [String, Object],
+            default: null
+        },
+        streamingStatus: {
+            type: String,
+            default: 'stopped' // 'generating', 'paused', 'stopped'
         },
         placeholder: {
             type: String,
@@ -109,7 +143,12 @@
         'nav-click',
         'voice-click',
         'add-click',
-        'send-file'
+        'send-file',
+        'retry',
+        'stop-generation',
+        'pause-generation',
+        'resume-generation',
+        'feedback'
     ])
 
     // Refs
@@ -303,6 +342,21 @@
 
             &::-webkit-scrollbar-track {
                 background: transparent;
+            }
+        }
+
+        .streaming-controls-wrapper {
+            position: absolute;
+            bottom: 80px; // Adjust based on input height
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            z-index: 10;
+            pointer-events: none; // Allow clicking through empty space
+
+            > * {
+                pointer-events: auto; // Re-enable pointer events for the controller
             }
         }
     }
