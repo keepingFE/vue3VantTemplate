@@ -23,11 +23,13 @@
         <van-cell :title="$t('user.profile')" icon="user-o" is-link @click="handleProfile" />
         <van-cell :title="$t('user.pdfPreview')" icon="orders-o" is-link @click="handlePdfDemo" />
         <van-cell :title="$t('user.markdownPreview')" icon="notes-o" is-link @click="handleMarkdownDemo" />
+        <van-cell title="大文件上传" icon="upgrade" is-link @click="handleLargeFileUpload" />
         <van-cell :title="$t('user.chat')" icon="chat-o" is-link @click="handleChat" />
         <van-cell :title="$t('user.aiChat')" icon="service-o" is-link @click="handleAiChat" />
         <van-cell :title="$t('user.theme')" icon="brush-o" is-link @click="showThemePopup = true" />
         <van-cell :title="$t('user.language')" icon="guide-o" is-link @click="showLanguagePopup = true" />
       </van-cell-group>
+
 
       <!-- 退出登录 -->
       <div class="user-logout" v-if="userStore.isLoggedIn">
@@ -105,6 +107,11 @@ const handleChat = () => {
 const handleAiChat = () => {
   router.push('/ai-chat')
 }
+
+const handleLargeFileUpload = () => {
+  router.push('/upload/large-file')
+}
+
 
 const handleSettings = () => {
   showToast(t('common.success'))

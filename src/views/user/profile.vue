@@ -18,7 +18,9 @@
 
       <van-form @submit="handleSubmit">
         <!-- Basic Info -->
-        <div class="section-title">{{ $t('user.basicInfo') }}</div>
+        <div class="section-title">
+          {{ $t('user.basicInfo') }}
+        </div>
         <van-cell-group inset>
           <!-- Name -->
           <van-field v-model="form.name" name="name" :label="$t('user.nameLabel')"

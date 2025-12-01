@@ -140,6 +140,16 @@ export const constantRoutes = [
     }
   },
   {
+    path: '/upload/large-file',
+    name: 'LargeFileUpload',
+    component: () => import('@/views/upload/largeFileUpload.vue'),
+    meta: {
+      title: '大文件上传',
+      requiresAuth: false,
+      hidden: true
+    }
+  },
+  {
     path: '/404',
     name: 'NotFound',
     component: () => import('@/views/error/404.vue'),
