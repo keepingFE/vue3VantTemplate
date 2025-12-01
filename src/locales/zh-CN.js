@@ -93,10 +93,16 @@ export default {
     avatar: '头像',
     changeAvatar: '更换头像',
     avatarTip: '上传清晰的个人头像，支持 jpg/png 格式',
+    nameLabel: '姓名',
+    namePlaceholder: '请输入姓名',
     usernameLabel: '昵称',
     emailLabel: '邮箱',
     phoneLabel: '手机号',
+    wechatLabel: '微信号',
+    wechatPlaceholder: '请输入微信号',
     bioLabel: '个人简介',
+    jobLabel: '工作岗位',
+    jobPlaceholder: '请输入工作岗位',
     saveProfile: '保存信息',
     updateTime: '最近更新：',
     theme: '主题设置',
@@ -120,7 +126,14 @@ export default {
     pdfPreview: 'PDF 预览',
     markdownPreview: 'Markdown 预览',
     languageZhCN: '简体中文',
-    languageEnUS: 'English'
+    languageEnUS: 'English',
+    addressLabel: '家庭住址',
+    addressAreaLabel: '省市区',
+    addressDetailLabel: '详细地址',
+    selectArea: '选择省市区',
+    addressDetailPlaceholder: '请输入详细地址',
+    homepageLabel: '个人主页',
+    homepagePlaceholder: '请输入个人主页URL'
   },
 
   messages: {

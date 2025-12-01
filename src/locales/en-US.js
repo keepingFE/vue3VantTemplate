@@ -93,10 +93,16 @@ export default {
     avatar: 'Avatar',
     changeAvatar: 'Change Avatar',
     avatarTip: 'Upload a clear personal avatar (JPG/PNG)',
+    nameLabel: 'Name',
+    namePlaceholder: 'Please enter your name',
     usernameLabel: 'Display Name',
     emailLabel: 'Email',
     phoneLabel: 'Phone',
+    wechatLabel: 'WeChat',
+    wechatPlaceholder: 'Please enter your WeChat ID',
     bioLabel: 'Bio',
+    jobLabel: 'Job',
+    jobPlaceholder: 'Please enter your job',
     saveProfile: 'Save Profile',
     updateTime: 'Last updated: ',
     theme: 'Theme Settings',
@@ -120,7 +126,14 @@ export default {
     pdfPreview: 'PDF Preview',
     markdownPreview: 'Markdown Preview',
     languageZhCN: 'Simplified Chinese',
-    languageEnUS: 'English'
+    languageEnUS: 'English',
+    addressLabel: 'Home Address',
+    addressAreaLabel: 'Province/City/District',
+    addressDetailLabel: 'Detailed Address',
+    selectArea: 'Select Province/City/District',
+    addressDetailPlaceholder: 'Please enter detailed address',
+    homepageLabel: 'Homepage',
+    homepagePlaceholder: 'Please enter homepage URL'
   },
 
   messages: {

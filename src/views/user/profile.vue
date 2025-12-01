@@ -20,6 +20,10 @@
         <!-- Basic Info -->
         <div class="section-title">{{ $t('user.basicInfo') }}</div>
         <van-cell-group inset>
+          <!-- Name -->
+          <van-field v-model="form.name" name="name" :label="$t('user.nameLabel')"
+            :placeholder="$t('user.namePlaceholder')" input-align="right" maxlength="20" show-word-limit />
+
           <!-- Username -->
           <van-field v-model="form.username" name="username" :label="$t('user.usernameLabel')"
             :placeholder="$t('user.usernameLabel')" input-align="right"
@@ -36,6 +40,15 @@
           <!-- Bio -->
           <van-field v-model="form.bio" name="bio" :label="$t('user.bioLabel')" :placeholder="$t('user.bioLabel')"
             type="textarea" rows="2" autosize maxlength="100" show-word-limit input-align="right" />
+
+          <!-- Job -->
+          <van-field v-model="form.job" name="job" :label="$t('user.jobLabel')" :placeholder="$t('user.jobPlaceholder')"
+            input-align="right" maxlength="50" show-word-limit />
+
+          <!-- Homepage -->
+          <van-field v-model="form.homepage" name="homepage" type="url" :label="$t('user.homepageLabel')"
+            :placeholder="$t('user.homepagePlaceholder')" input-align="right"
+            :rules="[{ validator: validateURL, message: $t('validation.url') }]" />
         </van-cell-group>
 
         <!-- Contact Info -->
@@ -53,6 +66,22 @@
           <van-field v-model="form.phone" name="phone" type="tel" :label="$t('user.phoneLabel')"
             :placeholder="$t('user.phoneLabel')" input-align="right"
             :rules="[{ validator: validatePhone, message: $t('validation.phone') }]" />
+          <!-- WeChat -->
+          <van-field v-model="form.wechat" name="wechat" :label="$t('user.wechatLabel')"
+            :placeholder="$t('user.wechatPlaceholder')" input-align="right" maxlength="50" />
+        </van-cell-group>
+
+        <!-- Address Info -->
+        <div class="section-title">
+          {{ $t('user.addressLabel') }}
+        </div>
+        <van-cell-group inset>
+          <!-- Area Picker -->
+          <van-field :model-value="areaText" is-link readonly name="addressArea" :label="$t('user.addressAreaLabel')"
+            :placeholder="$t('user.selectArea')" input-align="right" @click="showAreaPicker = true" />
+          <!-- Address Detail -->
+          <van-field v-model="form.addressDetail" name="addressDetail" :label="$t('user.addressDetailLabel')"
+            :placeholder="$t('user.addressDetailPlaceholder')" input-align="right" maxlength="100" show-word-limit />
         </van-cell-group>
 
         <div class="submit-bar">
@@ -70,6 +99,10 @@
     <!-- Birthday Picker -->
     <BirthdayPicker v-model:show="showBirthdayPicker" v-model:modelValue="form.birthday"
       :title="$t('user.selectBirthday')" format="YYYY-MM-DD HH:mm:ss" />
+
+    <!-- Area Picker -->
+    <AddressPicker v-model:show="showAreaPicker" :modelValue="form.addressArea" :title="$t('user.selectArea')"
+      @update:modelValue="handleAreaUpdate" @confirm="onAreaConfirm" />
   </div>
 </template>
 
@@ -83,8 +116,10 @@ import { useRouter } from 'vue-router'
 import { showToast } from 'vant'
 import { useUserStore } from '@/store/modules/user'
 import { useI18n } from 'vue-i18n'
-import { isValidPhone } from '@/utils/validate'
+import { isValidPhone, isValidURL } from '@/utils/validate'
 import BirthdayPicker from '@/components/common/BirthdayPicker.vue'
+import AddressPicker from '@/components/common/AddressPicker.vue'
+import { areaList } from '@vant/area-data'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -94,15 +129,22 @@ const defaultAvatar = 'https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg'
 const saving = ref(false)
 const showGenderSheet = ref(false)
 const showBirthdayPicker = ref(false)
+const showAreaPicker = ref(false)
 
 const form = reactive({
   avatar: '',
+  name: '', // 姓名
   username: '',
   email: '',
   phone: '',
+  wechat: '', // 微信号
   bio: '',
   gender: 0, // 0: Secret, 1: Male, 2: Female
-  birthday: ''
+  birthday: '',
+  job: '', // 工作岗位
+  homepage: '', // 个人主页
+  addressArea: [], // 省市区代码数组，如 ['110000', '110100', '110101']
+  addressDetail: '' // 详细地址
 })
 
 const genderActions = computed(() => [
@@ -116,17 +158,46 @@ const genderText = computed(() => {
   return action ? action.name : t('user.secret')
 })
 
+// 获取省市区文本显示
+const areaText = computed(() => {
+  if (!form.addressArea || !Array.isArray(form.addressArea) || form.addressArea.length < 3) {
+    return ''
+  }
+
+  const provinceCode = form.addressArea[0]
+  const cityCode = form.addressArea[1]
+  const districtCode = form.addressArea[2]
+
+  // 确保 areaList 数据存在
+  if (!areaList || !areaList.province_list) {
+    return ''
+  }
+
+  const province = areaList.province_list[provinceCode] || ''
+  const city = areaList.city_list?.[cityCode] || ''
+  const district = areaList.county_list?.[districtCode] || ''
+
+  const addressParts = [province, city, district].filter(Boolean)
+  return addressParts.join(' ')
+})
+
 const lastUpdateTime = computed(() => userStore.userInfo?.updateTime || '')
 
 const syncForm = (info) => {
   if (!info) return
   form.avatar = info.avatar || ''
+  form.name = info.name || ''
   form.username = info.username || ''
   form.email = info.email || ''
   form.phone = info.phone || ''
+  form.wechat = info.wechat || ''
   form.bio = info.bio || ''
   form.gender = info.gender !== undefined ? info.gender : 0
   form.birthday = info.birthday || ''
+  form.job = info.job || ''
+  form.homepage = info.homepage || ''
+  form.addressArea = info.addressArea && Array.isArray(info.addressArea) ? [...info.addressArea] : []
+  form.addressDetail = info.addressDetail || ''
 }
 
 watch(
@@ -152,6 +223,7 @@ onMounted(async () => {
 
 const validateEmail = (val) => !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)
 const validatePhone = (val) => !val || isValidPhone(val)
+const validateURL = (val) => !val || isValidURL(val)
 
 const handleAvatarUpload = (file) => {
   const target = Array.isArray(file) ? file[0] : file
@@ -178,6 +250,22 @@ const handleAvatarUpload = (file) => {
 
 const onGenderSelect = (action) => {
   form.gender = action.value
+}
+
+// 处理省市区更新（确保响应式更新）
+const handleAreaUpdate = (codes) => {
+  if (codes && Array.isArray(codes) && codes.length >= 3) {
+    // 创建新数组以确保响应式更新
+    form.addressArea = [...codes]
+  } else {
+    form.addressArea = []
+  }
+}
+
+// 省市区选择确认
+const onAreaConfirm = (data) => {
+  // handleAreaUpdate 已经通过 @update:modelValue 处理了更新
+  // 这里可以做一些额外的处理，比如验证等
 }
 
 const handleSubmit = async () => {
