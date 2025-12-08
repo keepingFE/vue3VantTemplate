@@ -136,7 +136,10 @@ export default {
     invalidPhone: 'Please enter a valid phone number',
     invalidEmail: 'Please enter a valid email address',
     hasAccount: 'Already have an account?',
-    goLogin: 'Login now'
+    goLogin: 'Login now',
+    otherLoginMethods: 'Other Login Methods',
+    wechatLogin: 'WeChat Login',
+    alipayLogin: 'Alipay Login'
   },
 
   register: {

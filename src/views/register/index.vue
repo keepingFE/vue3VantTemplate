@@ -98,6 +98,27 @@
             </div>
         </van-form>
 
+        <!-- 第三方注册/登录 -->
+        <div class="third-party-login">
+            <div class="divider">
+                <span>{{ $t('login.otherLoginMethods') }}</span>
+            </div>
+            <div class="login-methods">
+                <div class="method-item" @click="handleWechatLogin">
+                    <div class="icon-wrapper wechat">
+                        <van-icon name="wechat" />
+                    </div>
+                    <span class="method-name">{{ $t('login.wechatLogin') }}</span>
+                </div>
+                <div class="method-item" @click="handleAlipayLogin">
+                    <div class="icon-wrapper alipay">
+                        <van-icon name="alipay" />
+                    </div>
+                    <span class="method-name">{{ $t('login.alipayLogin') }}</span>
+                </div>
+            </div>
+        </div>
+
         <!-- 版权和版本信息 -->
         <div class="copyright-info">
             <p>© 2025 Vue3 Vant Mobile Template</p>
@@ -216,6 +237,15 @@ const handleRegister = async () => {
     } finally {
         loading.value = false
     }
+}
+
+// 第三方登录处理
+const handleWechatLogin = () => {
+    showToast(t('common.tips') + ': ' + t('login.wechatLogin'))
+}
+
+const handleAlipayLogin = () => {
+    showToast(t('common.tips') + ': ' + t('login.alipayLogin'))
 }
 </script>
 
@@ -382,6 +412,85 @@ const handleRegister = async () => {
 
         p {
             margin: 5px 0;
+        }
+    }
+
+    // 第三方登录样式
+    .third-party-login {
+        margin-top: 30px;
+        padding: 0 20px;
+
+        .divider {
+            position: relative;
+            text-align: center;
+            margin-bottom: 20px;
+
+            span {
+                position: relative;
+                z-index: 1;
+                padding: 0 10px;
+                color: rgba(255, 255, 255, 0.9);
+                font-size: 13px;
+                background: transparent;
+            }
+
+            &::before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 0;
+                width: 100%;
+                height: 1px;
+                background-color: rgba(255, 255, 255, 0.3);
+                transform: translateY(-50%);
+            }
+        }
+
+        .login-methods {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+
+            .method-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
+                cursor: pointer;
+                transition: transform 0.2s ease;
+
+                &:active {
+                    transform: scale(0.95);
+                }
+
+                .icon-wrapper {
+                    width: 44px;
+                    height: 44px;
+                    border-radius: 50%;
+                    background-color: white;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+                    &.wechat {
+                        color: #07c160;
+                    }
+
+                    &.alipay {
+                        color: #1677ff;
+                    }
+
+                    .van-icon {
+                        font-size: 24px;
+                    }
+                }
+
+                .method-name {
+                    font-size: 12px;
+                    color: rgba(255, 255, 255, 0.9);
+                }
+            }
         }
     }
 }

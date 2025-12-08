@@ -137,7 +137,10 @@ export default {
     invalidPhone: '请输入正确的手机号',
     invalidEmail: '请输入正确的邮箱地址',
     hasAccount: '已有账号？',
-    goLogin: '立即登录'
+    goLogin: '立即登录',
+    otherLoginMethods: '其他登录方式',
+    wechatLogin: '微信登录',
+    alipayLogin: '支付宝登录'
   },
 
   register: {
