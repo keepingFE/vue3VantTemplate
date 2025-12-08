@@ -30,75 +30,73 @@
                 </div>
 
                 <!-- 上传进度 -->
-                <div class="upload-progress" v-if="item.status === 'uploading' || item.status === 'paused'">
-                    <van-progress :percentage="item.uploadProgress" stroke-width="4"
-                        :color="item.status === 'paused' ? '#ff976a' : '#1989fa'" />
-                    <div class="progress-info">
-                        <span class="progress-text">
-                            {{ item.status === 'paused' ? '已暂停' : '上传中' }}
-                            {{ item.uploadProgress }}%
-                        </span>
-                        <span class="chunk-info">
-                            {{ item.uploadedChunks }}/{{ item.totalChunks }} 块
-                        </span>
-                    </div>
-                </div>
-
-                <!-- 成功状态 -->
-                <div class="upload-success" v-if="item.status === 'success'">
-                    <van-icon name="success" color="#07c160" />
-                    <span class="success-text">上传成功</span>
-                </div>
-
-                <!-- 失败状态 -->
-                <div class="upload-error" v-if="item.status === 'error'">
-                    <van-icon name="close" color="#ee0a24" />
-                    <span class="error-text">上传失败: {{ item.errorMsg }}</span>
-                </div>
-
-                <!-- 操作按钮 -->
-                <div class="file-actions">
-                    <!-- 暂停 -->
-                    <van-button v-if="item.status === 'uploading'" size="small" type="warning"
-                        @click="pauseUpload(item)">
-                        暂停
-                    </van-button>
-
-                    <!-- 继续 -->
-                    <van-button v-if="item.status === 'paused'" size="small" type="primary" @click="resumeUpload(item)">
-                        继续
-                    </van-button>
-
-                    <!-- 重试 -->
-                    <van-button v-if="item.status === 'error'" size="small" type="primary" @click="retryUpload(item)">
-                        重试
-                    </van-button>
-
-                    <!-- 删除 -->
-                    <van-button v-if="['success', 'error', 'paused'].includes(item.status)" size="small" type="danger"
-                        @click="removeFile(index)">
-                        删除
-                    </van-button>
-
-                    <!-- 预览 -->
-                    <van-button v-if="item.status === 'success' && item.url && isImage(item.file)" size="small"
-                        @click="previewFile(item)">
-                        预览
-                    </van-button>
+                <div class="upload-progress" v-if="item.status === 'uploading' || item.status === 'paused'"></div>
+                <van-progress :percentage="item.uploadProgress" stroke-width="4"
+                    :color="item.status === 'paused' ? '#ff976a' : '#1989fa'" />
+                <div class="progress-info">
+                    <span class="progress-text">
+                        {{ item.status === 'paused' ? '已暂停' : '上传中' }}
+                        {{ item.uploadProgress }}%
+                    </span>
+                    <span class="chunk-info">
+                        {{ item.uploadedChunks }}/{{ item.totalChunks }} 块
+                    </span>
                 </div>
             </div>
 
-            <!-- 添加更多文件 -->
-            <div class="add-more" @click="triggerUpload" v-if="multiple">
-                <van-icon name="plus" />
-                <span>添加文件</span>
+            <!-- 成功状态 -->
+            <div class="upload-success" v-if="item.status === 'success'">
+                <van-icon name="success" color="#07c160" />
+                <span class="success-text">上传成功</span>
             </div>
+
+            <!-- 失败状态 -->
+            <div class="upload-error" v-if="item.status === 'error'">
+                <van-icon name="close" color="#ee0a24" />
+                <span class="error-text">上传失败: {{ item.errorMsg }}</span>
+            </div>
+
+            <!-- 操作按钮 -->
+            <div class="file-actions">
+                <!-- 暂停 -->
+                <van-button v-if="item.status === 'uploading'" size="small" type="warning" @click="pauseUpload(item)">
+                    暂停
+                </van-button>
+
+                <!-- 继续 -->
+                <van-button v-if="item.status === 'paused'" size="small" type="primary" @click="resumeUpload(item)">
+                    继续
+                </van-button>
+
+                <!-- 重试 -->
+                <van-button v-if="item.status === 'error'" size="small" type="primary" @click="retryUpload(item)">
+                    重试
+                </van-button>
+
+                <!-- 删除 -->
+                <van-button v-if="['success', 'error', 'paused'].includes(item.status)" size="small" type="danger"
+                    @click="removeFile(index)">
+                    删除
+                </van-button>
+
+                <!-- 预览 -->
+                <van-button v-if="item.status === 'success' && item.url && isImage(item.file)" size="small"
+                    @click="previewFile(item)">
+                    预览
+                </van-button>
+            </div>
+        </div>
+
+        <!-- 添加更多文件 -->
+        <div class="add-more" @click="triggerUpload" v-if="multiple">
+            <van-icon name="plus" />
+            <span>添加文件</span>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onUnmounted } from 'vue'
 import { showToast, showDialog, showImagePreview } from 'vant'
 import { calculateFileMD5 } from '@/utils/fileMd5'
 import { LargeFileUploader } from '@/utils/fileUpload'
@@ -167,6 +165,11 @@ const triggerUpload = () => {
     fileInput.value?.click()
 }
 
+// 检查是否存在相同MD5的文件（精确判断重复）
+const findDuplicateByMD5 = (md5) => {
+    return fileList.value.find(item => item.fileMD5 === md5 && item.status !== 'error')
+}
+
 // 处理文件选择
 const handleFileChange = async (event) => {
     const files = Array.from(event.target.files)
@@ -215,7 +218,19 @@ const startUploadProcess = async (fileItem) => {
             fileItem.md5Progress = progress
         })
 
-        // 2. 创建上传器
+        // 2. 检查是否存在相同MD5的文件（精确判断重复）
+        const duplicateFile = findDuplicateByMD5(fileItem.fileMD5)
+        if (duplicateFile && duplicateFile.id !== fileItem.id) {
+            // 移除当前文件项
+            const index = fileList.value.findIndex(f => f.id === fileItem.id)
+            if (index > -1) {
+                fileList.value.splice(index, 1)
+            }
+            showToast(`文件内容与 "${duplicateFile.file.name}" 相同，已自动去重`)
+            return
+        }
+
+        // 4. 创建上传器
         const uploader = new LargeFileUploader({
             file: fileItem.file,
             fileMD5: fileItem.fileMD5,
@@ -253,7 +268,7 @@ const startUploadProcess = async (fileItem) => {
         fileItem.uploader = uploader
         fileItem.status = 'uploading'
 
-        // 3. 开始上传
+        // 5. 开始上传
         await uploader.start()
     } catch (error) {
         fileItem.status = 'error'
@@ -278,12 +293,15 @@ const pauseUpload = (fileItem) => {
 const resumeUpload = async (fileItem) => {
     if (fileItem.uploader) {
         fileItem.uploader.resume()
-        fileItem.status = 'uploading'
         showToast('继续上传')
 
         // 重新启动上传流程（从断点处继续）
         try {
             await fileItem.uploader.start()
+            // 上传开始成功后再更新状态，避免状态闪烁
+            if (fileItem.status !== 'success' && fileItem.status !== 'error') {
+                fileItem.status = 'uploading'
+            }
         } catch (error) {
             fileItem.status = 'error'
             fileItem.errorMsg = error.message || '上传失败'
@@ -319,15 +337,22 @@ const retryUpload = async (fileItem) => {
 
 // 删除文件
 const removeFile = (index) => {
+    const fileItem = fileList.value[index]
+    const fileId = fileItem.id // 先保存文件ID，避免异步操作时index变化
+
     showDialog({
         title: '提示',
         message: '确定删除该文件吗？',
     }).then(() => {
-        const fileItem = fileList.value[index]
-        if (fileItem.uploader) {
-            fileItem.uploader.cancel()
+        // 通过ID查找当前索引，确保删除正确的文件
+        const currentIndex = fileList.value.findIndex(f => f.id === fileId)
+        if (currentIndex > -1) {
+            const item = fileList.value[currentIndex]
+            if (item.uploader) {
+                item.uploader.cancel()
+            }
+            fileList.value.splice(currentIndex, 1)
         }
-        fileList.value.splice(index, 1)
     }).catch(() => {
         // 取消删除
     })
@@ -345,15 +370,15 @@ const isImage = (file) => {
 
 // 预览文件
 const previewFile = (fileItem) => {
-    let url = fileItem.url
-
-    // 如果有原始文件对象，优先使用本地预览，体验更好且无需依赖后端返回的URL是否可访问
-    if (fileItem.file) {
-        url = URL.createObjectURL(fileItem.file)
-    }
-
-    if (url && isImage(fileItem.file)) {
-        showImagePreview([url])
+    if (fileItem.file && isImage(fileItem.file)) {
+        // 使用本地预览，体验更好且无需依赖后端返回的URL是否可访问
+        const blobUrl = URL.createObjectURL(fileItem.file)
+        showImagePreview({
+            images: [blobUrl],
+            onClose: () => URL.revokeObjectURL(blobUrl) // 关闭时释放内存，避免内存泄漏
+        })
+    } else if (fileItem.url) {
+        showImagePreview([fileItem.url])
     }
 }
 
@@ -394,6 +419,15 @@ const formatFileSize = (bytes) => {
     const i = Math.floor(Math.log(bytes) / Math.log(k))
     return (bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i]
 }
+
+// 组件卸载时清理所有上传任务，避免内存泄漏和后台请求继续发送
+onUnmounted(() => {
+    fileList.value.forEach(item => {
+        if (item.uploader) {
+            item.uploader.cancel()
+        }
+    })
+})
 
 // 暴露方法给父组件
 defineExpose({

@@ -8,6 +8,24 @@ import { useUserStore } from '@/store/modules/user'
 import { usePermissionStore } from '@/store/modules/permission'
 
 /**
+ * 检查路由是否需要登录
+ * @param {Object} route - 路由对象
+ * @returns {Boolean} 是否需要登录
+ */
+function requiresAuth(route) {
+  // 如果明确设置了 requiresAuth，以此为准
+  if (route.meta?.requiresAuth !== undefined) {
+    return route.meta.requiresAuth
+  }
+  // 如果设置了 roles，默认需要登录
+  if (route.meta?.roles?.length > 0) {
+    return true
+  }
+  // 默认需要登录（安全优先）
+  return true
+}
+
+/**
  * 检查路由是否需要特定角色
  * @param {Object} route - 路由对象
  * @returns {Boolean} 是否需要特定角色
@@ -51,7 +69,14 @@ export function setupRouterGuards(router) {
       return
     }
 
-    // 2. 不在白名单中的路由，必须验证 token
+    // 2. 检查路由是否需要登录
+    if (!requiresAuth(to)) {
+      // 不需要登录的路由，直接放行
+      next()
+      return
+    }
+
+    // 3. 需要登录但没有 token
     if (!token) {
       // 未登录，重定向到登录页
       const redirect = to.fullPath !== '/' ? to.fullPath : ''
@@ -59,13 +84,13 @@ export function setupRouterGuards(router) {
       return
     }
 
-    // 3. 已登录，访问登录页时重定向到首页
+    // 4. 已登录，访问登录页时重定向到首页
     if (to.path === '/login') {
       next({ path: '/' })
       return
     }
 
-    // 4. 已登录，检查是否已获取用户信息
+    // 5. 已登录，检查是否已获取用户信息
     if (!userStore.userInfo) {
       try {
         // 获取用户信息
@@ -92,7 +117,7 @@ export function setupRouterGuards(router) {
       }
     }
 
-    // 5. 已有用户信息，检查角色权限
+    // 6. 已有用户信息，检查角色权限
     const needRoles = requiresRoles(to)
     
     if (needRoles) {

@@ -24,6 +24,7 @@
     "pinia-plugin-persistedstate": "^3.2.0",
     "spark-md5": "^3.0.2",
     "vant": "^4.8.0",
+    "video.js": "^8.23.4",
     "vue": "^3.3.0",
     "vue-echarts": "^8.0.1",
     "vue-i18n": "^9.8.0",
