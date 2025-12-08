@@ -26,6 +26,7 @@
         <van-cell :title="$t('user.markdownPreview')" icon="notes-o" is-link @click="handleMarkdownDemo" />
         <van-cell title="大文件上传" icon="upgrade" is-link @click="handleLargeFileUpload" />
         <van-cell title="精彩活动" icon="fire-o" is-link @click="handleActivity" />
+        <van-cell title="图片瀑布流" icon="photo-o" is-link @click="handleWaterfall" />
         <van-cell :title="$t('user.chat')" icon="chat-o" is-link @click="handleChat" />
         <van-cell :title="$t('user.aiChat')" icon="service-o" is-link @click="handleAiChat" />
         <van-cell :title="$t('user.theme')" icon="brush-o" is-link @click="showThemePopup = true" />
@@ -116,6 +117,10 @@ const handleLargeFileUpload = () => {
 
 const handleActivity = () => {
   router.push('/activity/list')
+}
+
+const handleWaterfall = () => {
+  router.push('/waterfall')
 }
 
 const handleOrders = () => {

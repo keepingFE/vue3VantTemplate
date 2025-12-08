@@ -212,6 +212,16 @@ export const constantRoutes = [
     }
   },
   {
+    path: '/waterfall',
+    name: 'Waterfall',
+    component: () => import('@/views/waterfall/index.vue'),
+    meta: {
+      title: '图片瀑布流',
+      requiresAuth: false,
+      hidden: true
+    }
+  },
+  {
     path: '/activity/list',
     name: 'ActivityList',
     component: () => import('@/views/activity/index.vue'),
