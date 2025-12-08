@@ -71,7 +71,7 @@
 
             // Calculate dynamic delay for natural typing effect
             let delay = props.typingSpeed
-            
+
             // Add variance
             delay += Math.random() * 20 - 10
 

@@ -37,6 +37,12 @@ const tabbarItems = [
     text: t('route.chart')
   },
   {
+    name: 'product',
+    to: '/product',
+    icon: 'shopping-cart-o',
+    text: t('route.product')
+  },
+  {
     name: 'user',
     to: '/user',
     icon: 'user-o',

@@ -48,6 +48,11 @@
           {{ $t('login.loginBtn') }}
         </van-button>
       </div>
+
+      <div class="register-link">
+        <span>{{ $t('login.noAccount') }}</span>
+        <router-link to="/register" class="link-text">{{ $t('login.register') }}</router-link>
+      </div>
     </van-form>
 
     <!-- 版权和版本信息 -->
@@ -305,6 +310,20 @@ const handleSendVerifyCode = async target => {
       .van-button {
         padding: 0 4px;
         font-size: inherit;
+      }
+    }
+
+    .register-link {
+      text-align: center;
+      margin-top: $spacing-md;
+      font-size: 14px;
+      color: var(--text-regular);
+
+      .link-text {
+        color: var(--primary-color);
+        font-weight: 500;
+        margin-left: 4px;
+        text-decoration: none;
       }
     }
   }

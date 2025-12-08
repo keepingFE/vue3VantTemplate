@@ -45,11 +45,69 @@ export default {
     message: '消息',
     chart: '图表',
     user: '我的',
+    product: '商品',
+    cart: '购物车',
     login: '登录',
     admin: '管理',
     aiChat: 'AI 助手',
     notFound: '页面不存在',
-    forbidden: '无权限'
+    notFound: '页面不存在',
+    forbidden: '无权限',
+    productDetail: '商品详情'
+  },
+
+  product: {
+    title: '商品详情',
+    detail: '商品详情',
+    shop: '店铺',
+    service: '客服',
+    cart: '购物车',
+    addToCart: '加入购物车',
+    buyNow: '立即购买',
+    select: '选择',
+    selectSku: '选择 颜色/尺码',
+    selected: '已选',
+    delivery: '送至',
+    discount: '限时特惠',
+    color: '颜色',
+    size: '尺码',
+    quantity: '购买数量',
+    added: '已加入购物车',
+    model: '型号',
+    paymentMethod: '支付方式',
+    wechatPay: '微信支付',
+    alipay: '支付宝',
+    bankCard: '银行卡',
+    sort: {
+      default: '综合',
+      sales: '销量',
+      price: '价格',
+      brand: '品牌',
+      material: '材质'
+    },
+    filter: {
+      title: '筛选',
+      reset: '重置',
+      confirm: '确定',
+      priceRange: '价格区间',
+      minPrice: '最低价',
+      maxPrice: '最高价',
+      pricePlaceholder: '请输入价格',
+      season: '季节',
+      crowd: '人群',
+      allSeasons: '全部季节',
+      spring: '春季',
+      summer: '夏季',
+      autumn: '秋季',
+      winter: '冬季',
+      allCrowds: '全部人群',
+      men: '男士',
+      women: '女士',
+      kids: '儿童',
+      elderly: '老年',
+      unisex: '通用',
+      priceError: '最低价不能大于最高价'
+    }
   },
 
   login: {
@@ -77,7 +135,46 @@ export default {
     sendVerifyCodeSuccess: '验证码已发送',
     sendVerifyCodeFailed: '验证码发送失败',
     invalidPhone: '请输入正确的手机号',
-    invalidEmail: '请输入正确的邮箱地址'
+    invalidEmail: '请输入正确的邮箱地址',
+    hasAccount: '已有账号？',
+    goLogin: '立即登录'
+  },
+
+  register: {
+    title: '用户注册',
+    username: '用户名',
+    password: '密码',
+    confirmPassword: '确认密码',
+    usernamePlaceholder: '请输入用户名（3-20个字符）',
+    passwordPlaceholder: '请输入密码（6-20个字符）',
+    confirmPasswordPlaceholder: '请再次输入密码',
+    registerBtn: '注册',
+    registerSuccess: '注册成功',
+    registerFailed: '注册失败',
+    usernameRequired: '请输入用户名',
+    passwordRequired: '请输入密码',
+    confirmPasswordRequired: '请再次输入密码',
+    passwordNotMatch: '两次输入的密码不一致',
+    usernameLength: '用户名长度必须在3-20个字符之间',
+    passwordLength: '密码长度必须在6-20个字符之间',
+    phone: '手机号',
+    phonePlaceholder: '请输入手机号',
+    phoneRequired: '请输入手机号',
+    email: '邮箱',
+    emailPlaceholder: '请输入邮箱地址',
+    emailRequired: '请输入邮箱地址',
+    verifyCode: '验证码',
+    verifyCodePlaceholder: '请输入验证码',
+    verifyCodeRequired: '请输入验证码',
+    sendVerifyCode: '获取验证码',
+    sendVerifyCodeSuccess: '验证码已发送',
+    sendVerifyCodeFailed: '验证码发送失败',
+    invalidPhone: '请输入正确的手机号',
+    invalidEmail: '请输入正确的邮箱地址',
+    agreement: '我已阅读并同意',
+    userAgreement: '《用户协议》',
+    privacyPolicy: '《隐私政策》',
+    agreementRequired: '请先阅读并同意用户协议和隐私政策'
   },
 
   user: {
@@ -221,5 +318,47 @@ export default {
     retry: '重试',
     home: '回到首页',
     download: '下载PDF'
+  },
+
+  activity: {
+    title: '活动列表',
+    detailTitle: '活动详情'
+  },
+
+  address: {
+    listTitle: '收货地址',
+    addTitle: '新增地址',
+    editTitle: '编辑地址',
+    disabledText: '以下地址超出配送范围',
+    defaultTag: '默认',
+    province: '省份',
+    city: '城市',
+    county: '区县'
+  },
+
+  order: {
+    title: '我的订单',
+    all: '全部',
+    pending: '待支付',
+    paid: '待发货',
+    shipped: '待收货',
+    completed: '已完成',
+    cancelled: '已取消',
+    orderNo: '订单号',
+    totalAmount: '合计',
+    cancel: '取消订单',
+    pay: '立即支付',
+    confirmReceipt: '确认收货',
+    buyAgain: '再次购买',
+    viewDetail: '查看详情',
+    noOrders: '暂无订单',
+    cancelConfirm: '确定要取消订单吗？',
+    cancelSuccess: '订单已取消',
+    confirmReceiptTip: '确认已收到货物吗？',
+    receiptSuccess: '确认收货成功',
+    paymentProcessing: '跳转支付中...',
+    addedToCart: '已加入购物车',
+    submitSuccess: '订单提交成功'
   }
 }
+

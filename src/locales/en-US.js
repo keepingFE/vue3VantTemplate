@@ -45,11 +45,68 @@ export default {
     message: 'Messages',
     chart: 'Chart',
     user: 'User',
+    product: 'Products',
     login: 'Login',
     admin: 'Admin',
     aiChat: 'AI Assistant',
     notFound: 'Not Found',
-    forbidden: 'Forbidden'
+    notFound: 'Not Found',
+    forbidden: 'Forbidden',
+    productDetail: 'Product Detail'
+  },
+
+  product: {
+    title: 'Product Detail',
+    detail: 'Detail',
+    shop: 'Shop',
+    service: 'Chat',
+    cart: 'Cart',
+    addToCart: 'Add to Cart',
+    buyNow: 'Buy Now',
+    select: 'Select',
+    selectSku: 'Select Color/Size',
+    selected: 'Selected',
+    delivery: 'Deliver to',
+    discount: 'Special Offer',
+    color: 'Color',
+    size: 'Size',
+    quantity: 'Quantity',
+    added: 'Added to cart',
+    model: 'Model',
+    paymentMethod: 'Payment Method',
+    wechatPay: 'WeChat Pay',
+    alipay: 'Alipay',
+    bankCard: 'Bank Card',
+    sort: {
+      default: 'Default',
+      sales: 'Sales',
+      price: 'Price',
+      brand: 'Brand',
+      material: 'Material'
+    },
+    filter: {
+      title: 'Filter',
+      reset: 'Reset',
+      confirm: 'Confirm',
+      priceRange: 'Price Range',
+      minPrice: 'Min Price',
+      maxPrice: 'Max Price',
+      pricePlaceholder: 'Enter price',
+      season: 'Season',
+      crowd: 'Crowd',
+      allSeasons: 'All Seasons',
+      spring: 'Spring',
+      summer: 'Summer',
+      autumn: 'Autumn',
+      winter: 'Winter',
+      allCrowds: 'All Crowds',
+      men: 'Men',
+      women: 'Women',
+      kids: 'Kids',
+      elderly: 'Elderly',
+      unisex: 'Unisex',
+      priceError: 'Min price cannot be greater than max price'
+    }
   },
 
   login: {
@@ -77,7 +134,46 @@ export default {
     sendVerifyCodeSuccess: 'Verification code sent',
     sendVerifyCodeFailed: 'Failed to send verification code',
     invalidPhone: 'Please enter a valid phone number',
-    invalidEmail: 'Please enter a valid email address'
+    invalidEmail: 'Please enter a valid email address',
+    hasAccount: 'Already have an account?',
+    goLogin: 'Login now'
+  },
+
+  register: {
+    title: 'User Registration',
+    username: 'Username',
+    password: 'Password',
+    confirmPassword: 'Confirm Password',
+    usernamePlaceholder: 'Please enter username (3-20 characters)',
+    passwordPlaceholder: 'Please enter password (6-20 characters)',
+    confirmPasswordPlaceholder: 'Please enter password again',
+    registerBtn: 'Register',
+    registerSuccess: 'Registration successful',
+    registerFailed: 'Registration failed',
+    usernameRequired: 'Please enter username',
+    passwordRequired: 'Please enter password',
+    confirmPasswordRequired: 'Please enter password again',
+    passwordNotMatch: 'Passwords do not match',
+    usernameLength: 'Username must be between 3-20 characters',
+    passwordLength: 'Password must be between 6-20 characters',
+    phone: 'Phone',
+    phonePlaceholder: 'Please enter phone number',
+    phoneRequired: 'Please enter phone number',
+    email: 'Email',
+    emailPlaceholder: 'Please enter email address',
+    emailRequired: 'Please enter email address',
+    verifyCode: 'Verification Code',
+    verifyCodePlaceholder: 'Please enter verification code',
+    verifyCodeRequired: 'Please enter verification code',
+    sendVerifyCode: 'Send Code',
+    sendVerifyCodeSuccess: 'Verification code sent',
+    sendVerifyCodeFailed: 'Failed to send verification code',
+    invalidPhone: 'Please enter a valid phone number',
+    invalidEmail: 'Please enter a valid email address',
+    agreement: 'I have read and agree to',
+    userAgreement: 'User Agreement',
+    privacyPolicy: 'Privacy Policy',
+    agreementRequired: 'Please read and agree to the User Agreement and Privacy Policy'
   },
 
   user: {
@@ -221,5 +317,46 @@ export default {
     retry: 'Retry',
     home: 'Back to Home',
     download: 'Download PDF'
+  },
+
+  activity: {
+    title: 'Activity List',
+    detailTitle: 'Activity Detail'
+  },
+
+  address: {
+    listTitle: 'Shipping Address',
+    addTitle: 'Add Address',
+    editTitle: 'Edit Address',
+    disabledText: 'The following addresses are out of delivery range',
+    defaultTag: 'Default',
+    province: 'Province',
+    city: 'City',
+    county: 'District'
+  },
+
+  order: {
+    title: 'My Orders',
+    all: 'All',
+    pending: 'Pending Payment',
+    paid: 'Pending Shipment',
+    shipped: 'Pending Receipt',
+    completed: 'Completed',
+    cancelled: 'Cancelled',
+    orderNo: 'Order No',
+    totalAmount: 'Total',
+    cancel: 'Cancel Order',
+    pay: 'Pay Now',
+    confirmReceipt: 'Confirm Receipt',
+    buyAgain: 'Buy Again',
+    viewDetail: 'View Detail',
+    noOrders: 'No orders',
+    cancelConfirm: 'Are you sure you want to cancel this order?',
+    cancelSuccess: 'Order cancelled',
+    confirmReceiptTip: 'Have you received the goods?',
+    receiptSuccess: 'Receipt confirmed',
+    paymentProcessing: 'Redirecting to payment...',
+    addedToCart: 'Added to cart',
+    submitSuccess: 'Order submitted successfully'
   }
 }

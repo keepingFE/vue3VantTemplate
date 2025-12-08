@@ -17,6 +17,16 @@ export const constantRoutes = [
     }
   },
   {
+    path: '/register',
+    name: 'Register',
+    component: () => import('@/views/register/index.vue'),
+    meta: {
+      title: '注册',
+      requiresAuth: false,
+      hidden: true
+    }
+  },
+  {
     path: '/',
     name: 'Layout',
     component: () => import('@/components/common/Layout.vue'),
@@ -67,6 +77,48 @@ export const constantRoutes = [
         }
       },
       {
+        path: '/product',
+        name: 'Product',
+        component: () => import('@/views/product/index.vue'),
+        meta: {
+          title: '商品',
+          requiresAuth: false,
+          keepAlive: true,
+          icon: 'shopping-cart-o'
+        }
+      },
+      {
+        path: '/product/detail/:id',
+        name: 'ProductDetail',
+        component: () => import('@/views/product/detail.vue'),
+        meta: {
+          title: '商品详情',
+          requiresAuth: false,
+          hidden: true
+        }
+      },
+
+      {
+        path: '/address/list',
+        name: 'AddressList',
+        component: () => import('@/views/address/index.vue'),
+        meta: {
+          title: '收货地址',
+          requiresAuth: true,
+          hidden: true
+        }
+      },
+      {
+        path: '/address/edit',
+        name: 'AddressEdit',
+        component: () => import('@/views/address/edit.vue'),
+        meta: {
+          title: '编辑地址',
+          requiresAuth: true,
+          hidden: true
+        }
+      },
+      {
         path: '/user',
         name: 'User',
         component: () => import('@/views/user/index.vue'),
@@ -78,6 +130,16 @@ export const constantRoutes = [
         }
       }
     ]
+  },
+  {
+    path: '/cart',
+    name: 'Cart',
+    component: () => import('@/views/cart/index.vue'),
+    meta: {
+      title: '购物车',
+      requiresAuth: false,
+      hidden: true
+    }
   },
   {
     path: '/list/detail/:id',
@@ -146,6 +208,46 @@ export const constantRoutes = [
     meta: {
       title: '大文件上传',
       requiresAuth: false,
+      hidden: true
+    }
+  },
+  {
+    path: '/activity/list',
+    name: 'ActivityList',
+    component: () => import('@/views/activity/index.vue'),
+    meta: {
+      title: '活动列表',
+      requiresAuth: false,
+      hidden: true
+    }
+  },
+  {
+    path: '/activity/detail/:id',
+    name: 'ActivityDetail',
+    component: () => import('@/views/activity/detail.vue'),
+    meta: {
+      title: '活动详情',
+      requiresAuth: false,
+      hidden: true
+    }
+  },
+  {
+    path: '/order/list',
+    name: 'OrderList',
+    component: () => import('@/views/order/index.vue'),
+    meta: {
+      title: '我的订单',
+      requiresAuth: true,
+      hidden: true
+    }
+  },
+  {
+    path: '/order/detail/:id',
+    name: 'OrderDetail',
+    component: () => import('@/views/order/detail.vue'),
+    meta: {
+      title: '订单详情',
+      requiresAuth: true,
       hidden: true
     }
   },
