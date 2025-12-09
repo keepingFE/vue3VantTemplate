@@ -160,6 +160,10 @@ const previewImage = () => {
 
 const handleJoin = () => {
     showToast('报名成功！')
+    // 延迟跳转到我参加的活动页面
+    setTimeout(() => {
+        router.push('/activity/my-activities')
+    }, 1500)
 }
 
 const onSelectShare = (option) => {

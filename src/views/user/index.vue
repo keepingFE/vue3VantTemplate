@@ -22,6 +22,7 @@
       <van-cell-group inset class="user-settings">
         <van-cell :title="$t('user.profile')" icon="user-o" is-link @click="handleProfile" />
         <van-cell :title="$t('order.title')" icon="orders-o" is-link @click="handleOrders" />
+        <van-cell title="我参加的活动" icon="calendar-o" is-link @click="handleMyActivities" />
         <van-cell :title="$t('user.pdfPreview')" icon="description-o" is-link @click="handlePdfDemo" />
         <van-cell :title="$t('user.markdownPreview')" icon="notes-o" is-link @click="handleMarkdownDemo" />
         <van-cell title="大文件上传" icon="upgrade" is-link @click="handleLargeFileUpload" />
@@ -127,6 +128,9 @@ const handleOrders = () => {
   router.push('/order/list')
 }
 
+const handleMyActivities = () => {
+  router.push('/activity/my-activities')
+}
 
 const handleSettings = () => {
   showToast(t('common.success'))

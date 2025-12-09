@@ -242,6 +242,16 @@ export const constantRoutes = [
     }
   },
   {
+    path: '/activity/my-activities',
+    name: 'MyActivities',
+    component: () => import('@/views/activity/myActivities.vue'),
+    meta: {
+      title: '我参加的活动',
+      requiresAuth: true,
+      hidden: true
+    }
+  },
+  {
     path: '/order/list',
     name: 'OrderList',
     component: () => import('@/views/order/index.vue'),
