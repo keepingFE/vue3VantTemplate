@@ -2,7 +2,7 @@
     <div class="order-container">
         <van-nav-bar :title="$t('order.title')" fixed placeholder left-arrow @click-left="onClickLeft" />
 
-        <van-tabs v-model:active="activeTab" sticky offset-top="46px" @change="onTabChange">
+        <van-tabs v-model:active="activeTab" scrollable sticky offset-top="46px" @change="onTabChange">
             <van-tab :title="$t('order.all')" name="all">
                 <order-list :orders="filteredOrders" @view-detail="viewDetail" />
             </van-tab>

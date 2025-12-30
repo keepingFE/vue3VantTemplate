@@ -5,7 +5,8 @@
         <div class="product-content">
             <!-- 搜索栏 -->
             <div class="search-wrapper">
-                <van-search v-model="searchValue" :placeholder="$t('common.search')" show-action @search="onSearch">
+                <van-search size="small" v-model="searchValue" :placeholder="$t('common.search')" show-action
+                    @search="onSearch">
                     <template #action>
                         <div @click="onSearch">{{ $t('common.search') }}</div>
                     </template>
@@ -98,10 +99,10 @@
                     <div class="filter-section">
                         <div class="section-title">{{ $t('product.filter.priceRange') }}</div>
                         <div class="price-range">
-                            <van-field v-model="tempFilters.minPrice" type="number"
+                            <van-field size="small" v-model="tempFilters.minPrice" type="number"
                                 :placeholder="$t('product.filter.minPrice')" />
                             <span class="price-separator">-</span>
-                            <van-field v-model="tempFilters.maxPrice" type="number"
+                            <van-field size="small" v-model="tempFilters.maxPrice" type="number"
                                 :placeholder="$t('product.filter.maxPrice')" />
                         </div>
                     </div>
@@ -132,9 +133,10 @@
                 </div>
 
                 <div class="filter-footer">
-                    <van-button block plain @click="resetFilters">{{ $t('product.filter.reset') }}</van-button>
-                    <van-button block type="primary" @click="applyFilters">{{ $t('product.filter.confirm')
+                    <van-button size="small" block plain @click="resetFilters">{{ $t('product.filter.reset')
                         }}</van-button>
+                    <van-button size="small" block type="primary" @click="applyFilters">{{ $t('product.filter.confirm')
+                    }}</van-button>
                 </div>
             </div>
         </van-popup>

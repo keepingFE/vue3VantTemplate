@@ -78,16 +78,16 @@
 
         <!-- 底部操作栏 -->
         <div class="footer-actions" v-if="order">
-            <van-button v-if="order.status === 'pending'" type="default" @click="cancelOrder">
+            <van-button size="small" v-if="order.status === 'pending'" type="default" @click="cancelOrder">
                 {{ $t('order.cancel') }}
             </van-button>
-            <van-button v-if="order.status === 'pending'" type="danger" @click="payOrder">
+            <van-button size="small" v-if="order.status === 'pending'" type="danger" @click="payOrder">
                 {{ $t('order.pay') }}
             </van-button>
-            <van-button v-if="order.status === 'shipped'" type="primary" @click="confirmReceipt">
+            <van-button size="small" v-if="order.status === 'shipped'" type="primary" @click="confirmReceipt">
                 {{ $t('order.confirmReceipt') }}
             </van-button>
-            <van-button v-if="order.status === 'completed'" type="default" @click="buyAgain">
+            <van-button size="small" v-if="order.status === 'completed'" type="default" @click="buyAgain">
                 {{ $t('order.buyAgain') }}
             </van-button>
         </div>

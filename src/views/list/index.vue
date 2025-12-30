@@ -9,7 +9,7 @@
     <!-- 固定区域：Tab 和搜索栏 -->
     <div class="fixed-header">
       <!-- Tab 切换 -->
-      <van-tabs v-model:active="activeTab" @change="onTabChange">
+      <van-tabs v-model:active="activeTab" scrollable @change="onTabChange">
         <van-tab title="全部" name="all"></van-tab>
         <van-tab title="进行中" name="ongoing"></van-tab>
         <van-tab title="已完成" name="completed"></van-tab>
@@ -17,7 +17,7 @@
       </van-tabs>
 
       <!-- 搜索栏 -->
-      <van-search v-model="searchValue" :placeholder="$t('common.search')" show-action @search="onSearch">
+      <van-search size="small" v-model="searchValue" :placeholder="$t('common.search')" show-action @search="onSearch">
         <template #action>
           <div @click="onSearch">{{ $t('common.search') }}</div>
         </template>

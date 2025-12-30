@@ -19,7 +19,7 @@
 
         <van-form @submit="handleRegister" class="register-form">
             <van-cell-group>
-                <van-field v-model="registerForm.username" name="username" :label="$t('register.username')"
+                <van-field size="small" v-model="registerForm.username" name="username" :label="$t('register.username')"
                     :placeholder="$t('register.usernamePlaceholder')" :rules="[
                         { required: true, message: $t('register.usernameRequired') },
                         {
@@ -28,7 +28,7 @@
                         }
                     ]" clearable />
 
-                <van-field v-model="registerForm.email" name="email" :label="$t('register.email')"
+                <van-field size="small" v-model="registerForm.email" name="email" :label="$t('register.email')"
                     :placeholder="$t('register.emailPlaceholder')" :rules="[
                         { required: true, message: $t('register.emailRequired') },
                         {
@@ -37,7 +37,7 @@
                         }
                     ]" clearable />
 
-                <van-field v-model="registerForm.phone" name="phone" :label="$t('register.phone')"
+                <van-field size="small" v-model="registerForm.phone" name="phone" :label="$t('register.phone')"
                     :placeholder="$t('register.phonePlaceholder')" :rules="[
                         { required: true, message: $t('register.phoneRequired') },
                         {
@@ -46,8 +46,8 @@
                         }
                     ]" clearable />
 
-                <van-field v-model="registerForm.verifyCode" name="verifyCode" :label="$t('register.verifyCode')"
-                    :placeholder="$t('register.verifyCodePlaceholder')"
+                <van-field size="small" v-model="registerForm.verifyCode" name="verifyCode"
+                    :label="$t('register.verifyCode')" :placeholder="$t('register.verifyCodePlaceholder')"
                     :rules="[{ required: true, message: $t('register.verifyCodeRequired') }]" clearable
                     style="--van-field-input-width: calc(100% - 100px)">
                     <template #button>
@@ -56,7 +56,7 @@
                     </template>
                 </van-field>
 
-                <van-field v-model="registerForm.password" type="password" name="password"
+                <van-field size="small" v-model="registerForm.password" type="password" name="password"
                     :label="$t('register.password')" :placeholder="$t('register.passwordPlaceholder')" :rules="[
                         { required: true, message: $t('register.passwordRequired') },
                         {
@@ -65,7 +65,7 @@
                         }
                     ]" clearable />
 
-                <van-field v-model="registerForm.confirmPassword" type="password" name="confirmPassword"
+                <van-field size="small" v-model="registerForm.confirmPassword" type="password" name="confirmPassword"
                     :label="$t('register.confirmPassword')" :placeholder="$t('register.confirmPasswordPlaceholder')"
                     :rules="[
                         { required: true, message: $t('register.confirmPasswordRequired') },
@@ -76,7 +76,7 @@
                     ]" clearable />
 
                 <div class="agreement-cell">
-                    <van-checkbox v-model="registerForm.agreement">
+                    <van-checkbox size="small" v-model="registerForm.agreement">
                         <span class="agreement-text">
                             {{ $t('register.agreement') }}
                             <span class="agreement-link">{{ $t('register.userAgreement') }}</span>
@@ -87,7 +87,7 @@
             </van-cell-group>
 
             <div class="register-button">
-                <van-button round block type="primary" native-type="submit" :loading="loading">
+                <van-button size="small" round block type="primary" native-type="submit" :loading="loading">
                     {{ $t('register.registerBtn') }}
                 </van-button>
             </div>

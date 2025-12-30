@@ -6,7 +6,7 @@
       <!-- 固定区域：消息分类标签 + 操作按钮 -->
       <div class="sticky-header">
         <!-- 消息分类标签 -->
-        <van-tabs v-model:active="activeTab" @change="onTabChange">
+        <van-tabs v-model:active="activeTab" scrollable @change="onTabChange">
           <van-tab :title="$t('messages.all')" name="all" />
           <van-tab :title="$t('messages.unread')" name="unread">
             <template #title>
@@ -52,9 +52,9 @@
                 </template>
               </van-cell>
               <template #right>
-                <van-button square type="primary" :text="$t('messages.markAsRead')" class="swipe-button"
+                <van-button size="small" square type="primary" :text="$t('messages.markAsRead')" class="swipe-button"
                   @click="markAsRead(item)" v-if="!item.isRead" />
-                <van-button square type="danger" :text="$t('messages.delete')" class="swipe-button"
+                <van-button size="small" square type="danger" :text="$t('messages.delete')" class="swipe-button"
                   @click="deleteMessage(item)" />
               </template>
             </van-swipe-cell>

@@ -13,15 +13,15 @@
                 <div v-for="item in cartStore.cartList" :key="item.id" class="cart-item">
                     <van-swipe-cell>
                         <div class="item-content">
-                            <van-checkbox :name="item.id" class="checkbox" />
+                            <van-checkbox size="small" :name="item.id" class="checkbox" />
                             <van-image :src="item.image" fit="cover" class="product-image" @click="goDetail(item.id)" />
                             <div class="product-info">
                                 <div class="product-title" @click="goDetail(item.id)">{{ item.name }}</div>
                                 <div class="product-sku">{{ item.sku }}</div>
                                 <div class="price-stepper">
                                     <div class="price">¥{{ item.price }}</div>
-                                    <van-stepper v-model="item.count" theme="round" button-size="22" disable-input
-                                        @change="(val) => cartStore.updateItemCount(item.id, val)" />
+                                    <van-stepper size="small" v-model="item.count" theme="round" button-size="22"
+                                        disable-input @change="(val) => cartStore.updateItemCount(item.id, val)" />
                                 </div>
                             </div>
                         </div>
@@ -35,7 +35,7 @@
 
             <!-- 底部提交栏 -->
             <van-submit-bar :price="totalPrice" button-text="提交订单" @submit="onSubmit">
-                <van-checkbox v-model="checkedAll" @click="toggleAll">全选</van-checkbox>
+                <van-checkbox size="small" v-model="checkedAll" @click="toggleAll">全选</van-checkbox>
             </van-submit-bar>
         </div>
 

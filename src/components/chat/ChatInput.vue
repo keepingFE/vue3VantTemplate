@@ -2,29 +2,16 @@
     <div class="chat-input">
         <!-- Upload Preview -->
         <div v-if="showPreview" class="preview-container">
-            <UploadPreview 
-                :images="images" 
-                :files="files" 
-                @remove-image="handleRemoveImage"
-                @remove-file="handleRemoveFile"
-                @add="handleAddClick"
-            />
+            <UploadPreview :images="images" :files="files" @remove-image="handleRemoveImage"
+                @remove-file="handleRemoveFile" @add="handleAddClick" />
         </div>
 
         <div class="input-wrapper">
             <div class="voice-button" @click="handleVoiceClick">
                 <van-icon name="audio" class="voice-icon" />
             </div>
-            <van-field 
-                v-model="inputValue"
-                type="textarea"
-                :placeholder="placeholder"
-                rows="1"
-                autosize
-                :maxlength="maxLength"
-                @keydown="handleKeyDown"
-                class="message-input"
-            />
+            <van-field size="small" v-model="inputValue" type="textarea" :placeholder="placeholder" rows="1" autosize
+                :maxlength="maxLength" @keydown="handleKeyDown" class="message-input" />
             <div v-if="!inputValue && !hasContent" class="add-button" @click="handleAddClick">
                 <van-icon name="plus" class="add-icon" />
             </div>
@@ -168,7 +155,7 @@ watch(inputValue, (newVal) => {
             transition: all 0.3s ease;
             flex-shrink: 0;
             margin-bottom: 2px; // Align with input bottom
-            
+
             &:active {
                 opacity: 0.8;
                 transform: scale(0.95);

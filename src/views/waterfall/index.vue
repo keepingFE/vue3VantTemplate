@@ -6,7 +6,7 @@
             <!-- 列数控制 -->
             <div class="control-bar">
                 <span class="label">列数：</span>
-                <van-stepper v-model="columnCount" :min="2" :max="5" />
+                <van-stepper size="small" v-model="columnCount" :min="2" :max="5" />
             </div>
 
             <!-- 瀑布流组件 -->

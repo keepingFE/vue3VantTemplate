@@ -56,10 +56,10 @@
 
       <!-- 操作按钮 -->
       <div class="message-actions">
-        <van-button v-if="!message.isRead" type="primary" block @click="markAsRead">
+        <van-button size="small" v-if="!message.isRead" type="primary" block @click="markAsRead">
           {{ $t('messages.markAsRead') }}
         </van-button>
-        <van-button type="danger" block plain @click="deleteMessage">
+        <van-button size="small" type="danger" block plain @click="deleteMessage">
           {{ $t('messages.delete') }}
         </van-button>
       </div>

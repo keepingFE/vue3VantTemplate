@@ -19,16 +19,16 @@
 
     <van-form @submit="handleLogin" class="login-form">
       <van-cell-group>
-        <van-field v-model="loginForm.username" name="username" :label="$t('login.username')"
+        <van-field size="small" v-model="loginForm.username" name="username" :label="$t('login.username')"
           :placeholder="$t('login.usernamePlaceholder')"
           :rules="[{ required: true, message: $t('login.usernameRequired') }]" clearable />
-        <van-field v-model="loginForm.password" type="password" name="password" :label="$t('login.password')"
-          :placeholder="$t('login.passwordPlaceholder')"
+        <van-field size="small" v-model="loginForm.password" type="password" name="password"
+          :label="$t('login.password')" :placeholder="$t('login.passwordPlaceholder')"
           :rules="[{ required: true, message: $t('login.passwordRequired') }]" clearable />
-        <van-field v-model="loginForm.phone" name="phone" :label="$t('login.phone')"
+        <van-field size="small" v-model="loginForm.phone" name="phone" :label="$t('login.phone')"
           :placeholder="$t('login.phonePlaceholder')" :rules="[{ required: true, message: $t('login.phoneRequired') }]"
           clearable />
-        <van-field v-model="loginForm.verifyCode" name="verifyCode" :label="$t('login.verifyCode')"
+        <van-field size="small" v-model="loginForm.verifyCode" name="verifyCode" :label="$t('login.verifyCode')"
           :placeholder="$t('login.verifyCodePlaceholder')"
           :rules="[{ required: true, message: $t('login.verifyCodeRequired') }]" clearable
           style="--van-field-input-width: calc(100% - 100px)">
@@ -38,13 +38,13 @@
           </template>
         </van-field>
         <div class="remember-me-cell">
-          <van-checkbox v-model="loginForm.rememberMe">
+          <van-checkbox size="small" v-model="loginForm.rememberMe">
             {{ $t('login.rememberMe') }}
           </van-checkbox>
         </div>
       </van-cell-group>
       <div class="login-button">
-        <van-button round block type="primary" native-type="submit" :loading="loading">
+        <van-button size="small" round block type="primary" native-type="submit" :loading="loading">
           {{ $t('login.loginBtn') }}
         </van-button>
       </div>

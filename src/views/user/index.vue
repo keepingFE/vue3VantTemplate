@@ -37,14 +37,14 @@
 
       <!-- 退出登录 -->
       <div class="user-logout" v-if="userStore.isLoggedIn">
-        <van-button block round type="danger" @click="handleLogout">
+        <van-button size="small" block round type="danger" @click="handleLogout">
           {{ $t('user.logout') }}
         </van-button>
       </div>
 
       <!-- 登录按钮 -->
       <div class="user-login" v-else>
-        <van-button block round type="primary" @click="handleLogin">
+        <van-button size="small" block round type="primary" @click="handleLogin">
           {{ $t('route.login') }}
         </van-button>
       </div>

@@ -23,32 +23,34 @@
         </div>
         <van-cell-group inset>
           <!-- Name -->
-          <van-field v-model="form.name" name="name" :label="$t('user.nameLabel')"
+          <van-field size="small" v-model="form.name" name="name" :label="$t('user.nameLabel')"
             :placeholder="$t('user.namePlaceholder')" input-align="right" maxlength="20" show-word-limit />
 
           <!-- Username -->
-          <van-field v-model="form.username" name="username" :label="$t('user.usernameLabel')"
+          <van-field size="small" v-model="form.username" name="username" :label="$t('user.usernameLabel')"
             :placeholder="$t('user.usernameLabel')" input-align="right"
             :rules="[{ required: true, message: $t('validation.required') }]" />
 
           <!-- Gender -->
-          <van-field v-model="genderText" is-link readonly name="gender" :label="$t('user.genderLabel')"
+          <van-field size="small" v-model="genderText" is-link readonly name="gender" :label="$t('user.genderLabel')"
             :placeholder="$t('user.selectGender')" input-align="right" @click="showGenderSheet = true" />
 
           <!-- Birthday -->
-          <van-field v-model="form.birthday" is-link readonly name="birthday" :label="$t('user.birthdayLabel')"
-            :placeholder="$t('user.selectBirthday')" input-align="right" @click="showBirthdayPicker = true" />
+          <van-field size="small" v-model="form.birthday" is-link readonly name="birthday"
+            :label="$t('user.birthdayLabel')" :placeholder="$t('user.selectBirthday')" input-align="right"
+            @click="showBirthdayPicker = true" />
 
           <!-- Bio -->
-          <van-field v-model="form.bio" name="bio" :label="$t('user.bioLabel')" :placeholder="$t('user.bioLabel')"
-            type="textarea" rows="2" autosize maxlength="100" show-word-limit input-align="right" />
+          <van-field size="small" v-model="form.bio" name="bio" :label="$t('user.bioLabel')"
+            :placeholder="$t('user.bioLabel')" type="textarea" rows="2" autosize maxlength="100" show-word-limit
+            input-align="right" />
 
           <!-- Job -->
-          <van-field v-model="form.job" name="job" :label="$t('user.jobLabel')" :placeholder="$t('user.jobPlaceholder')"
-            input-align="right" maxlength="50" show-word-limit />
+          <van-field size="small" v-model="form.job" name="job" :label="$t('user.jobLabel')"
+            :placeholder="$t('user.jobPlaceholder')" input-align="right" maxlength="50" show-word-limit />
 
           <!-- Homepage -->
-          <van-field v-model="form.homepage" name="homepage" type="url" :label="$t('user.homepageLabel')"
+          <van-field size="small" v-model="form.homepage" name="homepage" type="url" :label="$t('user.homepageLabel')"
             :placeholder="$t('user.homepagePlaceholder')" input-align="right"
             :rules="[{ validator: validateURL, message: $t('validation.url') }]" />
         </van-cell-group>
@@ -59,17 +61,17 @@
         </div>
         <van-cell-group inset>
           <!-- Email -->
-          <van-field v-model="form.email" name="email" type="email" :label="$t('user.emailLabel')"
+          <van-field size="small" v-model="form.email" name="email" type="email" :label="$t('user.emailLabel')"
             :placeholder="$t('user.emailLabel')" input-align="right" :rules="[
               { required: true, message: $t('validation.required') },
               { validator: validateEmail, message: $t('validation.email') }
             ]" />
           <!-- Phone -->
-          <van-field v-model="form.phone" name="phone" type="tel" :label="$t('user.phoneLabel')"
+          <van-field size="small" v-model="form.phone" name="phone" type="tel" :label="$t('user.phoneLabel')"
             :placeholder="$t('user.phoneLabel')" input-align="right"
             :rules="[{ validator: validatePhone, message: $t('validation.phone') }]" />
           <!-- WeChat -->
-          <van-field v-model="form.wechat" name="wechat" :label="$t('user.wechatLabel')"
+          <van-field size="small" v-model="form.wechat" name="wechat" :label="$t('user.wechatLabel')"
             :placeholder="$t('user.wechatPlaceholder')" input-align="right" maxlength="50" />
         </van-cell-group>
 
@@ -79,15 +81,17 @@
         </div>
         <van-cell-group inset>
           <!-- Area Picker -->
-          <van-field :model-value="areaText" is-link readonly name="addressArea" :label="$t('user.addressAreaLabel')"
-            :placeholder="$t('user.selectArea')" input-align="right" @click="showAreaPicker = true" />
+          <van-field size="small" :model-value="areaText" is-link readonly name="addressArea"
+            :label="$t('user.addressAreaLabel')" :placeholder="$t('user.selectArea')" input-align="right"
+            @click="showAreaPicker = true" />
           <!-- Address Detail -->
-          <van-field v-model="form.addressDetail" name="addressDetail" :label="$t('user.addressDetailLabel')"
-            :placeholder="$t('user.addressDetailPlaceholder')" input-align="right" maxlength="100" show-word-limit />
+          <van-field size="small" v-model="form.addressDetail" name="addressDetail"
+            :label="$t('user.addressDetailLabel')" :placeholder="$t('user.addressDetailPlaceholder')"
+            input-align="right" maxlength="100" show-word-limit />
         </van-cell-group>
 
         <div class="submit-bar">
-          <van-button block round type="primary" native-type="submit" :loading="saving">
+          <van-button size="small" block round type="primary" native-type="submit" :loading="saving">
             {{ $t('user.saveProfile') }}
           </van-button>
         </div>

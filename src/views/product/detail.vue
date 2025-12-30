@@ -117,7 +117,7 @@
                 </div>
                 <div class="sku-count">
                     <span>{{ $t('product.quantity') }}</span>
-                    <van-stepper v-model="buyCount" />
+                    <van-stepper size="small" v-model="buyCount" />
                 </div>
                 <div class="sku-group">
                     <div class="group-title">{{ $t('product.paymentMethod') }}</div>
@@ -131,7 +131,7 @@
                         </div>
                     </div>
                 </div>
-                <van-button round block type="danger" @click="addToCart">
+                <van-button size="small" round block type="danger" @click="addToCart">
                     {{ $t('common.confirm') }}
                 </van-button>
             </div>

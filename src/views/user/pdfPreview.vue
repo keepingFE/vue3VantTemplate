@@ -4,9 +4,9 @@
 
     <div class="demo-content">
       <van-cell-group inset>
-        <van-field v-model="pdfUrl" label="PDF地址" placeholder="请输入PDF地址" />
+        <van-field size="small" v-model="pdfUrl" label="PDF地址" placeholder="请输入PDF地址" />
         <van-cell>
-          <van-button type="primary" block @click="previewPdf">预览PDF</van-button>
+          <van-button size="small" type="primary" block @click="previewPdf">预览PDF</van-button>
         </van-cell>
       </van-cell-group>
     </div>
