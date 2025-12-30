@@ -86,216 +86,216 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { showToast, showImagePreview } from 'vant'
+    import { ref, onMounted, computed } from 'vue'
+    import { useRoute, useRouter } from 'vue-router'
+    import { showToast, showImagePreview } from 'vant'
 
-defineOptions({
-    name: 'ActivityDetail'
-})
+    defineOptions({
+        name: 'ActivityDetail'
+    })
 
-const route = useRoute()
-const router = useRouter()
-const activityId = route.params.id
-const activity = ref(null)
-const showShare = ref(false)
+    const route = useRoute()
+    const router = useRouter()
+    const activityId = route.params.id
+    const activity = ref(null)
+    const showShare = ref(false)
 
-const shareOptions = [
-    { name: '微信', icon: 'wechat' },
-    { name: '微博', icon: 'weibo' },
-    { name: '复制链接', icon: 'link' },
-    { name: '生成海报', icon: 'poster' },
-]
+    const shareOptions = [
+        { name: '微信', icon: 'wechat' },
+        { name: '微博', icon: 'weibo' },
+        { name: '复制链接', icon: 'link' },
+        { name: '生成海报', icon: 'poster' },
+    ]
 
-// Mock Data Fetch
-const fetchActivity = () => {
-    // Simulate API call
-    setTimeout(() => {
-        activity.value = {
-            id: activityId,
-            title: '双十二超级购物节',
-            description: '全场5折起，消费满300减50，更有神秘大礼包等你抢购！',
-            image: 'https://fastly.jsdelivr.net/npm/@vant/assets/apple-1.jpeg',
-            status: 'ongoing',
-            startTime: Date.now() - 86400000,
-            endTime: Date.now() + 259200000,
-            location: '线上商城',
-            tags: ['限时抢购', '全场5折', '满减'],
-            participants: 12580,
-            discount: '满300减50'
+    // Mock Data Fetch
+    const fetchActivity = () => {
+        // Simulate API call
+        setTimeout(() => {
+            activity.value = {
+                id: activityId,
+                title: '双十二超级购物节',
+                description: '全场5折起，消费满300减50，更有神秘大礼包等你抢购！',
+                image: 'https://fastly.jsdelivr.net/npm/@vant/assets/apple-1.jpeg',
+                status: 'ongoing',
+                startTime: Date.now() - 86400000,
+                endTime: Date.now() + 259200000,
+                location: '线上商城',
+                tags: ['限时抢购', '全场5折', '满减'],
+                participants: 12580,
+                discount: '满300减50'
+            }
+        }, 500)
+    }
+
+    const getStatusText = (status) => {
+        const map = {
+            ongoing: '进行中',
+            upcoming: '即将开始',
+            ended: '已结束'
         }
-    }, 500)
-}
-
-const getStatusText = (status) => {
-    const map = {
-        ongoing: '进行中',
-        upcoming: '即将开始',
-        ended: '已结束'
+        return map[status] || status
     }
-    return map[status] || status
-}
 
-const actionButtonText = computed(() => {
-    if (!activity.value) return '立即报名'
-    if (activity.value.status === 'ended') return '已结束'
-    if (activity.value.status === 'upcoming') return '提醒我'
-    return '立即报名'
-})
+    const actionButtonText = computed(() => {
+        if (!activity.value) return '立即报名'
+        if (activity.value.status === 'ended') return '已结束'
+        if (activity.value.status === 'upcoming') return '提醒我'
+        return '立即报名'
+    })
 
-const formatTimeRange = (start, end) => {
-    if (!start || !end) return ''
-    const s = new Date(start)
-    const e = new Date(end)
-    return `${s.getMonth() + 1}/${s.getDate()} ${s.getHours()}:${s.getMinutes()} - ${e.getMonth() + 1}/${e.getDate()} ${e.getHours()}:${e.getMinutes()}`
-}
-
-const handleBack = () => router.back()
-
-const previewImage = () => {
-    if (activity.value?.image) {
-        showImagePreview([activity.value.image])
+    const formatTimeRange = (start, end) => {
+        if (!start || !end) return ''
+        const s = new Date(start)
+        const e = new Date(end)
+        return `${s.getMonth() + 1}/${s.getDate()} ${s.getHours()}:${s.getMinutes()} - ${e.getMonth() + 1}/${e.getDate()} ${e.getHours()}:${e.getMinutes()}`
     }
-}
 
-const handleJoin = () => {
-    showToast('报名成功！')
-    // 延迟跳转到我参加的活动页面
-    setTimeout(() => {
-        router.push('/activity/my-activities')
-    }, 1500)
-}
+    const handleBack = () => router.back()
 
-const onSelectShare = (option) => {
-    showToast(option.name)
-    showShare.value = false
-}
+    const previewImage = () => {
+        if (activity.value?.image) {
+            showImagePreview([activity.value.image])
+        }
+    }
 
-onMounted(() => {
-    fetchActivity()
-})
+    const handleJoin = () => {
+        showToast('报名成功！')
+        // 延迟跳转到我参加的活动页面
+        setTimeout(() => {
+            router.push('/activity/my-activities')
+        }, 1500)
+    }
+
+    const onSelectShare = (option) => {
+        showToast(option.name)
+        showShare.value = false
+    }
+
+    onMounted(() => {
+        fetchActivity()
+    })
 </script>
 
 <style lang="scss" scoped>
-.activity-detail {
-    min-height: 100vh;
-    background-color: #f7f8fa;
-    padding-bottom: 80px;
+    .activity-detail {
+        min-height: 100vh;
+        background-color: #f7f8fa;
+        padding-bottom: 80px;
 
-    .header-image {
-        position: relative;
+        .header-image {
+            position: relative;
 
-        .status-tag {
-            position: absolute;
-            bottom: 16px;
-            right: 16px;
-            padding: 4px 12px;
-            background: rgba(0, 0, 0, 0.6);
-            color: #fff;
-            border-radius: 16px;
-            font-size: 12px;
-            backdrop-filter: blur(4px);
+            .status-tag {
+                position: absolute;
+                bottom: 16px;
+                right: 16px;
+                padding: 4px 12px;
+                background: rgba(0, 0, 0, 0.6);
+                color: #fff;
+                border-radius: 16px;
+                font-size: 12px;
+                backdrop-filter: blur(4px);
 
-            &.ongoing {
-                background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-                opacity: 1;
+                &.ongoing {
+                    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+                    opacity: 1;
+                }
             }
         }
-    }
 
-    .section {
-        background: #fff;
-        margin-bottom: 12px;
-        padding: 16px;
+        .section {
+            background: #fff;
+            margin-bottom: 12px;
+            padding: 16px;
 
-        &.title-section {
-            border-radius: 0 0 16px 16px;
-            padding-top: 20px;
+            &.title-section {
+                border-radius: 0 0 16px 16px;
+                padding-top: 20px;
 
-            .price-row {
-                color: #ee0a24;
-                display: flex;
-                align-items: flex-end;
-                margin-bottom: 8px;
+                .price-row {
+                    color: #ee0a24;
+                    display: flex;
+                    align-items: flex-end;
+                    margin-bottom: 8px;
 
-                .currency {
-                    font-size: 14px;
-                    margin-bottom: 2px;
+                    .currency {
+                        font-size: 14px;
+                        margin-bottom: 2px;
+                    }
+
+                    .price {
+                        font-size: 24px;
+                        font-weight: bold;
+                        margin-right: 8px;
+                    }
+
+                    .original-price {
+                        font-size: 12px;
+                        color: #999;
+                        text-decoration: line-through;
+                        margin-right: 8px;
+                        margin-bottom: 4px;
+                    }
                 }
 
-                .price {
-                    font-size: 24px;
+                .title {
+                    font-size: 18px;
                     font-weight: bold;
-                    margin-right: 8px;
+                    color: #323233;
+                    line-height: 1.4;
+                    margin-bottom: 8px;
                 }
 
-                .original-price {
-                    font-size: 12px;
-                    color: #999;
-                    text-decoration: line-through;
-                    margin-right: 8px;
-                    margin-bottom: 4px;
+                .subtitle {
+                    font-size: 13px;
+                    color: #666;
+                    margin-bottom: 12px;
                 }
-            }
 
-            .title {
-                font-size: 18px;
-                font-weight: bold;
-                color: #323233;
-                line-height: 1.4;
-                margin-bottom: 8px;
-            }
-
-            .subtitle {
-                font-size: 13px;
-                color: #666;
-                margin-bottom: 12px;
-            }
-
-            .tags {
-                display: flex;
-                gap: 8px;
-            }
-        }
-
-        &.info-section {
-            padding: 0;
-            background: transparent;
-
-            :deep(.van-cell-group) {
-                margin: 0;
-            }
-        }
-
-        &.detail-content {
-            border-radius: 16px;
-            margin: 12px;
-
-            .section-header {
-                font-size: 16px;
-                font-weight: bold;
-                margin-bottom: 16px;
-                position: relative;
-                padding-left: 10px;
-
-                &::before {
-                    content: '';
-                    position: absolute;
-                    left: 0;
-                    top: 4px;
-                    bottom: 4px;
-                    width: 3px;
-                    background: #ee0a24;
-                    border-radius: 2px;
+                .tags {
+                    display: flex;
+                    gap: 8px;
                 }
             }
 
-            .rich-text {
-                font-size: 14px;
-                color: #666;
-                line-height: 1.6;
+            &.info-section {
+                padding: 0;
+                background: transparent;
+
+                :deep(.van-cell-group) {
+                    margin: 0;
+                }
+            }
+
+            &.detail-content {
+                border-radius: 16px;
+                margin: 12px;
+
+                .section-header {
+                    font-size: 16px;
+                    font-weight: bold;
+                    margin-bottom: 16px;
+                    position: relative;
+                    padding-left: 10px;
+
+                    &::before {
+                        content: '';
+                        position: absolute;
+                        left: 0;
+                        top: 4px;
+                        bottom: 4px;
+                        width: 3px;
+                        background: #ee0a24;
+                        border-radius: 2px;
+                    }
+                }
+
+                .rich-text {
+                    font-size: 14px;
+                    color: #666;
+                    line-height: 1.6;
+                }
             }
         }
     }
-}
 </style>

@@ -1,16 +1,7 @@
 <template>
   <div class="error-container">
-    <van-empty
-      class="error-empty"
-      image="error"
-      :description="$t('route.forbidden')"
-    >
-      <van-button
-        round
-        type="primary"
-        class="error-button"
-        @click="handleBack"
-      >
+    <van-empty class="error-empty" image="error" :description="$t('route.forbidden')">
+      <van-button round type="primary" class="error-button" @click="handleBack">
         {{ $t('common.back') }}
       </van-button>
     </van-empty>
@@ -34,7 +25,7 @@ const handleBack = () => {
   align-items: center;
   justify-content: center;
   background-color: var(--bg-color);
-  
+
   .error-empty {
     .error-button {
       width: 160px;
@@ -42,4 +33,3 @@ const handleBack = () => {
   }
 }
 </style>
-

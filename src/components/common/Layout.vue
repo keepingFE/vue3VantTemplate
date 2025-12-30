@@ -1,6 +1,10 @@
 <template>
   <div class="layout-container">
-    <router-view />
+    <router-view v-slot="{ Component, route }">
+      <keep-alive :include="cachedViews">
+        <component :is="Component" :key="route.name" />
+      </keep-alive>
+    </router-view>
     <!-- 底部导航菜单 -->
     <van-tabbar v-model="active" route fixed placeholder>
       <van-tabbar-item v-for="item in tabbarItems" :key="item.name" :to="item.to" :icon="item.icon">
@@ -11,11 +15,16 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useKeepAliveStore } from '@/store/modules/keepAlive'
 
 const { t } = useI18n()
 const active = ref(0)
+const keepAliveStore = useKeepAliveStore()
+
+// 需要缓存的视图
+const cachedViews = computed(() => keepAliveStore.getCachedViews)
 
 const tabbarItems = [
   {

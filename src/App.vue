@@ -3,7 +3,7 @@
     <van-config-provider :theme-vars="themeVars">
       <router-view v-slot="{ Component, route }">
         <keep-alive :include="cachedViews">
-          <component :is="Component" :key="route.path" />
+          <component :is="Component" :key="route.name" />
         </keep-alive>
       </router-view>
     </van-config-provider>
@@ -13,8 +13,10 @@
 <script setup>
 import { computed } from 'vue'
 import { useAppStore } from '@/store/modules/app'
+import { useKeepAliveStore } from '@/store/modules/keepAlive'
 
 const appStore = useAppStore()
+const keepAliveStore = useKeepAliveStore()
 
 // Vant 主题变量
 const themeVars = computed(() => ({
@@ -24,11 +26,8 @@ const themeVars = computed(() => ({
   warningColor: '#ff976a'
 }))
 
-// 需要缓存的视图
-const cachedViews = computed(() => {
-  // 这里可以根据路由配置动态获取需要缓存的组件
-  return ['Home', 'List', 'User']
-})
+// 需要缓存的视图（从 store 动态获取）
+const cachedViews = computed(() => keepAliveStore.getCachedViews)
 </script>
 
 <style lang="scss">

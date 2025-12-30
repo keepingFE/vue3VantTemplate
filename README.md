@@ -35,6 +35,7 @@
 - 🎨 **主题定制** - 支持主题色切换和深色模式，跟随系统主题
 - 🌍 **国际化** - 内置中英文支持，可扩展多语言
 - 🔐 **权限管理** - 完整的路由权限控制，支持按钮级权限
+- 💾 **路由缓存** - 智能的页面缓存管理，提升用户体验
 - 📦 **状态管理** - Pinia + 持久化，轻量级状态管理方案
 - 📐 **移动端适配** - postcss-pxtorem + amfe-flexible，完美适配各种屏幕
 - 🔧 **自动导入** - API 和组件自动导入，无需手动引入
@@ -189,20 +190,28 @@ npm run lint
 - ✅ 动态路由生成
 - ✅ 路由懒加载
 
-### 2. 状态管理
+### 2. 路由缓存管理
+
+- ✅ 基于路由配置的智能缓存
+- ✅ 动态添加/移除缓存
+- ✅ 页面刷新功能
+- ✅ 缓存控制 Hook
+- ✅ 详细文档：[路由缓存使用指南](./docs/keep-alive-guide.md)
+
+### 3. 状态管理
 
 - ✅ Pinia 状态管理
 - ✅ 状态持久化（pinia-plugin-persistedstate）
-- ✅ 模块化 Store（user、app、permission）
+- ✅ 模块化 Store（user、app、permission、keepAlive）
 
-### 3. 国际化
+### 4. 国际化
 
 - ✅ Vue I18n 9.x
 - ✅ 中英文语言包
 - ✅ 语言切换功能
 - ✅ Vant 组件库语言同步
 
-### 4. 主题定制
+### 5. 主题定制
 
 - ✅ 动态主题色切换
 - ✅ 深色/浅色模式
@@ -211,7 +220,7 @@ npm run lint
 - ✅ Vant 组件主题同步
 - ✅ 主题持久化
 
-### 5. API 请求
+### 6. API 请求
 
 - ✅ Axios 封装
 - ✅ 请求/响应拦截器
@@ -220,12 +229,12 @@ npm run lint
 - ✅ Token 自动注入
 - ✅ API 模块化管理
 
-### 6. Mock 数据
+### 7. Mock 数据
 
 - ✅ vite-plugin-mock 集成
 - ✅ 开发环境自动启用
 
-### 7. 移动端适配
+### 8. 移动端适配
 
 - ✅ postcss-pxtorem（px 转 rem）
 - ✅ amfe-flexible（动态设置 rem 基准）
@@ -233,7 +242,7 @@ npm run lint
 - ✅ 安全区域适配
 - ✅ 横竖屏适配
 
-### 8. 工具函数
+### 9. 工具函数
 
 - ✅ 本地存储封装
 - ✅ Token 管理
@@ -241,19 +250,20 @@ npm run lint
 - ✅ 防抖/节流
 - ✅ 权限判断
 
-### 9. 自定义指令
+### 10. 自定义指令
 
 - ✅ v-permission - 权限控制
 - ✅ v-debounce - 防抖
 - ✅ v-throttle - 节流
 
-### 10. 组合式函数 (Hooks)
+### 11. 组合式函数 (Hooks)
 
 - ✅ useTheme - 主题管理
 - ✅ useRequest - 请求封装
 - ✅ usePermission - 权限判断
+- ✅ useKeepAlive - 路由缓存管理
 
-### 11. 图表可视化
+### 12. 图表可视化
 
 - ✅ ECharts 集成
 - ✅ Vue-ECharts 组件封装
@@ -308,6 +318,28 @@ if (hasPermission(['admin'])) {
 }
 </script>
 ```
+
+### 路由缓存控制
+
+```vue
+<script setup>
+import { useKeepAlive } from '@/hooks/useKeepAlive'
+
+const { refreshPage, closePage, closeOthers, closeAll } = useKeepAlive()
+
+// 刷新当前页面（清除缓存重新加载）
+const handleRefresh = () => {
+  refreshPage()
+}
+
+// 关闭当前页面并返回
+const handleClose = () => {
+  closePage()
+}
+</script>
+```
+
+详细文档：[路由缓存使用指南](./docs/keep-alive-guide.md)
 
 ### API 请求
 

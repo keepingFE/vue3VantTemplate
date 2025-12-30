@@ -6,6 +6,7 @@ import config from '@/config'
 import { showToast } from 'vant'
 import { useUserStore } from '@/store/modules/user'
 import { usePermissionStore } from '@/store/modules/permission'
+import { useKeepAliveStore } from '@/store/modules/keepAlive'
 
 /**
  * 检查路由是否需要登录
@@ -139,8 +140,22 @@ export function setupRouterGuards(router) {
   
   // 全局后置守卫
   router.afterEach((to, from) => {
-    // 页面滚动到顶部
-    window.scrollTo(0, 0)
+    // 处理路由缓存
+    const keepAliveStore = useKeepAliveStore()
+    
+    // 记录进入前是否已经在缓存中
+    const wasAlreadyCached = keepAliveStore.cachedViews.includes(to.name)
+    
+    // 如果路由配置了 keepAlive，则添加到缓存列表
+    if (to.meta?.keepAlive && to.name) {
+      keepAliveStore.addCachedView(to.name)
+    }
+    
+    // 只有在非缓存页面或首次进入缓存页面时才滚动到顶部
+    // 如果页面已经被缓存过，说明是从缓存恢复，应该保持滚动位置
+    if (!to.meta?.keepAlive || !wasAlreadyCached) {
+      window.scrollTo(0, 0)
+    }
   })
   
   // 全局错误处理

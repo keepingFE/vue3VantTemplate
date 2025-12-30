@@ -31,7 +31,14 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { showToast } from 'vant'
+
+defineOptions({
+  name: 'Home'
+})
+
+const router = useRouter()
 
 // 轮播图数据
 const banners = ref([
@@ -65,7 +72,11 @@ const handleFeatureClick = (item) => {
 }
 
 const handleItemClick = (item) => {
-  showToast(item.description)
+  // 跳转到详情页
+  router.push({
+    name: 'ListDetail',
+    params: { id: item.id }
+  })
 }
 </script>
 

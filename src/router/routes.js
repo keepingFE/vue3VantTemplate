@@ -7,6 +7,16 @@
  */
 export const constantRoutes = [
   {
+    path: '/redirect/:path(.*)',
+    name: 'Redirect',
+    component: () => import('@/views/redirect/index.vue'),
+    meta: {
+      title: '重定向',
+      requiresAuth: false,
+      hidden: true
+    }
+  },
+  {
     path: '/login',
     name: 'Login',
     component: () => import('@/views/login/index.vue'),

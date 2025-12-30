@@ -134,7 +134,7 @@
                 <div class="filter-footer">
                     <van-button block plain @click="resetFilters">{{ $t('product.filter.reset') }}</van-button>
                     <van-button block type="primary" @click="applyFilters">{{ $t('product.filter.confirm')
-                    }}</van-button>
+                        }}</van-button>
                 </div>
             </div>
         </van-popup>
@@ -149,7 +149,7 @@ import { useI18n } from 'vue-i18n'
 import productImage from '@/assets/images/picture.jpg'
 
 defineOptions({
-    name: 'ProductList'
+    name: 'Product'
 })
 
 const router = useRouter()

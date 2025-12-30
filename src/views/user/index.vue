@@ -74,6 +74,10 @@ import { showToast, showConfirmDialog } from 'vant'
 import { useI18n } from 'vue-i18n'
 import { languages } from '@/config'
 
+defineOptions({
+  name: 'User'
+})
+
 const defaultAvatar = new URL('@/assets/images/person.png', import.meta.url).href
 const router = useRouter()
 const userStore = useUserStore()

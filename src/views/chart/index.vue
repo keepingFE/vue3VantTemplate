@@ -67,6 +67,10 @@ import {
 import { LegacyGridContainLabel } from 'echarts/features'
 import VChart from 'vue-echarts'
 
+defineOptions({
+  name: 'Chart'
+})
+
 // 按需注册 ECharts 组件
 use([
   CanvasRenderer,

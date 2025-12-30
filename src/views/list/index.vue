@@ -1,6 +1,10 @@
 <template>
   <div class="list-container">
-    <van-nav-bar :title="$t('route.list')" fixed placeholder />
+    <van-nav-bar :title="$t('route.list')" fixed placeholder>
+      <template #right>
+        <van-icon name="replay" size="18" @click="handleRefreshPage" />
+      </template>
+    </van-nav-bar>
 
     <!-- 固定区域：Tab 和搜索栏 -->
     <div class="fixed-header">
@@ -46,13 +50,19 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onActivated } from 'vue'
 import { useRouter } from 'vue-router'
 import { showToast } from 'vant'
 import { useI18n } from 'vue-i18n'
+import { useKeepAlive } from '@/hooks/useKeepAlive'
+
+defineOptions({
+  name: 'List'
+})
 
 const router = useRouter()
 const { t } = useI18n()
+const { refreshPage } = useKeepAlive()
 
 // Tab 激活状态
 const activeTab = ref('all')
@@ -186,6 +196,17 @@ const handleItemClick = (item) => {
     params: { id: item.id }
   })
 }
+
+// 刷新页面（清除缓存重新加载）
+const handleRefreshPage = () => {
+  refreshPage()
+}
+
+// 页面激活时的处理（从缓存恢复时触发）
+onActivated(() => {
+  console.log('List 页面从缓存激活')
+  // 可以在这里处理需要刷新的数据
+})
 </script>
 
 <style lang="scss" scoped>
